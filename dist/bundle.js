@@ -74,7 +74,7 @@ var Incremancer;
     element.getElementsByClassName("tooltip")[0].style.left = (x + 20) + "px";
   }
 
-  let gameContainer, u, p, g, m, b, f, y, x;
+  let gameContainer, u, p, g, m, b, f, y, grass;
   (e => {
     "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
       value: "Module"
@@ -132,8 +132,8 @@ var Incremancer;
   function onDragMove(event) {
     if (Zombies.zombieCursor) {
       Zombies.zombieCursor.position = event.data.getLocalPosition(this.parent);
-      const position = event.data.getLocalPosition(x);
-      Zombies.mouseOutOfBounds = position.x < 0 || position.y < 0 || position.x > x.width || position.y > x.height;
+      const position = event.data.getLocalPosition(grass);
+      Zombies.mouseOutOfBounds = position.x < 0 || position.y < 0 || position.x > grass.width || position.y > grass.height;
     }
 
     // Pinch zoom
@@ -287,13 +287,20 @@ var Incremancer;
       }(e, t)
   }
 
-  function N() {
-    const e = Math.min(500 + 50 * GameModel.level, 1500),
-      t = Math.random() * e / 3;
+  function setGameFieldSizeForLevel() {
+    const size = Math.min(500 + 50 * GameModel.level, 1500);
+    const shift = Math.random() * size / 3;
+
     gameFieldSize = {
-      x: e + t,
-      y: e - t
-    }, x && (x.width = gameFieldSize.x, x.height = gameFieldSize.y), gameContainer.hitArea = new PIXI.Rectangle(0, 0, gameFieldSize.x, gameFieldSize.y)
+      x: size + shift,
+      y: size - shift
+    };
+    
+    if (grass) {
+      grass.width = gameFieldSize.x;
+      grass.height = gameFieldSize.y;
+      gameContainer.hitArea = new PIXI.Rectangle(0, 0, gameFieldSize.x, gameFieldSize.y);
+    }
   }
 
   function O() {
@@ -326,7 +333,7 @@ var Incremancer;
               e.preventDefault()
             }
           }(e), e.loader.add("sprites/ground.json").add("sprites/megagraveyard.png").add("sprites/graveyard.json").add("sprites/buildings.json").add("sprites/humans.json").add("sprites/cop.json").add("sprites/dogs.json").add("sprites/army.json").add("sprites/doctor.json").add("sprites/zombie.json").add("sprites/golem.json").add("sprites/bonecollector.json").add("sprites/harpy.json").add("sprites/objects2.json").add("sprites/fenceposts.json").add("sprites/trees2.json").add("sprites/fortress.json").add("sprites/tank.json").add("sprites/skeleton.json").load((function() {
-            GameModel.app = e, N(), x = new PIXI.TilingSprite(PIXI.Texture.from("grass.png")), x.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF, x.width = gameFieldSize.x, x.height = gameFieldSize.y, u.addChild(x), GameModel.setupLevel(), setTimeout((function() {
+            GameModel.app = e, setGameFieldSizeForLevel(), grass = new PIXI.TilingSprite(PIXI.Texture.from("grass.png")), grass.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF, grass.width = gameFieldSize.x, grass.height = gameFieldSize.y, u.addChild(grass), GameModel.setupLevel(), setTimeout((function() {
               centerGameContainer(!0)
             })), e.ticker.add((t => {
               U(e.ticker.deltaMS / 1e3, e), GameModel.frameRate = e.ticker.FPS
@@ -1255,7 +1262,7 @@ var Incremancer;
       this.level++, this.currentState = this.states.playingLevel, this.setupLevel(), this.updatePlayingLevel(), this.persistentData.autoRelease && this.releaseCagedZombies()
     }
     setupLevel() {
-      this.endLevelTimer = this.endLevelDelay, N(), this.particles.initialize(), this.humans.populate(), this.zombies.populate(), this.graveyard.initialize(), setTimeout(centerGameContainer, 10), this.upgrades.applyUpgrades(), this.upgrades.updateRuneEffects(), this.partFactory.applyGenerators(), this.creatures.populate(), this.skeleton.populate(), this.addStartLevelResources(), this.populateStats()
+      this.endLevelTimer = this.endLevelDelay, setGameFieldSizeForLevel(), this.particles.initialize(), this.humans.populate(), this.zombies.populate(), this.graveyard.initialize(), setTimeout(centerGameContainer, 10), this.upgrades.applyUpgrades(), this.upgrades.updateRuneEffects(), this.partFactory.applyGenerators(), this.creatures.populate(), this.skeleton.populate(), this.addStartLevelResources(), this.populateStats()
     }
     populateStats() {
       this.stats = {
