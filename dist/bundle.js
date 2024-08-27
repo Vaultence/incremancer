@@ -220,8 +220,8 @@ var Incremancer;
       }
     }
 
-    gc.x = coords.x - centerPosition.x * gc.scale.x;
-    gc.y = coords.y - centerPosition.y * gc.scale.y;
+    gc.x = coords.x - centerPositionX * gc.scale.x;
+    gc.y = coords.y - centerPositionY * gc.scale.y;
     preventGameContainerLeavingBounds(gc);
   }
 
