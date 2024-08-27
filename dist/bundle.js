@@ -138,8 +138,7 @@ var Incremancer;
 
     // Pinch zoom
     if (event.data.originalEvent.touches && event.data.originalEvent.touches.length > 1) {
-      const curDiff = Math.abs(e.data.originalEvent.touches[0].clientX - e.data.originalEvent.touches[1].clientX);
-      lastDiff ? lastPinchZoom + 50 < Date.now() && Math.abs(curDiff - lastDiff) > 10 && (zoom(curDiff > lastDiff ? 1 : -1, null), lastPinchZoom = Date.now(), lastDiff = curDiff) : lastDiff = curDiff
+      pinchZoom(event);
     }
 
     else if (this.dragging) {
