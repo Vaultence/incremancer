@@ -74,7 +74,7 @@ var Incremancer;
     element.getElementsByClassName("tooltip")[0].style.left = (x + 20) + "px";
   }
 
-  let c, u, p, g, m, b, f, y, x;
+  let gameContainer, u, p, g, m, b, f, y, x;
   (e => {
     "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
       value: "Module"
@@ -82,167 +82,266 @@ var Incremancer;
       value: !0
     })
   })(e);
-  let v, S, M, k, w, T, C, D = {
+  let GameModel, S, M, k, w, Zombies, C, canvasSize = {
       x: 800,
       y: 600,
       defaultScale: 1
     },
-    P = {
+    gameFieldSize = {
       x: 600,
       y: 600
     };
 
-  function z(e) {
-    this.data = e.data, this.dragging = !0, this.dragOffset = this.data.getLocalPosition(this), this.dragOffset.x *= this.scale.x, this.dragOffset.y *= this.scale.y, this.dragStartX = this.x, this.dragStartY = this.y, B = 0
+  function onDragStart(event) {
+    this.data = event.data;
+    this.dragging = true;
+    this.dragOffset = this.data.getLocalPosition(this);
+    this.dragOffset.x *= this.scale.x;
+    this.dragOffset.y *= this.scale.y;
+    this.dragStartX = this.x;
+    this.dragStartY = this.y;
+    lastDiff = 0;
   }
 
-  function I() {
-    this.dragging = !1, this.data = null, B = 0
+  function onDragEnd() {
+    this.dragging = false;
+    this.data = null;
+    lastDiff = 0;
   }
-  let B = 0,
-    R = 0;
+  
+  let lastDiff = 0;
+  let lastPinchZoom = 0;
 
-  function H(e) {
-    if (T.zombieCursor) {
-      T.zombieCursor.position = e.data.getLocalPosition(this.parent);
-      const t = e.data.getLocalPosition(x);
-      T.mouseOutOfBounds = t.x < 0 || t.y < 0 || t.x > x.width || t.y > x.height
+  function pinchZoom(event) {
+    var curDiff = Math.abs(event.data.originalEvent.touches[0].clientX - event.data.originalEvent.touches[1].clientX);
+    if (lastDiff) {
+      if (lastPinchZoom + 50 < Date.now() && Math.abs(curDiff - lastDiff) > 10) {
+        if (curDiff > lastDiff) {
+          zoom(1);
+        } else {
+          zoom(-1);
+        }
+        lastPinchZoom = Date.now();
+        lastDiff = curDiff;
+      }
+    } else {
+      lastDiff = curDiff;
     }
-    if (e.data.originalEvent.touches && e.data.originalEvent.touches.length > 1) ! function(e) {
-      const t = Math.abs(e.data.originalEvent.touches[0].clientX - e.data.originalEvent.touches[1].clientX);
-      B ? R + 50 < Date.now() && Math.abs(t - B) > 10 && (A(t > B ? 1 : -1, null), R = Date.now(), B = t) : B = t
-    }(e);
+  }
+
+  function onDragMove(event) {
+    if (Zombies.zombieCursor) {
+      Zombies.zombieCursor.position = event.data.getLocalPosition(this.parent);
+      const position = event.data.getLocalPosition(x);
+      Zombies.mouseOutOfBounds = position.x < 0 || position.y < 0 || position.x > x.width || position.y > x.height;
+    }
+
+    // Pinch zoom
+    if (event.data.originalEvent.touches && event.data.originalEvent.touches.length > 1) {
+      const curDiff = Math.abs(e.data.originalEvent.touches[0].clientX - e.data.originalEvent.touches[1].clientX);
+      lastDiff ? lastPinchZoom + 50 < Date.now() && Math.abs(curDiff - lastDiff) > 10 && (zoom(curDiff > lastDiff ? 1 : -1, null), lastPinchZoom = Date.now(), lastDiff = curDiff) : lastDiff = curDiff
+    }
+
     else if (this.dragging) {
-      const e = this.data.getLocalPosition(this.parent);
-      this.x = e.x - this.dragOffset.x, this.y = e.y - this.dragOffset.y, F(this), distanceBetweenPoints(this.dragStartX, this.dragStartY, this.x, this.y) > 5 && (this.hasMoved = !0)
+      const newPosition = this.data.getLocalPosition(this.parent);
+      this.x = newPosition.x - this.dragOffset.x;
+      this.y = newPosition.y - this.dragOffset.y;
+      preventGameContainerLeavingBounds(this);
+      if (distanceBetweenPoints(this.dragStartX, this.dragStartY, this.x, this.y) > 5) {
+        this.hasMoved = true;
+      }
     }
   }
 
-  function F(e) {
-    const t = P.x * e.scale.x,
-      s = P.y * e.scale.y;
-    e.x > .5 * D.x && (e.x = .5 * D.x), e.x + t < .5 * D.x && (e.x = .5 * D.x - t), e.y > .5 * D.y && (e.y = .5 * D.y), e.y + s < .5 * D.y && (e.y = .5 * D.y - s)
+  function preventGameContainerLeavingBounds(gc) {
+    const gcWidth = gameFieldSize.x * gc.scale.x;
+    const gcHeight = gameFieldSize.y * gc.scale.y;
+    if (gc.x > canvasSize.x * 0.5)
+      gc.x = canvasSize.x * 0.5;
+    if (gc.x + gcWidth < canvasSize.x * 0.5)
+      gc.x = canvasSize.x * 0.5 - gcWidth;
+    if (gc.y > canvasSize.y * 0.5)
+      gc.y = canvasSize.y * 0.5;
+    if (gc.y + gcHeight < canvasSize.y * 0.5)
+      gc.y = canvasSize.y * 0.5 - gcHeight;
   }
 
-  function E(e) {
-    this.hasMoved || v.currentState != v.states.playingLevel || (Y.shift ? T.spawnAllZombies(e.data.getLocalPosition(this).x, e.data.getLocalPosition(this).y) : T.spawnZombie(e.data.getLocalPosition(this).x, e.data.getLocalPosition(this).y)), this.hasMoved = !1
+  function onClickTap(event) {
+    if (!this.hasMoved && GameModel.currentState == GameModel.states.playingLevel) {
+      if (KeysPressed.shift) {
+        Zombies.spawnAllZombies(event.data.getLocalPosition(this).x, event.data.getLocalPosition(this).y);
+      } 
+      else {
+        Zombies.spawnZombie(event.data.getLocalPosition(this).x, event.data.getLocalPosition(this).y);
+      }
+    }
+    this.hasMoved = false;
   }
 
-  function A(e, t) {
-    if (R + 50 > Date.now()) return;
-    R = Date.now();
-    const s = c;
-    t || (t = {
-      x: .5 * D.x,
-      y: .5 * D.y
-    });
-    const i = P.x * s.scale.x,
-      a = P.y * s.scale.y;
-    t.x > s.x + i && (t.x = s.x + i), t.x < s.x && (t.x = s.x), t.y < s.y && (t.y = s.y), t.y > s.y + a && (t.y = s.y + a);
-    const r = (t.x - s.x) / s.scale.x,
-      n = (t.y - s.y) / s.scale.y;
-    e > 0 ? s.scale.x < 10 && (s.scale.x = s.scale.y = 1.1 * s.scale.x, T.zombieCursor && T.zombieCursor.scale && (T.zombieCursor.scale.x = T.zombieCursor.scale.y = 1.1 * T.zombieCursor.scale.x)) : Math.max(i, a) > .8 * Math.min(D.y, D.x) && (s.scale.x = s.scale.y = .9 * s.scale.x, T.zombieCursor && T.zombieCursor.scale && (T.zombieCursor.scale.x = T.zombieCursor.scale.y = .9 * T.zombieCursor.scale.x)), s.x = t.x - r * s.scale.x, s.y = t.y - n * s.scale.y, F(s)
+  function zoom(change, coords) {
+    if (lastPinchZoom + 50 > Date.now()) return;
+
+    lastPinchZoom = Date.now();
+    const gc = gameContainer;
+    
+    if (!coords) {
+      coords = {
+        x:canvasSize.x * 0.5, 
+        y:canvasSize.y * 0.5};
+    }
+
+    const gcWidth = gameFieldSize.x * gc.scale.x;
+    const gcHeight = gameFieldSize.y * gc.scale.y;
+    
+    if (coords.x > gc.x + gcWidth)
+      coords.x = gc.x + gcWidth;
+    if (coords.x < gc.x)
+      coords.x = gc.x;
+    if (coords.y < gc.y)
+      coords.y = gc.y;
+    if (coords.y > gc.y + gcHeight)
+      coords.y = gc.y + gcHeight;
+   
+    const centerPositionX = (coords.x - gc.x) / gc.scale.x;
+    const centerPositionY = (coords.y - gc.y) / gc.scale.y;
+
+    if (change > 0) {
+      if (gc.scale.x < 10) {
+        gc.scale.x = gc.scale.y = 1.1 * gc.scale.x;
+        if (Zombies.zombieCursor && Zombies.zombieCursor.scale) // scale sometimes undefined.
+          Zombies.zombieCursor.scale.x = Zombies.zombieCursor.scale.y = 1.1 * Zombies.zombieCursor.scale.x;
+      }
+    }
+    
+    else {
+      if (Math.max(gcWidth, gcHeight) > Math.min(canvasSize.y, canvasSize.x) * 0.8) {
+        gc.scale.x = gc.scale.y = gc.scale.x * 0.9;
+        if (Zombies.zombieCursor && Zombies.zombieCursor.scale) // scale sometimes undefined.
+        Zombies.zombieCursor.scale.x = Zombies.zombieCursor.scale.y = Zombies.zombieCursor.scale.x * 0.9;
+      }
+    }
+
+    gc.x = coords.x - centerPosition.x * gc.scale.x;
+    gc.y = coords.y - centerPosition.y * gc.scale.y;
+    preventGameContainerLeavingBounds(gc);
   }
 
-  function L(e) {
-    e.preventDefault();
-    const t = {
-      x: e.clientX * (D.x / document.body.clientWidth),
-      y: e.clientY * (D.y / document.body.clientHeight)
+  function onWheel(event) {
+    event.preventDefault();
+    const coords = {
+      x: event.clientX * (canvasSize.x / document.body.clientWidth),
+      y: event.clientY * (canvasSize.y / document.body.clientHeight)
     };
-    e.deltaY < 0 || e.deltaX < 0 ? A(1, t) : A(-1, t)
+
+    if (event.deltaY < 0 || event.deltaX < 0)
+      zoom(+1, coords);
+    else
+      zoom(-1, coords);
   }
 
-  function Z(e = !1) {
-    e && (c.scale.x = D.defaultScale, c.scale.y = D.defaultScale, T.zombieCursor && (T.zombieCursor.scale.x = T.zombieCursor.scale.y = T.zombieCursorScale * D.defaultScale)), c.x = (D.x - P.x * c.scale.x) / 2, c.y = (D.y - P.y * c.scale.y) / 2
+  function centerGameContainer(resetZoom = false) {
+    if (resetZoom) {
+      gameContainer.scale.x = canvasSize.defaultScale;
+      gameContainer.scale.y = canvasSize.defaultScale;
+      if (Zombies.zombieCursor)
+        Zombies.zombieCursor.scale.x = Zombies.zombieCursor.scale.y = Zombies.zombieCursorScale * canvasSize.defaultScale;
+    }
+    
+    gameContainer.x = (canvasSize.x - gameFieldSize.x * gameContainer.scale.x) / 2;
+    gameContainer.y = (canvasSize.y - gameFieldSize.y * gameContainer.scale.y) / 2;
   }
-  const G = {
+
+  const viewableArea = {
       x: 0,
       y: 0,
-      width: 1e3,
-      height: 1e3,
-      hideParticle(e, t) {
-        return e < this.x || t < this.y || e > this.x + this.width || t > this.y + this.height
+      width: 1000,
+      height: 1000,
+      hideParticle(x, y) {
+        return x < this.x || y < this.y || x > this.x + this.width || y > this.y + this.height;
       },
       update() {
-        this.x = -c.x / c.scale.x, this.y = -c.y / c.scale.y, this.width = D.x / c.scale.x, this.height = D.y / c.scale.y
+        this.x = -gameContainer.x / gameContainer.scale.x;
+        this.y = -gameContainer.y / gameContainer.scale.y;
+        this.width = canvasSize.x / gameContainer.scale.x;
+        this.height = canvasSize.y / gameContainer.scale.y;
       }
-    },
-    X = new PIXI.Matrix;
+  }
+  
+  let X = new PIXI.Matrix;
 
   function U(e, t) {
     ! function(e) {
-      const t = Y;
+      const t = KeysPressed;
       let s = !1;
-      const i = c;
-      t.w && (i.y += t.scrollSpeed * e, s = !0), t.a && (i.x += t.scrollSpeed * e, s = !0), t.s && (i.y -= t.scrollSpeed * e, s = !0), t.d && (i.x -= t.scrollSpeed * e, s = !0), s && F(i)
-    }(e), G.update(), e *= v.gameSpeed, M.update(e), C.update(e), T.update(e), k.update(e), w.update(e), S.update(e),
+      const i = gameContainer;
+      t.w && (i.y += t.scrollSpeed * e, s = !0), t.a && (i.x += t.scrollSpeed * e, s = !0), t.s && (i.y -= t.scrollSpeed * e, s = !0), t.d && (i.x -= t.scrollSpeed * e, s = !0), s && preventGameContainerLeavingBounds(i)
+    }(e), viewableArea.update(), e *= GameModel.gameSpeed, M.update(e), C.update(e), Zombies.update(e), k.update(e), w.update(e), S.update(e),
       function(e, t) {
         if (C.vipEscaping && void 0 !== C.vip ? y.alpha += e : (y.alpha -= e, y.alpha < 0 && (y.alpha = 0)), y.alpha > 0) {
-          y.alpha > 1 && (y.alpha = 1), y.visible = !0, y.x = 5, y.y = D.y - 305;
-          const e = c.scale.x,
-            s = c.scale.y,
-            i = c.x,
-            a = c.y;
-          c.position.set(0, 0), C.vip && (X.tx = -2 * C.vip.x + 150, X.ty = -2 * C.vip.y + 150), c.scale.set(2, 2), t.renderer.render(c, f, void 0, X), c.scale.set(e, s), c.position.set(i, a)
+          y.alpha > 1 && (y.alpha = 1), y.visible = !0, y.x = 5, y.y = canvasSize.y - 305;
+          const e = gameContainer.scale.x,
+            s = gameContainer.scale.y,
+            i = gameContainer.x,
+            a = gameContainer.y;
+          gameContainer.position.set(0, 0), C.vip && (X.tx = -2 * C.vip.x + 150, X.ty = -2 * C.vip.y + 150), gameContainer.scale.set(2, 2), t.renderer.render(gameContainer, f, void 0, X), gameContainer.scale.set(e, s), gameContainer.position.set(i, a)
         } else y.visible = !1
       }(e, t)
   }
 
   function N() {
-    const e = Math.min(500 + 50 * v.level, 1500),
+    const e = Math.min(500 + 50 * GameModel.level, 1500),
       t = Math.random() * e / 3;
-    P = {
+    gameFieldSize = {
       x: e + t,
       y: e - t
-    }, x && (x.width = P.x, x.height = P.y), c.hitArea = new PIXI.Rectangle(0, 0, P.x, P.y)
+    }, x && (x.width = gameFieldSize.x, x.height = gameFieldSize.y), gameContainer.hitArea = new PIXI.Rectangle(0, 0, gameFieldSize.x, gameFieldSize.y)
   }
 
   function O() {
     const e = document.body.clientWidth,
       t = document.body.clientHeight;
-    D = {
+    canvasSize = {
       x: e,
       y: t,
       defaultScale: Math.max(e, t) / 1e3
-    }, Y.scrollSpeed = Math.max(e, t) / 4
+    }, KeysPressed.scrollSpeed = Math.max(e, t) / 4
   }
   new Map, window.onload = function() {
-    v = ne.getInstance(), S = new Qe, M = new Oe, k = new Ue, w = new Xe, T = new Ae, C = new Se, v.loadData(), v.onReady(), O(),
+    GameModel = ne.getInstance(), S = new Qe, M = new Oe, k = new Ue, w = new Xe, Zombies = new Ae, C = new Se, GameModel.loadData(), GameModel.onReady(), O(),
       function() {
         PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
         const e = new PIXI.Application({
-          width: D.x,
-          height: D.y,
+          width: canvasSize.x,
+          height: canvasSize.y,
           backgroundColor: 1066256,
-          resolution: v.persistentData.resolution || 1,
+          resolution: GameModel.persistentData.resolution || 1,
           antialias: !1,
           resizeTo: window
         });
         document.body.appendChild(e.view), PIXI.utils.isWebGLSupported() || console.error("Warning: WebGL support not detected. Game performance may be slower."),
           function(e) {
-            c = new PIXI.Container, u = new PIXI.Container, p = new PIXI.Container, g = new PIXI.Container, g.sortableChildren = !0, b = new PIXI.Container, m = new PIXI.Container, f = PIXI.RenderTexture.create({
+            gameContainer = new PIXI.Container, u = new PIXI.Container, p = new PIXI.Container, g = new PIXI.Container, g.sortableChildren = !0, b = new PIXI.Container, m = new PIXI.Container, f = PIXI.RenderTexture.create({
               width: 300,
               height: 300
-            }), y = new PIXI.Sprite(f), y.visible = !1, y.alpha = 0, m.addChild(y), c.addChild(u), c.addChild(p), c.addChild(g), c.addChild(b), e.stage.addChild(c), e.stage.addChild(m), c.interactive = !0, c.interactiveChildren = !1, c.on("pointerdown", z), c.on("pointerup", I), c.on("pointerupoutside", I), c.on("pointermove", H), c.on("click", E), c.on("tap", E), document.getElementsByTagName("canvas")[0].onwheel = L, document.getElementsByTagName("canvas")[0].oncontextmenu = function(e) {
+            }), y = new PIXI.Sprite(f), y.visible = !1, y.alpha = 0, m.addChild(y), gameContainer.addChild(u), gameContainer.addChild(p), gameContainer.addChild(g), gameContainer.addChild(b), e.stage.addChild(gameContainer), e.stage.addChild(m), gameContainer.interactive = !0, gameContainer.interactiveChildren = !1, gameContainer.on("pointerdown", onDragStart), gameContainer.on("pointerup", onDragEnd), gameContainer.on("pointerupoutside", onDragEnd), gameContainer.on("pointermove", onDragMove), gameContainer.on("click", onClickTap), gameContainer.on("tap", onClickTap), document.getElementsByTagName("canvas")[0].onwheel = onWheel, document.getElementsByTagName("canvas")[0].oncontextmenu = function(e) {
               e.preventDefault()
             }
           }(e), e.loader.add("sprites/ground.json").add("sprites/megagraveyard.png").add("sprites/graveyard.json").add("sprites/buildings.json").add("sprites/humans.json").add("sprites/cop.json").add("sprites/dogs.json").add("sprites/army.json").add("sprites/doctor.json").add("sprites/zombie.json").add("sprites/golem.json").add("sprites/bonecollector.json").add("sprites/harpy.json").add("sprites/objects2.json").add("sprites/fenceposts.json").add("sprites/trees2.json").add("sprites/fortress.json").add("sprites/tank.json").add("sprites/skeleton.json").load((function() {
-            v.app = e, N(), x = new PIXI.TilingSprite(PIXI.Texture.from("grass.png")), x.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF, x.width = P.x, x.height = P.y, u.addChild(x), v.setupLevel(), setTimeout((function() {
-              Z(!0)
+            GameModel.app = e, N(), x = new PIXI.TilingSprite(PIXI.Texture.from("grass.png")), x.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF, x.width = gameFieldSize.x, x.height = gameFieldSize.y, u.addChild(x), GameModel.setupLevel(), setTimeout((function() {
+              centerGameContainer(!0)
             })), e.ticker.add((t => {
-              U(e.ticker.deltaMS / 1e3, e), v.frameRate = e.ticker.FPS
+              U(e.ticker.deltaMS / 1e3, e), GameModel.frameRate = e.ticker.FPS
             }))
           }))
       }(), window.self !== window.top && ("" != document.referrer && -1 == document.referrer.indexOf("kongregate.com") && -1 == document.referrer.indexOf("konggames.com") && -1 == document.referrer.indexOf("gti.nz") ? window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ" : -1 === document.referrer.indexOf("kongregate.com") && -1 === document.referrer.indexOf("konggames.com") || kongregateAPI.loadAPI((function() {
-        window.kongregate = kongregateAPI.getAPI(), v.kongregate = !0, v.loginInUsingPlayFab()
+        window.kongregate = kongregateAPI.getAPI(), GameModel.kongregate = !0, GameModel.loginInUsingPlayFab()
       }))), document.addEventListener("visibilitychange", (function() {
-        "hidden" == document.visibilityState ? v.hidden = !0 : v.hidden = !1
+        "hidden" == document.visibilityState ? GameModel.hidden = !0 : GameModel.hidden = !1
       }), !1)
   }, window.onresize = function() {
     O()
   };
-  const Y = {
+  const KeysPressed = {
     scrollSpeed: 200,
     w: !1,
     a: !1,
@@ -251,28 +350,28 @@ var Incremancer;
     shift: !1
   };
   window.onblur = function() {
-    Y.w = Y.a = Y.s = Y.d = !1, Y.shift = !1
+    KeysPressed.w = KeysPressed.a = KeysPressed.s = KeysPressed.d = !1, KeysPressed.shift = !1
   }, window.onkeydown = function(e) {
     switch (e.keyCode) {
       case 16:
       case 17:
-        Y.shift = !0;
+        KeysPressed.shift = !0;
         break;
       case 87:
       case 38:
-        Y.w = !0;
+        KeysPressed.w = !0;
         break;
       case 65:
       case 37:
-        Y.a = !0;
+        KeysPressed.a = !0;
         break;
       case 83:
       case 40:
-        Y.s = !0;
+        KeysPressed.s = !0;
         break;
       case 68:
       case 39:
-        Y.d = !0;
+        KeysPressed.d = !0;
         break;
       default:
         return !0
@@ -282,23 +381,23 @@ var Incremancer;
     switch (e.keyCode) {
       case 16:
       case 17:
-        Y.shift = !1;
+        KeysPressed.shift = !1;
         break;
       case 87:
       case 38:
-        Y.w = !1;
+        KeysPressed.w = !1;
         break;
       case 65:
       case 37:
-        Y.a = !1;
+        KeysPressed.a = !1;
         break;
       case 83:
       case 40:
-        Y.s = !1;
+        KeysPressed.s = !1;
         break;
       case 68:
       case 39:
-        Y.d = !1;
+        KeysPressed.d = !1;
         break;
       default:
         return !0
@@ -544,15 +643,15 @@ var Incremancer;
       }];
       let n;
       const o = {
-        x: P.x / 2,
-        y: P.y / 2
+        x: gameFieldSize.x / 2,
+        y: gameFieldSize.y / 2
       };
       let h = 2e3;
       for (let e = 0; e < r.length; e++) {
         const t = fastDistance(r[e].x, r[e].y, o.x, o.y);
         t < h && (h = t, n = r[e])
       }
-      e.entrance = n, this.gameModel.level % 5 == 0 && (e.y < P.y / 2 ? e.entrance = r.filter((e => e.south))[0] : e.entrance = r.filter((e => e.north))[0]), e.walls = [];
+      e.entrance = n, this.gameModel.level % 5 == 0 && (e.y < gameFieldSize.y / 2 ? e.entrance = r.filter((e => e.south))[0] : e.entrance = r.filter((e => e.north))[0]), e.walls = [];
       const l = getRandomElementFromArray(this.buildingTextures, Math.random());
       this.makeHorizontalWall(e.walls, l, e.entrance.north, -4, -4, e.width + 8), this.makeHorizontalWall(e.walls, l, e.entrance.south, -4, e.height, e.width + 8), this.makeVerticalWall(e.walls, l, e.entrance.west, -4, -4, e.height + 8), this.makeVerticalWall(e.walls, l, e.entrance.east, e.width, -4, e.height + 8);
       for (let t = 0; t < e.walls.length; t++) e.container.addChild(e.walls[t]);
@@ -576,13 +675,13 @@ var Incremancer;
     }
     setGraveyardPosition() {
       this.gameModel.level % 5 != 0 || this.gameModel.isBossStage(this.gameModel.level) ? this.graveYardPosition = {
-        x: P.x / 2 - 50,
-        y: P.y / 2 - 50,
+        x: gameFieldSize.x / 2 - 50,
+        y: gameFieldSize.y / 2 - 50,
         width: 100,
         height: 100
       } : this.graveYardPosition = {
-        x: Math.random() * P.x * .8 - 50 + .1 * P.x,
-        y: (Math.random() > .5 ? .25 * P.y : .75 * P.y) - 50,
+        x: Math.random() * gameFieldSize.x * .8 - 50 + .1 * gameFieldSize.x,
+        y: (Math.random() > .5 ? .25 * gameFieldSize.y : .75 * gameFieldSize.y) - 50,
         width: 100,
         height: 100
       }, this.graveYardLocation = {
@@ -595,7 +694,7 @@ var Incremancer;
         this.buildingTextures = [];
         for (let e = 0; e < 2; e++) this.buildingTextures.push(PIXI.Texture.from("floor" + (e + 1) + ".png"));
         for (let e = 0; e < 2; e++) this.buildingTextures.push(PIXI.Texture.from("wall" + (e + 1) + ".png"));
-        this.roadSprite = new PIXI.TilingSprite(PIXI.Texture.from("road.png")), this.roadSprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF, this.roadSprite.width = P.x, this.roadSprite.tileScale.set(3, 3), this.roadSprite.height = 96, u.addChild(this.roadSprite), this.roadSprite.visible = !1, this.roadSprite.anchor.set(0, 0)
+        this.roadSprite = new PIXI.TilingSprite(PIXI.Texture.from("road.png")), this.roadSprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF, this.roadSprite.width = gameFieldSize.x, this.roadSprite.tileScale.set(3, 3), this.roadSprite.height = 96, u.addChild(this.roadSprite), this.roadSprite.visible = !1, this.roadSprite.anchor.set(0, 0)
       }
       if (this.buildings.length > 0)
         for (let e = 0; e < this.buildings.length; e++) u.removeChild(this.buildings[e].container), this.buildings[e].walls.forEach((t => {
@@ -606,7 +705,7 @@ var Incremancer;
       let t = this.minBuildings,
         s = this.humans.getMaxHumans();
       const i = Math.max(Math.min(50, Math.round(s / 3)), 10);
-      for (this.roadSprite.visible = !1, this.gameModel.isBossStage(this.gameModel.level) ? (s = 0, t = 0) : this.gameModel.level % 5 == 0 && (this.roadSprite.visible = !0, this.roadSprite.width = P.x, this.roadSprite.x = 0, this.roadSprite.y = P.y / 2 - 48); s > 0 || t > 0;) {
+      for (this.roadSprite.visible = !1, this.gameModel.isBossStage(this.gameModel.level) ? (s = 0, t = 0) : this.gameModel.level % 5 == 0 && (this.roadSprite.visible = !0, this.roadSprite.width = gameFieldSize.x, this.roadSprite.x = 0, this.roadSprite.y = gameFieldSize.y / 2 - 48); s > 0 || t > 0;) {
         t--;
         const a = Math.round(5 + Math.random() * (i - 5)),
           r = Math.sqrt(500 * a);
@@ -615,18 +714,18 @@ var Incremancer;
           h = 1e3;
         const l = 10;
         for (; !o && h > 0;) h--, n = this.gameModel.level % 5 == 0 ? Math.random() > .7 ? {
-          x: l + Math.random() * (P.x - (2 * l + r)),
-          y: l + Math.random() * (P.y - (2 * l + r)),
+          x: l + Math.random() * (gameFieldSize.x - (2 * l + r)),
+          y: l + Math.random() * (gameFieldSize.y - (2 * l + r)),
           width: r,
           height: r
         } : {
-          x: l + Math.random() * (P.x - (2 * l + r)),
-          y: Math.random() > .5 ? P.y / 2 + this.roadSprite.height / 2 + 8 : P.y / 2 - this.roadSprite.height / 2 - 8 - r,
+          x: l + Math.random() * (gameFieldSize.x - (2 * l + r)),
+          y: Math.random() > .5 ? gameFieldSize.y / 2 + this.roadSprite.height / 2 + 8 : gameFieldSize.y / 2 - this.roadSprite.height / 2 - 8 - r,
           width: r,
           height: r
         } : {
-          x: l + Math.random() * (P.x - (2 * l + r)),
-          y: l + Math.random() * (P.y - (2 * l + r)),
+          x: l + Math.random() * (gameFieldSize.x - (2 * l + r)),
+          y: l + Math.random() * (gameFieldSize.y - (2 * l + r)),
           width: r,
           height: r
         }, o = this.isValidPosition(n);
@@ -641,7 +740,7 @@ var Incremancer;
       this.populateBuildingMap(), this.populateTrees()
     }
     populateBuildingMap() {
-      if (this.buildingMap = [], this.mapCols = Math.ceil(P.x / 10), this.mapRows = Math.ceil(P.y / 10), 0 != this.buildings.length)
+      if (this.buildingMap = [], this.mapCols = Math.ceil(gameFieldSize.x / 10), this.mapRows = Math.ceil(gameFieldSize.y / 10), 0 != this.buildings.length)
         for (let e = 0; e < this.mapRows; e++) {
           const t = 10 * e;
           for (let i = 0; i < this.mapCols; i++) {
@@ -663,14 +762,14 @@ var Incremancer;
       if (!e) {
         const e = Math.random() > .5 ? -1 : 1,
           t = Math.random() > .5 ? -1 : 1,
-          s = P.x / 4,
-          i = P.y / 4;
+          s = gameFieldSize.x / 4,
+          i = gameFieldSize.y / 4;
         return Math.random() > .5 ? {
-          x: Math.random() * P.x,
-          y: P.y / 2 + t * i + Math.random() * t * i
+          x: Math.random() * gameFieldSize.x,
+          y: gameFieldSize.y / 2 + t * i + Math.random() * t * i
         } : {
-          x: P.x / 2 + e * s + Math.random() * e * s,
-          y: Math.random() * P.y
+          x: gameFieldSize.x / 2 + e * s + Math.random() * e * s,
+          y: Math.random() * gameFieldSize.y
         }
       }
       return {
@@ -788,7 +887,7 @@ var Incremancer;
         for (let e = 0; e < 6; e++) this.treeTextures.push(PIXI.Texture.from("tree" + e + ".png"));
         this.armyTextures.push(PIXI.Texture.from("hedgehog.png")), this.armyTextures.push(PIXI.Texture.from("sandbags.png"))
       }
-      let e = Math.round(P.x / 50);
+      let e = Math.round(gameFieldSize.x / 50);
       this.gameModel.isBossStage(this.gameModel.level) && (e = Math.round(1.5 * e));
       let t = 0;
       for (; e > 0;) {
@@ -797,8 +896,8 @@ var Incremancer;
         const n = 8,
           o = 2;
         for (; !i && r > 0;) r--, s = {
-          x: n + Math.random() * (P.x - 2 * n),
-          y: n + Math.random() * (P.y - 2 * n),
+          x: n + Math.random() * (gameFieldSize.x - 2 * n),
+          y: n + Math.random() * (gameFieldSize.y - 2 * n),
           width: o,
           height: o
         }, i = this.isValidTreePosition(s);
@@ -1043,7 +1142,7 @@ var Incremancer;
         graveyard: 0,
         construction: 0,
         boneCollectorCapacity: 10
-      }, this.zoom = A, this.centerGameContainer = Z, this.lastSave = 0, this.lastPlayFabSave = Date.now() - 15e3, this.persistentData = {
+      }, this.zoom = zoom, this.centerGameContainer = centerGameContainer, this.lastSave = 0, this.lastPlayFabSave = Date.now() - 15e3, this.persistentData = {
         saveCreated: Date.now(),
         dateOfSave: Date.now(),
         autoStart: !1,
@@ -1157,7 +1256,7 @@ var Incremancer;
       this.level++, this.currentState = this.states.playingLevel, this.setupLevel(), this.updatePlayingLevel(), this.persistentData.autoRelease && this.releaseCagedZombies()
     }
     setupLevel() {
-      this.endLevelTimer = this.endLevelDelay, N(), this.particles.initialize(), this.humans.populate(), this.zombies.populate(), this.graveyard.initialize(), setTimeout(Z, 10), this.upgrades.applyUpgrades(), this.upgrades.updateRuneEffects(), this.partFactory.applyGenerators(), this.creatures.populate(), this.skeleton.populate(), this.addStartLevelResources(), this.populateStats()
+      this.endLevelTimer = this.endLevelDelay, N(), this.particles.initialize(), this.humans.populate(), this.zombies.populate(), this.graveyard.initialize(), setTimeout(centerGameContainer, 10), this.upgrades.applyUpgrades(), this.upgrades.updateRuneEffects(), this.partFactory.applyGenerators(), this.creatures.populate(), this.skeleton.populate(), this.addStartLevelResources(), this.populateStats()
     }
     populateStats() {
       this.stats = {
@@ -2291,8 +2390,8 @@ var Incremancer;
       const s = this.getMaxHealth(this.gameModel.level);
       let i = this.trophies.doesLevelHaveTrophy(this.gameModel.level);
       this.vip = void 0, i ? this.escapeTarget = {
-        x: P.x / 2,
-        y: P.y + 50
+        x: gameFieldSize.x / 2,
+        y: gameFieldSize.y + 50
       } : this.vipText && (this.vipText.visible = !1);
       for (let a = 0; a < e; a++) {
         let e;
@@ -2532,8 +2631,8 @@ var Incremancer;
           break;
         case ue.hunting:
           (!e.zombieTarget || e.zombieTarget.flags.dead) && e.timer.scan < 0 && (this.humans.scanForZombies(e, s), e.zombieTarget && (e.policeState = ue.attacking)), fastDistance(e.position.x, e.position.y, e.target.x, e.target.y) < this.moveTargetDistance ? (e.target = {
-            x: Math.random() * P.x,
-            y: Math.random() * P.y
+            x: Math.random() * gameFieldSize.x,
+            y: Math.random() * gameFieldSize.y
           }, e.maxSpeed = this.maxRunSpeed) : this.updateDogSpeed(e, t)
       }
     }
@@ -2912,7 +3011,7 @@ var Incremancer;
       this.aliveHumans = this.humans.aliveHumans, this.graveyardAttackers = this.humans.graveyardAttackers, this.gigamutagen > 0 && (this.gigamutationTimer -= e);
       for (let i = 0; i < this.zombies.length; i++) this.zombies[i].visible && (this.updateZombie(this.zombies[i], e), this.zombies[i].flags.dead || (t.push(this.zombies[i]), this.partitionInsert(s, this.zombies[i])));
       if (this.model.zombieCount = t.length, this.aliveZombies = t, this.zombiePartition = s, this.model.energy >= this.model.zombieCost && this.model.currentState == this.model.states.playingLevel)
-        if (this.zombieCursor.visible = !this.mouseOutOfBounds, Y.shift && !this.mouseOutOfBounds) {
+        if (this.zombieCursor.visible = !this.mouseOutOfBounds, KeysPressed.shift && !this.mouseOutOfBounds) {
           this.zombieCursorText.visible = !0;
           const e = Math.min(Math.floor(this.model.energy / this.model.zombieCost), 100);
           this.zombieCursorText.text != e && (this.zombieCursorText.text = e)
@@ -3637,7 +3736,7 @@ var Incremancer;
         background: new PIXI.Graphics,
         foreground: new PIXI.Graphics,
         percentage: 100
-      }, this.healthBar.container.addChild(this.healthBar.background), this.healthBar.container.addChild(this.healthBar.foreground), b.addChild(this.healthBar.container)), this.target.x = P.x / 2, this.target.y = P.y / 2, this.healthBar.container.visible = !0, this.healthBar.container.x = this.target.x - 50, this.healthBar.container.y = this.target.y - 100, this.healthBar.background.clear(), this.healthBar.background.lineStyle(12, 3355443), this.healthBar.background.moveTo(-2, 0), this.healthBar.background.lineTo(102, 0), this.healthBar.foreground.clear(), this.healthBar.foreground.lineStyle(8, 16601682), this.healthBar.foreground.moveTo(0, 0), this.healthBar.foreground.lineTo(100, 0)) : this.healthBar && (this.healthBar.background.clear(), this.healthBar.foreground.clear(), this.healthBar.container.visible = !1)
+      }, this.healthBar.container.addChild(this.healthBar.background), this.healthBar.container.addChild(this.healthBar.foreground), b.addChild(this.healthBar.container)), this.target.x = gameFieldSize.x / 2, this.target.y = gameFieldSize.y / 2, this.healthBar.container.visible = !0, this.healthBar.container.x = this.target.x - 50, this.healthBar.container.y = this.target.y - 100, this.healthBar.background.clear(), this.healthBar.background.lineStyle(12, 3355443), this.healthBar.background.moveTo(-2, 0), this.healthBar.background.lineTo(102, 0), this.healthBar.foreground.clear(), this.healthBar.foreground.lineStyle(8, 16601682), this.healthBar.foreground.moveTo(0, 0), this.healthBar.foreground.lineTo(100, 0)) : this.healthBar && (this.healthBar.background.clear(), this.healthBar.foreground.clear(), this.healthBar.container.visible = !1)
     }
     updateHealthBar() {
       const e = Math.max(Math.round(this.graveyardHealth / this.graveyardMaxHealth * 100), 0);
@@ -3887,7 +3986,7 @@ var Incremancer;
         t = {
           x: e.x + e.width / 2,
           y: e.y + e.height / 2
-        }, t.x -= c.x, t.y -= c.y, t.x = t.x / c.scale.x, t.y = t.y / c.scale.y
+        }, t.x -= gameContainer.x, t.y -= gameContainer.y, t.x = t.x / gameContainer.scale.x, t.y = t.y / gameContainer.scale.y
       }
       for (let s = 0; s < this.sprites.length; s++) this.sprites[s].visible && this.updatePart(this.sprites[s], e, t)
     }
@@ -3923,7 +4022,7 @@ var Incremancer;
       return s.fillStyle = e, s.fillRect(0, 0, 1, 1), PIXI.Texture.from(t)
     }
     initialize() {
-      if (this.gameModel = ne.getInstance(), this.viewableArea = G, this.container || (this.container = new PIXI.Container, p.addChild(this.container), this.texture = this.getTexture("#ff0000"), this.plagueTexture = this.getTexture("#00ff00")), this.sprites.length < this.maxParts)
+      if (this.gameModel = ne.getInstance(), this.viewableArea = viewableArea, this.container || (this.container = new PIXI.Container, p.addChild(this.container), this.texture = this.getTexture("#ff0000"), this.plagueTexture = this.getTexture("#00ff00")), this.sprites.length < this.maxParts)
         for (let e = 0; e < this.maxParts; e++) {
           const e = new ht(this.texture);
           this.sprites.push(e), e.visible = !1, Math.random() > .5 && e.scale.set(2, 2), this.container.addChild(e)
@@ -4120,7 +4219,7 @@ var Incremancer;
       return s.addColorStop(0, "rgba(255,255,255,1)"), s.addColorStop(.8, "rgba(255,255,128,0.2)"), s.addColorStop(1, "rgba(255,180,0,0)"), t.fillStyle = s, t.fillRect(0, 0, 32, 32), PIXI.Texture.from(e)
     }
     initialize() {
-      this.viewableArea = G, this.texture || (this.texture = this.getTexture(), this.container = new PIXI.Container, b.addChild(this.container), this.setup(this.container, this.texture))
+      this.viewableArea = viewableArea, this.texture || (this.texture = this.getTexture(), this.container = new PIXI.Container, b.addChild(this.container), this.setup(this.container, this.texture))
     }
     update(e) {
       for (let t = 0; t < this.sprites.length; t++) this.sprites[t].visible && this.updatePart(this.sprites[t], e)
@@ -4162,7 +4261,7 @@ var Incremancer;
       return s.addColorStop(0, "rgba(255,255,255,0.05)"), s.addColorStop(.5, "rgba(255,255,255,0.1)"), s.addColorStop(1, "rgba(255,255,255,0)"), t.fillStyle = s, t.fillRect(0, 0, 12, 12), PIXI.Texture.from(e)
     }
     initialize() {
-      this.gameModel = ne.getInstance(), this.viewableArea = G, this.allowTint = this.gameModel.app && this.gameModel.app.renderer && 1 == this.gameModel.app.renderer.type, this.texture || (this.setup(new PIXI.Container, this.getTexture()), b.addChild(this.container))
+      this.gameModel = ne.getInstance(), this.viewableArea = viewableArea, this.allowTint = this.gameModel.app && this.gameModel.app.renderer && 1 == this.gameModel.app.renderer.type, this.texture || (this.setup(new PIXI.Container, this.getTexture()), b.addChild(this.container))
     }
     update(e) {
       if (this.gameModel.persistentData.particles) {
@@ -4207,7 +4306,7 @@ var Incremancer;
   }
   class lt extends _ {
     constructor() {
-      if (super(), this.partsPerSplatter = 15, this.gravity = 100, this.spraySpeed = 50, this.fadeSpeed = .7, this.viewableArea = G, lt.instance) return lt.instance;
+      if (super(), this.partsPerSplatter = 15, this.gravity = 100, this.spraySpeed = 50, this.fadeSpeed = .7, this.viewableArea = viewableArea, lt.instance) return lt.instance;
       lt.instance = this, this.create = e => new ht(e)
     }
     getTexture() {
@@ -4217,7 +4316,7 @@ var Incremancer;
       return t.fillStyle = "#FFFFFF", t.fillRect(0, 0, 5, 1), PIXI.Texture.from(e)
     }
     initialize() {
-      this.gameModel = ne.getInstance(), this.viewableArea = G, this.container || (this.container = new PIXI.Container, p.addChild(this.container), this.texture = this.getTexture(), this.setup(this.container, this.texture))
+      this.gameModel = ne.getInstance(), this.viewableArea = viewableArea, this.container || (this.container = new PIXI.Container, p.addChild(this.container), this.texture = this.getTexture(), this.setup(this.container, this.texture))
     }
     update(e) {
       if (this.gameModel.persistentData.particles) {
@@ -4396,7 +4495,7 @@ var Incremancer;
     }
     c.model = ne.getInstance(), c.skeleton = function() {
       return i.persistent
-    }, c.spells = a, c.keysPressed = Y, c.files = [], c.messageTimer = 4, c.message = !1, c.lastUpdate = 0, c.sidePanels = {}, c.upgrades = [], c.currentShopFilter = "blood", c.currentConstructionFilter = "available", c.graveyardTab = "minions", c.trophyTab = "all", c.factoryTab = "parts", c.factoryStats = {}, c.moveTooltip = moveToolTip, c.confirmMessage = "", c.confirmCancel = function() {
+    }, c.spells = a, c.keysPressed = KeysPressed, c.files = [], c.messageTimer = 4, c.message = !1, c.lastUpdate = 0, c.sidePanels = {}, c.upgrades = [], c.currentShopFilter = "blood", c.currentConstructionFilter = "available", c.graveyardTab = "minions", c.trophyTab = "all", c.factoryTab = "parts", c.factoryStats = {}, c.moveTooltip = moveToolTip, c.confirmMessage = "", c.confirmCancel = function() {
       c.confirmCallback = !1
     }, c.closeSidePanels = function() {
       c.currentShopFilter = "blood", c.currentConstructionFilter = "available", c.graveyardTab = "minions", c.factoryTab = "parts", c.sidePanels.options = !1, c.sidePanels.graveyard = !1, c.sidePanels.runesmith = !1, c.sidePanels.prestige = !1, c.sidePanels.construction = !1, c.sidePanels.shop = !1, c.sidePanels.open = !1, c.sidePanels.factory = !1, c.levelSelect.shown = !1
