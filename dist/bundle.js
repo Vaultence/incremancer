@@ -352,106 +352,121 @@ var Incremancer;
   };
   const KeysPressed = {
     scrollSpeed: 200,
-    w: !1,
-    a: !1,
-    s: !1,
-    d: !1,
-    shift: !1
+    w: false,
+    a: false,
+    s: false,
+    d: false,
+    shift: false
   };
+  
   window.onblur = function() {
-    KeysPressed.w = KeysPressed.a = KeysPressed.s = KeysPressed.d = !1, KeysPressed.shift = !1
-  }, window.onkeydown = function(e) {
+    KeysPressed.w = KeysPressed.a = KeysPressed.s = KeysPressed.d = false, KeysPressed.shift = false
+  };
+  
+  window.onkeydown = function(e) {
     switch (e.keyCode) {
       case 16:
       case 17:
-        KeysPressed.shift = !0;
+        KeysPressed.shift = true;
         break;
       case 87:
       case 38:
-        KeysPressed.w = !0;
+        KeysPressed.w = true;
         break;
       case 65:
       case 37:
-        KeysPressed.a = !0;
+        KeysPressed.a = true;
         break;
       case 83:
       case 40:
-        KeysPressed.s = !0;
+        KeysPressed.s = true;
         break;
       case 68:
       case 39:
-        KeysPressed.d = !0;
+        KeysPressed.d = true;
         break;
       default:
-        return !0
+        return true
     }
-    return !1
+    return false
   }, window.onkeyup = function(e) {
     switch (e.keyCode) {
       case 16:
       case 17:
-        KeysPressed.shift = !1;
+        KeysPressed.shift = false;
         break;
       case 87:
       case 38:
-        KeysPressed.w = !1;
+        KeysPressed.w = false;
         break;
       case 65:
       case 37:
-        KeysPressed.a = !1;
+        KeysPressed.a = false;
         break;
       case 83:
       case 40:
-        KeysPressed.s = !1;
+        KeysPressed.s = false;
         break;
       case 68:
       case 39:
-        KeysPressed.d = !1;
+        KeysPressed.d = false;
         break;
       default:
-        return !0
+        return true
     }
-    return !1
+    return false
   };
-  class W {
-    constructor(e, t, s, i, a, r, n, o, h) {
-      this.id = e, this.name = t, this.tooltip = s, this.itemText = i, this.cooldown = a, this.duration = r, this.energyCost = n, this.start = o, this.end = h, this.timer = 0, this.onCooldown = !1, this.active = !1, this.cooldownLeft = 0
+  class Spell {
+    constructor(id, name, tooltip, itemText, cooldown, duration, energyCost, startEffect, endEffect) {
+      this.id = id;
+      this.name = name;
+      this.tooltip = tooltip;
+      this.itemText = itemText;
+      this.cooldown = cooldown;
+      this.duration = duration;
+      this.energyCost = energyCost;
+      this.start = startEffect;
+      this.end = endEffect;
+      this.timer = 0;
+      this.onCooldown = false;
+      this.active = false;
+      this.cooldownLeft = 0;
     }
   }
-  class q {
+  class Spells {
     constructor() {
-      if (this.cooldownReduction = 0, this.timeExtension = 0, this.costReduction = 0, this.skeleton = new Xe, this.zombies = new Ae, this.humans = new Se, this.spellMap = new Map, this.spells = [new W(1, "Time Warp", "Speed up the flow of time for 30 seconds", "", 90, 30, 0, (function() {
+      if (this.cooldownReduction = 0, this.timeExtension = 0, this.costReduction = 0, this.skeleton = new Xe, this.zombies = new Ae, this.humans = new Se, this.spellMap = new Map, this.spells = [new Spell(1, "Time Warp", "Speed up the flow of time for 30 seconds", "", 90, 30, 0, (function() {
           ne.getInstance().gameSpeed = 2
         }), (function() {
           ne.getInstance().gameSpeed = 1
-        })), new W(2, "Energy Charge", "5x Energy rate for 20 seconds, cost 50 energy", "", 160, 20, 50, (function() {
+        })), new Spell(2, "Energy Charge", "5x Energy rate for 20 seconds, cost 50 energy", "", 160, 20, 50, (function() {
           ne.getInstance().energySpellMultiplier = 5
         }), (function() {
           ne.getInstance().energySpellMultiplier = 1
-        })), new W(3, "Detonate", "Turns your zombies into fast moving living bombs, cost 69 energy... nice", "", 80, 8, 69, (function() {
-          (new q).zombies.detonate = !0
+        })), new Spell(3, "Detonate", "Turns your zombies into fast moving living bombs, cost 69 energy... nice", "", 80, 8, 69, (function() {
+          (new Spells).zombies.detonate = !0
         }), (function() {
-          (new q).zombies.detonate = !1
-        })), new W(4, "Earth Freeze", "Freeze all humans in place preventing them from moving for 15 seconds, cost 75 energy", "", 50, 15, 75, (function() {
-          (new q).humans.frozen = !0
+          (new Spells).zombies.detonate = !1
+        })), new Spell(4, "Earth Freeze", "Freeze all humans in place preventing them from moving for 15 seconds, cost 75 energy", "", 50, 15, 75, (function() {
+          (new Spells).humans.frozen = !0
         }), (function() {
-          (new q).humans.frozen = !1
-        })), new W(5, "Gigazombies", "For 5 seconds any zombies spawned will be giants with 10x health and attack damage, cost 100 energy", "", 260, 5, 100, (function() {
-          (new q).zombies.super = !0
+          (new Spells).humans.frozen = !1
+        })), new Spell(5, "Gigazombies", "For 5 seconds any zombies spawned will be giants with 10x health and attack damage, cost 100 energy", "", 260, 5, 100, (function() {
+          (new Spells).zombies.super = !0
         }), (function() {
-          (new q).zombies.super = !1
-        })), new W(6, "Incinerate", "Burns humans near the skeleton champion", "Has a chance to cast Incinerate when attacking, burning all humans within a large radius of the Skeleton", 1, 10, 10, (function() {
-          (new q).skeleton.incinerate(), this.timer = 1
-        }), (function() {})), new W(7, "Pandemic", "Causes plague to spread", "Has a chance to cast Pandemic when attacking, causing infected humans to spread the plague to each other for 20 seconds", 10, 20, 10, (function() {
-          (new q).humans.pandemic = !0
+          (new Spells).zombies.super = !1
+        })), new Spell(6, "Incinerate", "Burns humans near the skeleton champion", "Has a chance to cast Incinerate when attacking, burning all humans within a large radius of the Skeleton", 1, 10, 10, (function() {
+          (new Spells).skeleton.incinerate(), this.timer = 1
+        }), (function() {})), new Spell(7, "Pandemic", "Causes plague to spread", "Has a chance to cast Pandemic when attacking, causing infected humans to spread the plague to each other for 20 seconds", 10, 20, 10, (function() {
+          (new Spells).humans.pandemic = !0
         }), (function() {
-          (new q).humans.pandemic = !1
-        })), new W(8, "Part Storm", "Doubles parts", "Has a chance to cast Part Storm when attacking, doubling the parts production of your factory machines for 15 seconds", 10, 15, 10, (function() {
-          (new se).storm = !0
+          (new Spells).humans.pandemic = !1
+        })), new Spell(8, "Part Storm", "Doubles parts", "Has a chance to cast Part Storm when attacking, doubling the parts production of your factory machines for 15 seconds", 10, 15, 10, (function() {
+          (new PartFactory).storm = !0
         }), (function() {
-          (new se).storm = !1
-        }))], q.instance) return q.instance;
-      q.instance = this, this.spells.forEach((e => this.spellMap.set(e.id, e)))
+          (new PartFactory).storm = !1
+        }))], Spells.instance) return Spells.instance;
+      Spells.instance = this, this.spells.forEach((e => this.spellMap.set(e.id, e)))
     }
     lockAllSpells() {
       for (let e = 0; e < this.spells.length; e++) this.spells[e].unlocked = !1
@@ -925,13 +940,13 @@ var Incremancer;
       this.x = !1, this.y = !1, this.validX = 0, this.validY = 0
     }
   }
-  class se {
+  class PartFactory {
     constructor() {
       if (this.storm = !1, this.gameModel = ne.getInstance(), this.costs = {
           blood: "blood",
           parts: "parts"
-        }, this.generatorsApplied = [], this.generators = [new ie(1, "Simple Machine", this.costs.blood, 1e6, 1.08, 1, 2, "A simple device that produces 1 part every 2 seconds"), new ie(2, "Part Duplicator", this.costs.parts, 100, 1.09, 4, 3, "A more advanced device that produces 4 parts every 3 seconds"), new ie(3, "Stamp Press", this.costs.parts, 1e3, 1.1, 16, 5, "An industrial press that produces 16 parts every 5 seconds"), new ie(4, "Conveyor", this.costs.parts, 1e4, 1.11, 64, 8, "A fantastic new invention that produces 64 parts every 8 seconds"), new ie(5, "Splitter Combiner", this.costs.parts, 1e5, 1.12, 192, 10, "A wondrous machine that produces 192 parts every 10 seconds"), new ie(6, "Batch Converter", this.costs.parts, 5e5, 1.13, 512, 12, "An astounding contraption that produces 512 parts every 12 seconds")], se.instance) return se.instance;
-      se.instance = this
+        }, this.generatorsApplied = [], this.generators = [new ie(1, "Simple Machine", this.costs.blood, 1e6, 1.08, 1, 2, "A simple device that produces 1 part every 2 seconds"), new ie(2, "Part Duplicator", this.costs.parts, 100, 1.09, 4, 3, "A more advanced device that produces 4 parts every 3 seconds"), new ie(3, "Stamp Press", this.costs.parts, 1e3, 1.1, 16, 5, "An industrial press that produces 16 parts every 5 seconds"), new ie(4, "Conveyor", this.costs.parts, 1e4, 1.11, 64, 8, "A fantastic new invention that produces 64 parts every 8 seconds"), new ie(5, "Splitter Combiner", this.costs.parts, 1e5, 1.12, 192, 10, "A wondrous machine that produces 192 parts every 10 seconds"), new ie(6, "Batch Converter", this.costs.parts, 5e5, 1.13, 512, 12, "An astounding contraption that produces 512 parts every 12 seconds")], PartFactory.instance) return PartFactory.instance;
+      PartFactory.instance = this
     }
     factoryStats() {
       let e = 0,
@@ -1201,7 +1216,7 @@ var Incremancer;
       }
     }
     static getInstance() {
-      return ne.instance || (ne.instance = new ne, ne.instance.particles = new Qe, ne.instance.trophies = new de, ne.instance.bones = new tt, ne.instance.creatureFactory = new ae, ne.instance.creatures = new Ue, ne.instance.boneCollectors = new Ve, ne.instance.graveyard = new Oe, ne.instance.spells = new q, ne.instance.partFactory = new se, ne.instance.skeleton = new Xe, ne.instance.upgrades = new oe, ne.instance.zombies = new Ae, ne.instance.humans = new Se, ne.instance.police = new ke, ne.instance.army = new Te), ne.instance
+      return ne.instance || (ne.instance = new ne, ne.instance.particles = new Qe, ne.instance.trophies = new de, ne.instance.bones = new tt, ne.instance.creatureFactory = new ae, ne.instance.creatures = new Ue, ne.instance.boneCollectors = new Ve, ne.instance.graveyard = new Oe, ne.instance.spells = new Spells, ne.instance.partFactory = new PartFactory, ne.instance.skeleton = new Xe, ne.instance.upgrades = new oe, ne.instance.zombies = new Ae, ne.instance.humans = new Se, ne.instance.police = new ke, ne.instance.army = new Te), ne.instance
     }
     resetToBaseStats() {
       this.energyRate = this.baseStats.energyRate, this.brainsRate = this.baseStats.brainsRate, this.bonesRate = this.baseStats.bonesRate, this.energyMax = this.baseStats.energyMax, this.bloodMax = this.baseStats.bloodMax, this.brainsMax = this.baseStats.brainsMax, this.zombieHealth = this.baseStats.zombieHealth, this.zombieDamage = this.baseStats.zombieDamage, this.zombieSpeed = this.baseStats.zombieSpeed, this.zombieCost = this.baseStats.zombieCost, this.zombieCages = 0, this.brainRecoverChance = 0, this.riseFromTheDeadChance = 0, this.infectedBiteChance = 0, this.infectedBlastChance = 0, this.construction = this.baseStats.construction, this.constructions = {}, this.boneCollectorCapacity = this.baseStats.boneCollectorCapacity, this.bonesPCMod = 1, this.partsPCMod = 1, this.bloodPCMod = 1, this.bloodStorePCMod = 1, this.brainsPCMod = 1, this.brainsStorePCMod = 1, this.zombieHealthPCMod = 1, this.zombieDamagePCMod = 1, this.golemHealthPCMod = 1, this.golemDamagePCMod = 1, this.plagueDamageMod = 0, this.plagueticks = 2, this.burningSpeedMod = 1, this.startingResources = 0, this.fenceRadius = 50, this.spitDistance = 0, this.spikeDelay = 5, this.blastHealing = 0, this.plagueDmgReduction = 1, this.creatureLimit = 1, this.runicSyphon.percentage = 0, this.autoconstructionUnlocked = !1, this.autoUpgrades = !1, this.graveyardHealthMod = 1, this.bulletproofChance = 0, this.gigazombies = !1, this.harpySpeed = 75, this.tankBuster = !1, this.harpyBombs = 1
@@ -1498,7 +1513,7 @@ var Incremancer;
   }
   class oe {
     constructor() {
-      if (this.gameModel = ne.getInstance(), this.spells = new q, this.skeleton = new Xe, this.partFactory = new se, this.types = {
+      if (this.gameModel = ne.getInstance(), this.spells = new Spells, this.skeleton = new Xe, this.partFactory = new PartFactory, this.types = {
           energyRate: "energyRate",
           energyCap: "energyCap",
           damage: "damage",
@@ -3310,7 +3325,7 @@ var Incremancer;
       this.model.persistentData.trophies = [], this.persistent.skeletons < 1 ? (this.persistent.skeletons = 1, this.persistent.xpRate = 1, this.model.sendMessage("Skeleton Champion joins the fight!")) : this.persistent.xpRate *= 2, this.upgrades.applyUpgrades(), this.model.saveData()
     }
     populate() {
-      if (this.model = ne.getInstance(), this.map = new ee, this.graveyard = new Oe, this.exclamations = new it, this.bullets = new rt, this.spells = new q, this.smoke = new ot, this.upgrades = new oe, this.humans = new Se, this.zombies = new Ae, this.prestigePoints = new Je, this.partFactory = new se, this.bones = new tt, this.blasts = new nt, this.blood = new _e, this.damageZombie = this.zombies.damageZombie, this.searchClosestTarget = this.zombies.searchClosestTarget, this.updateBurns = this.zombies.updateBurns, this.updateZombieRegen = this.zombies.updateZombieRegen, this.causePlagueExplosion = this.zombies.causePlagueExplosion, this.inflictPlague = this.zombies.inflictPlague, this.healZombie = this.zombies.healZombie, this.setSpeedMultiplier = this.zombies.setSpeedMultiplier, !this.textures.set) {
+      if (this.model = ne.getInstance(), this.map = new ee, this.graveyard = new Oe, this.exclamations = new it, this.bullets = new rt, this.spells = new Spells, this.smoke = new ot, this.upgrades = new oe, this.humans = new Se, this.zombies = new Ae, this.prestigePoints = new Je, this.partFactory = new PartFactory, this.bones = new tt, this.blasts = new nt, this.blood = new _e, this.damageZombie = this.zombies.damageZombie, this.searchClosestTarget = this.zombies.searchClosestTarget, this.updateBurns = this.zombies.updateBurns, this.updateZombieRegen = this.zombies.updateZombieRegen, this.causePlagueExplosion = this.zombies.causePlagueExplosion, this.inflictPlague = this.zombies.inflictPlague, this.healZombie = this.zombies.healZombie, this.setSpeedMultiplier = this.zombies.setSpeedMultiplier, !this.textures.set) {
         this.textures.down = [], this.textures.up = [], this.textures.right = [], this.textures.dead = [];
         for (let e = 0; e < 3; e++) this.textures.down.push(PIXI.Texture.from("skeleton" + e + ".png"));
         for (let e = 3; e < 6; e++) this.textures.up.push(PIXI.Texture.from("skeleton" + e + ".png"));
@@ -4353,7 +4368,7 @@ var Incremancer;
     ct = new Ae,
     ut = new Ue,
     pt = new ae,
-    gt = new q,
+    gt = new Spells,
     mt = "Golem Mastery",
     bt = "Zombie Mastery",
     ft = "Skeleton Mastery",
@@ -4489,8 +4504,8 @@ var Incremancer;
     e.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|javascript|data|blob):/), e.debugInfoEnabled(!1)
   }]).controller("ZombieController", ["$scope", "$interval", "$document", function(e, t, s) {
     const i = new Xe,
-      a = new q,
-      r = new se,
+      a = new Spells,
+      r = new PartFactory,
       o = new ae,
       h = new oe,
       l = new de,
