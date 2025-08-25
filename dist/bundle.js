@@ -306,17 +306,19 @@ var Incremancer;
     }
   }
 
-  function O() {
-    const e = document.body.clientWidth,
-      t = document.body.clientHeight;
+  function setSizes() {
+    const x = document.body.clientWidth;
+    const y = document.body.clientHeight;
     canvasSize = {
-      x: e,
-      y: t,
-      defaultScale: Math.max(e, t) / 1e3
-    }, KeysPressed.scrollSpeed = Math.max(e, t) / 4
+      x: x,
+      y: y,
+      defaultScale: Math.max(x, y) / 1000
+    };
+    KeysPressed.scrollSpeed = Math.max(x, y) / 4;
   }
+
   new Map, window.onload = function() {
-    GameModelInstance = GameModel.getInstance(), S = new Qe, M = new Oe, k = new Ue, w = new SkeletonManager, Zombies = new ZombieManager, C = new HumanManager, GameModelInstance.loadData(), GameModelInstance.onReady(), O(),
+    GameModelInstance = GameModel.getInstance(), S = new Qe, M = new Oe, k = new Ue, w = new SkeletonManager, Zombies = new ZombieManager, C = new HumanManager, GameModelInstance.loadData(), GameModelInstance.onReady(), setSizes(),
       function() {
         PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
         const e = new PIXI.Application({
@@ -348,7 +350,7 @@ var Incremancer;
         "hidden" == document.visibilityState ? GameModelInstance.hidden = !0 : GameModelInstance.hidden = !1
       }), !1)
   }, window.onresize = function() {
-    O()
+    setSizes()
   };
   const KeysPressed = {
     scrollSpeed: 200,
