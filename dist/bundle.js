@@ -266,6 +266,9 @@ var Incremancer;
       }
   }
   
+  // New code for VIPs that I can't easily deobfuscate without a good understanding of the rendering.
+  // Renders the corner view of escaping VIPs, possibly the general render/game model updating since
+  // it calls the .update method of a ton of game model managers, and is called by an update function.
   let X = new PIXI.Matrix;
 
   function U(e, t) {
