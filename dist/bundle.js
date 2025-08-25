@@ -595,14 +595,27 @@ var Incremancer;
       }
     }
   }
-  class V extends PIXI.TilingSprite {
-    constructor(e) {
-      super(e), this.collisionX = 0, this.collisionY = 0, this.collisionWidth = 0, this.collisionHeight = 0
+  class Wall extends PIXI.TilingSprite {
+    constructor(texture) {
+      super(texture);
+      this.collisionX = 0;
+      this.collisionY = 0;
+      this.collisionWidth = 0;
+      this.collisionHeight = 0;
     }
   }
-  class j {
-    constructor(e, t, s, i, a) {
-      this.id = 0, this.x = 0, this.y = 0, this.width = 0, this.height = 0, this.entrance = null, this.id = e, this.x = t, this.y = s, this.width = i, this.height = a
+  class Building {
+    constructor(id, xPos, yPos, width, height) {
+      this.x = 0;
+      this.y = 0;
+      this.width = 0;
+      this.height = 0;
+      this.entrance = null;
+      this.id = id;
+      this.x = xPos;
+      this.y = yPos;
+      this.width = width;
+      this.height = height;
     }
   }
   class $ {
@@ -616,8 +629,8 @@ var Incremancer;
     }
   }
   class Q extends PIXI.AnimatedSprite {
-    constructor(e) {
-      super(e), this.xSpeed = 0, this.ySpeed = 0, this.health = 0, this.maxHealth = 0, this.zombie = !1, this.targetVector = {
+    constructor(texture) {
+      super(texture), this.xSpeed = 0, this.ySpeed = 0, this.health = 0, this.maxHealth = 0, this.zombie = !1, this.targetVector = {
         x: 0,
         y: 0
       }, this.burnDamage = 0, this.hasIcon = !1, this.flags = new K, this.timer = new $
@@ -627,8 +640,8 @@ var Incremancer;
     }
   }
   class J extends PIXI.Sprite {
-    constructor(e) {
-      super(e), this.xSpeed = 0, this.ySpeed = 0
+    constructor(texture) {
+      super(texture), this.xSpeed = 0, this.ySpeed = 0
     }
   }
   class _ {
@@ -675,7 +688,7 @@ var Incremancer;
         const t = this.discardedWalls.pop();
         return t.texture = e, t
       }
-      return new V(e)
+      return new Wall(e)
     }
     makeHorizontalWall(e, t, s, i, a, r) {
       if (s) {
@@ -705,63 +718,66 @@ var Incremancer;
     getFloorSprite() {
       return this.discardedFloorSprites.length > 0 ? this.discardedFloorSprites.pop() : new PIXI.TilingSprite(PIXI.Texture.WHITE)
     }
-    addBuilding(e) {
+    addBuilding(poi) {
       var t, s;
-      e.container = this.getContainer(), e.container.cacheAsBitmap = !1, e.floorSprite = this.getFloorSprite(), e.floorSprite.tint = (t = 10 + Math.round(50 * Math.random()), s = 10 + Math.round(50 * Math.random()), 10 + Math.round(50 * Math.random()) | s << 8 | t << 16), e.floorSprite.alpha = .2, e.container.x = e.x, e.container.y = e.y, e.floorSprite.width = e.width, e.floorSprite.height = e.height, e.container.addChild(e.floorSprite);
+      poi.container = this.getContainer();
+      poi.container.cacheAsBitmap = false;
+      poi.floorSprite = this.getFloorSprite();
+      poi.floorSprite.tint = (t = 10 + Math.round(50 * Math.random()), s = 10 + Math.round(50 * Math.random()), 10 + Math.round(50 * Math.random()) | s << 8 | t << 16), poi.floorSprite.alpha = .2, poi.container.x = poi.x, poi.container.y = poi.y, poi.floorSprite.width = poi.width, poi.floorSprite.height = poi.height, poi.container.addChild(poi.floorSprite);
       const r = [{
-        x: e.x + e.width / 2,
-        y: e.y,
+        x: poi.x + poi.width / 2,
+        y: poi.y,
         north: !0,
         inside: {
-          x: e.x + e.width / 2,
-          y: e.y + this.entranceDepth,
+          x: poi.x + poi.width / 2,
+          y: poi.y + this.entranceDepth,
           entrance: !0
         },
         outside: {
-          x: e.x + e.width / 2,
-          y: e.y - this.entranceDepth,
+          x: poi.x + poi.width / 2,
+          y: poi.y - this.entranceDepth,
           entrance: !0
         }
       }, {
-        x: e.x + e.width / 2,
-        y: e.y + e.height,
+        x: poi.x + poi.width / 2,
+        y: poi.y + poi.height,
         south: !0,
         inside: {
-          x: e.x + e.width / 2,
-          y: e.y + e.height - this.entranceDepth,
+          x: poi.x + poi.width / 2,
+          y: poi.y + poi.height - this.entranceDepth,
           entrance: !0
         },
         outside: {
-          x: e.x + e.width / 2,
-          y: e.y + e.height + this.entranceDepth,
+          x: poi.x + poi.width / 2,
+          y: poi.y + poi.height + this.entranceDepth,
           entrance: !0
         }
       }, {
-        x: e.x,
-        y: e.y + e.height / 2,
+        x: poi.x,
+        y: poi.y + poi.height / 2,
         west: !0,
         inside: {
-          x: e.x + this.entranceDepth,
-          y: e.y + e.height / 2,
+          x: poi.x + this.entranceDepth,
+          y: poi.y + poi.height / 2,
           entrance: !0
         },
         outside: {
-          x: e.x - this.entranceDepth,
-          y: e.y + e.height / 2,
+          x: poi.x - this.entranceDepth,
+          y: poi.y + poi.height / 2,
           entrance: !0
         }
       }, {
-        x: e.x + e.width,
-        y: e.y + e.height / 2,
+        x: poi.x + poi.width,
+        y: poi.y + poi.height / 2,
         east: !0,
         inside: {
-          x: e.x + e.width - this.entranceDepth,
-          y: e.y + e.height / 2,
+          x: poi.x + poi.width - this.entranceDepth,
+          y: poi.y + poi.height / 2,
           entrance: !0
         },
         outside: {
-          x: e.x + e.width + this.entranceDepth,
-          y: e.y + e.height / 2,
+          x: poi.x + poi.width + this.entranceDepth,
+          y: poi.y + poi.height / 2,
           entrance: !0
         }
       }];
@@ -775,12 +791,12 @@ var Incremancer;
         const t = fastDistance(r[e].x, r[e].y, o.x, o.y);
         t < h && (h = t, n = r[e])
       }
-      e.entrance = n, this.gameModel.level % 5 == 0 && (e.y < gameFieldSize.y / 2 ? e.entrance = r.filter((e => e.south))[0] : e.entrance = r.filter((e => e.north))[0]), e.walls = [];
+      poi.entrance = n, this.gameModel.level % 5 == 0 && (poi.y < gameFieldSize.y / 2 ? poi.entrance = r.filter((e => e.south))[0] : poi.entrance = r.filter((e => e.north))[0]), poi.walls = [];
       const l = getRandomElementFromArray(this.buildingTextures, Math.random());
-      this.makeHorizontalWall(e.walls, l, e.entrance.north, -4, -4, e.width + 8), this.makeHorizontalWall(e.walls, l, e.entrance.south, -4, e.height, e.width + 8), this.makeVerticalWall(e.walls, l, e.entrance.west, -4, -4, e.height + 8), this.makeVerticalWall(e.walls, l, e.entrance.east, e.width, -4, e.height + 8);
-      for (let t = 0; t < e.walls.length; t++) e.container.addChild(e.walls[t]);
-      e.container.cacheAsBitmap = !0, u.addChild(e.container);
-      for (let t = 0; t < e.walls.length; t++) e.walls[t].collisionX = e.x + e.walls[t].x, e.walls[t].collisionY = e.y + e.walls[t].y, e.walls[t].collisionWidth = e.walls[t].width, e.walls[t].collisionHeight = e.walls[t].height
+      this.makeHorizontalWall(poi.walls, l, poi.entrance.north, -4, -4, poi.width + 8), this.makeHorizontalWall(poi.walls, l, poi.entrance.south, -4, poi.height, poi.width + 8), this.makeVerticalWall(poi.walls, l, poi.entrance.west, -4, -4, poi.height + 8), this.makeVerticalWall(poi.walls, l, poi.entrance.east, poi.width, -4, poi.height + 8);
+      for (let t = 0; t < poi.walls.length; t++) poi.container.addChild(poi.walls[t]);
+      poi.container.cacheAsBitmap = !0, u.addChild(poi.container);
+      for (let t = 0; t < poi.walls.length; t++) poi.walls[t].collisionX = poi.x + poi.walls[t].x, poi.walls[t].collisionY = poi.y + poi.walls[t].y, poi.walls[t].collisionWidth = poi.walls[t].width, poi.walls[t].collisionHeight = poi.walls[t].height
     }
     addCorners(e) {
       e.corners = [], e.corners.push({
@@ -854,11 +870,11 @@ var Incremancer;
           height: r
         }, o = this.isValidPosition(n);
         if (o) {
-          const t = new j(e++, n.x, n.y, r, r);
-          this.addBuilding(t);
+          const poi = new Building(e++, n.x, n.y, r, r);
+          this.addBuilding(poi);
           const s = Math.max(Math.round(r / 10), 1);
-          for (let e = 0; e < s; e++) this.buildingsByPopularity.push(t);
-          this.buildings.push(t), this.addCorners(t)
+          for (let e = 0; e < s; e++) this.buildingsByPopularity.push(poi);
+          this.buildings.push(poi), this.addCorners(poi)
         }
       }
       this.populateBuildingMap(), this.populateTrees()
@@ -1042,107 +1058,217 @@ var Incremancer;
   }
   class PartFactory {
     constructor() {
-      if (this.storm = !1, this.gameModel = GameModel.getInstance(), this.costs = {
+      if (
+        this.storm = false, 
+        this.gameModel = GameModel.getInstance(), 
+        this.costs = {
           blood: "blood",
           parts: "parts"
-        }, this.generatorsApplied = [], this.generators = [new ie(1, "Simple Machine", this.costs.blood, 1e6, 1.08, 1, 2, "A simple device that produces 1 part every 2 seconds"), new ie(2, "Part Duplicator", this.costs.parts, 100, 1.09, 4, 3, "A more advanced device that produces 4 parts every 3 seconds"), new ie(3, "Stamp Press", this.costs.parts, 1e3, 1.1, 16, 5, "An industrial press that produces 16 parts every 5 seconds"), new ie(4, "Conveyor", this.costs.parts, 1e4, 1.11, 64, 8, "A fantastic new invention that produces 64 parts every 8 seconds"), new ie(5, "Splitter Combiner", this.costs.parts, 1e5, 1.12, 192, 10, "A wondrous machine that produces 192 parts every 10 seconds"), new ie(6, "Batch Converter", this.costs.parts, 5e5, 1.13, 512, 12, "An astounding contraption that produces 512 parts every 12 seconds")], PartFactory.instance) return PartFactory.instance;
-      PartFactory.instance = this
+        }, 
+        this.generatorsApplied = [], 
+        this.generators = [
+          new Generator(
+            1, 
+            "Simple Machine", 
+            this.costs.blood, 
+            1e6, 
+            1.08, 
+            1, 
+            2, 
+            "A simple device that produces 1 part every 2 seconds"
+          ), 
+          new Generator(
+            2, 
+            "Part Duplicator", 
+            this.costs.parts, 
+            100, 
+            1.09, 
+            4, 
+            3, 
+            "A more advanced device that produces 4 parts every 3 seconds"
+          ), 
+          new Generator(
+            3, 
+            "Stamp Press", 
+            this.costs.parts, 
+            1e3, 
+            1.1, 
+            16, 
+            5, 
+            "An industrial press that produces 16 parts every 5 seconds"
+          ), 
+          new Generator(
+            4, 
+            "Conveyor", 
+            this.costs.parts, 
+            1e4, 
+            1.11, 
+            64, 
+            8, 
+            "A fantastic new invention that produces 64 parts every 8 seconds"
+          ), 
+          new Generator(
+            5, 
+            "Splitter Combiner", 
+            this.costs.parts, 
+            1e5, 
+            1.12, 
+            192, 
+            10, 
+            "A wondrous machine that produces 192 parts every 10 seconds"
+          ), 
+          new Generator(
+            6, 
+            "Batch Converter", 
+            this.costs.parts, 
+            5e5, 
+            1.13,
+            512, 
+            12, 
+            "An astounding contraption that produces 512 parts every 12 seconds"
+          )], PartFactory.instance) return PartFactory.instance;
+      PartFactory.instance = this;
     }
     factoryStats() {
-      let e = 0,
-        t = 0;
-      for (let s = 0; s < this.generatorsApplied.length; s++) e += this.generatorsApplied[s].rank, t += this.generatorsApplied[s].total / this.generatorsApplied[s].time;
+      let machines = 0;
+      let partsPerSec = 0;
+      for (let i = 0; i < this.generatorsApplied.length; i++) {
+        machines += this.generatorsApplied[i].rank;
+        partsPerSec += this.generatorsApplied[i].total / this.generatorsApplied[i].time;
+      }
       return {
-        machines: e,
-        partsPerSec: (this.storm ? 2 : 1) * t * this.gameModel.partsPCMod
+        machines: machines,
+        partsPerSec: (this.storm ? 2 : 1) * partsPerSec * this.gameModel.partsPCMod
       }
     }
-    update(e) {
-      for (let t = 0; t < this.generatorsApplied.length; t++) this.generatorsApplied[t].timeLeft -= e, this.generatorsApplied[t].timeLeft <= 0 && (this.generatorsApplied[t].timeLeft = this.generatorsApplied[t].time, this.gameModel.persistentData.parts += this.generatorsApplied[t].total * this.gameModel.partsPCMod * (this.storm ? 2 : 1))
+    update(timeDiff) {
+      for (let i = 0; i < this.generatorsApplied.length; i++) {
+        this.generatorsApplied[i].timeLeft -= timeDiff;
+        if (this.generatorsApplied[i].timeLeft <= 0) {
+          this.generatorsApplied[i].timeLeft = this.generatorsApplied[i].time;
+          this.gameModel.persistentData.parts += this.generatorsApplied[i].total * this.gameModel.partsPCMod * (this.storm ? 2 : 1);
+        }
+      }
     }
-    updateLongTime(e) {
-      let t = 0;
-      for (let s = 0; s < this.generatorsApplied.length; s++) t += this.generatorsApplied[s].total * (e / this.generatorsApplied[s].time);
-      return t * this.gameModel.partsPCMod
+    updateLongTime(timeDiff) {
+      let partsCreated = 0;
+      for (let i = 0; i < this.generatorsApplied.length; i++) {
+        partsCreated += this.generatorsApplied[i].total * (timeDiff / this.generatorsApplied[i].time);
+      }
+      return partsCreated * this.gameModel.partsPCMod;
     }
-    currentRank(e) {
+    currentRank(generator) {
       for (let t = 0; t < this.gameModel.persistentData.generators.length; t++) {
         const s = this.gameModel.persistentData.generators[t];
-        if (e.id == s.id) return s.rank
+        if (generator.id == s.id) return s.rank;
       }
-      return 0
+      return 0;
     }
-    purchasePrice(e) {
-      return Math.round(e.basePrice * Math.pow(e.multi, this.currentRank(e)))
+    purchasePrice(generator) {
+      return Math.round(generator.basePrice * Math.pow(generator.multi, this.currentRank(generator)));
     }
-    upgradeMaxAffordable(e) {
-      const t = this.currentRank(e);
-      let s = 0;
-      switch (e.costType) {
+    upgradeMaxAffordable(upgrade) {
+      const currentRank = this.currentRank(upgrade);
+      let maxAffordable = 0;
+      switch (upgrade.costType) {
         case this.costs.blood:
-          s = getMaxUpgrades(e.basePrice, e.multi, t, this.gameModel.persistentData.blood);
+          maxAffordable = getMaxUpgrades(upgrade.basePrice, upgrade.multi, currentRank, this.gameModel.persistentData.blood);
           break;
         case this.costs.parts:
-          s = getMaxUpgrades(e.basePrice, e.multi, t, this.gameModel.persistentData.parts)
+          maxAffordable = getMaxUpgrades(upgrade.basePrice, upgrade.multi, currentRank, this.gameModel.persistentData.parts);
+          break;
       }
-      return 0 != e.cap ? Math.min(s, e.cap - t) : s
+      return 0 != upgrade.cap ? Math.min(maxAffordable, upgrade.cap - currentRank) : maxAffordable;
     }
-    upgradeMaxPrice(e, t) {
-      return getCostForUpgrades(e.basePrice, e.multi, this.currentRank(e), t)
+    upgradeMaxPrice(upgrade, number) {
+      return getCostForUpgrades(upgrade.basePrice, upgrade.multi, this.currentRank(upgrade), number);
     }
-    canAffordGenerator(e) {
-      switch (e.costType) {
+    canAffordGenerator(generator) {
+      switch (generator.costType) {
         case this.costs.blood:
-          return this.gameModel.persistentData.blood >= this.purchasePrice(e);
+          return this.gameModel.persistentData.blood >= this.purchasePrice(generator);
         case this.costs.parts:
-          return this.gameModel.persistentData.parts >= this.purchasePrice(e)
+          return this.gameModel.persistentData.parts >= this.purchasePrice(generator);
       }
-      return !1
+      return false;
     }
-    purchaseMaxGenerators(e) {
-      const t = this.upgradeMaxAffordable(e);
-      for (let s = 0; s < t; s++) this.purchaseGenerator(e, !1);
+    purchaseMaxGenerators(generator) {
+      const amount = this.upgradeMaxAffordable(generator);
+      for (let i = 0; i < amount; i++) this.purchaseGenerator(generator, false);
       this.gameModel.saveData()
     }
-    purchaseGenerator(e, t = !0) {
-      if (this.canAffordGenerator(e)) {
-        switch (e.costType) {
+    purchaseGenerator(generator, save = true) {
+      if (this.canAffordGenerator(generator)) {
+        switch (generator.costType) {
           case this.costs.blood:
-            this.gameModel.persistentData.blood -= this.purchasePrice(e);
+            this.gameModel.persistentData.blood -= this.purchasePrice(generator);
             break;
           case this.costs.parts:
-            this.gameModel.persistentData.parts -= this.purchasePrice(e)
+            this.gameModel.persistentData.parts -= this.purchasePrice(generator);
+            break;
         }
-        let s;
-        for (let t = 0; t < this.gameModel.persistentData.generators.length; t++) e.id == this.gameModel.persistentData.generators[t].id && (s = this.gameModel.persistentData.generators[t], s.rank++);
-        s || this.gameModel.persistentData.generators.push({
-          id: e.id,
-          rank: 1
-        }), t && this.gameModel.saveData(), this.applyGenerators()
+        let owned;
+        for (let t = 0; t < this.gameModel.persistentData.generators.length; t++) {
+          if (generator.id == this.gameModel.persistentData.generators[t].id) {
+            owned = this.gameModel.persistentData.generators[t];
+            owned.rank++;
+          }
+        }
+        if (!owned) {
+          this.gameModel.persistentData.generators.push({
+            id: generator.id,
+            rank: 1
+          }); 
+        }
+        if (save) {
+          this.gameModel.saveData();
+        }
+        this.applyGenerators();
       }
     }
-    applyGenerator(e, t) {
-      let s = !1;
-      for (let i = 0; i < this.generatorsApplied.length; i++) this.generatorsApplied[i].id == e.id && (s = !0, this.generatorsApplied[i].rank = t, this.generatorsApplied[i].total = this.generatorsApplied[i].produces * this.generatorsApplied[i].rank);
-      s || this.generatorsApplied.push({
-        id: e.id,
-        produces: e.produces,
-        total: e.produces * t,
-        rank: t,
-        time: e.time,
-        timeLeft: e.time
-      })
+
+    applyGenerator(generator, rank) {
+      let owned = false;
+      for (let i = 0; i < this.generatorsApplied.length; i++) {
+        if (this.generatorsApplied[i].id == generator.id) {
+          owned = true;
+          this.generatorsApplied[i].rank = rank;
+          this.generatorsApplied[i].total = this.generatorsApplied[i].produces * this.generatorsApplied[i].rank;
+        }
+      }
+
+      if (!owned) {
+        this.generatorsApplied.push({
+          id: generator.id,
+          produces: generator.produces,
+          total: generator.produces * rank,
+          rank: rank,
+          time: generator.time,
+          timeLeft: generator.time
+        });
+      }
+        
     }
     applyGenerators() {
-      for (let e = 0; e < this.generators.length; e++) {
-        const t = this.currentRank(this.generators[e]);
-        t > 0 && this.applyGenerator(this.generators[e], t)
+      for (let i = 0; i < this.generators.length; i++) {
+        const currRank = this.currentRank(this.generators[i]);
+        if (currRank > 0) {
+          this.applyGenerator(this.generators[i], currRank);
+        }
       }
     }
   }
-  class ie {
-    constructor(e, t, s, i, a, r, n, o) {
-      this.id = e, this.name = t, this.costType = s, this.basePrice = i, this.multi = a, this.produces = r, this.time = n, this.description = o, this.cap = 0
+  class Generator {
+    constructor(id, name, costType, basePrice, multi, produces, time, description) {
+      this.id = id;
+      this.name = name;
+      this.costType = costType; // Blood or parts
+      this.basePrice = basePrice;
+      this.multi = multi;
+      this.produces = produces;
+      this.time = time;
+      this.description = description;
+      this.cap = 0;
     }
   }
   class ae {
