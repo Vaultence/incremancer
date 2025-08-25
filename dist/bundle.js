@@ -79,10 +79,10 @@ var Incremancer;
     "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
       value: "Module"
     }), Object.defineProperty(e, "__esModule", {
-      value: 1
+      value: !0
     })
   })(e);
-  let GameModel, S, M, k, Skeleton, Zombies, C, canvasSize = {
+  let GameModel, S, M, k, w, Zombies, C, canvasSize = {
       x: 800,
       y: 600,
       defaultScale: 1
@@ -251,19 +251,19 @@ var Incremancer;
   }
 
   const viewableArea = {
-    x: 0,
-    y: 0,
-    width: 1000,
-    height: 1000,
-    hideParticle(x, y) {
-      return x < this.x || y < this.y || x > this.x + this.width || y > this.y + this.height;
-    },
-    update() {
-      this.x = -gameContainer.x / gameContainer.scale.x;
-      this.y = -gameContainer.y / gameContainer.scale.y;
-      this.width = canvasSize.x / gameContainer.scale.x;
-      this.height = canvasSize.y / gameContainer.scale.y;
-    }
+      x: 0,
+      y: 0,
+      width: 1000,
+      height: 1000,
+      hideParticle(x, y) {
+        return x < this.x || y < this.y || x > this.x + this.width || y > this.y + this.height;
+      },
+      update() {
+        this.x = -gameContainer.x / gameContainer.scale.x;
+        this.y = -gameContainer.y / gameContainer.scale.y;
+        this.width = canvasSize.x / gameContainer.scale.x;
+        this.height = canvasSize.y / gameContainer.scale.y;
+      }
   }
   
   let X = new PIXI.Matrix;
@@ -271,19 +271,19 @@ var Incremancer;
   function U(e, t) {
     ! function(e) {
       const t = KeysPressed;
-      let s = 0;
+      let s = !1;
       const i = gameContainer;
-      t.w && (i.y += t.scrollSpeed * e, s = 1), t.a && (i.x += t.scrollSpeed * e, s = 1), t.s && (i.y -= t.scrollSpeed * e, s = 1), t.d && (i.x -= t.scrollSpeed * e, s = 1), s && preventGameContainerLeavingBounds(i)
-    }(e), viewableArea.update(), e *= GameModel.gameSpeed, M.update(e), C.update(e), Zombies.update(e), k.update(e), Skeleton.update(e), S.update(e),
+      t.w && (i.y += t.scrollSpeed * e, s = !0), t.a && (i.x += t.scrollSpeed * e, s = !0), t.s && (i.y -= t.scrollSpeed * e, s = !0), t.d && (i.x -= t.scrollSpeed * e, s = !0), s && preventGameContainerLeavingBounds(i)
+    }(e), viewableArea.update(), e *= GameModel.gameSpeed, M.update(e), C.update(e), Zombies.update(e), k.update(e), w.update(e), S.update(e),
       function(e, t) {
         if (C.vipEscaping && void 0 !== C.vip ? y.alpha += e : (y.alpha -= e, y.alpha < 0 && (y.alpha = 0)), y.alpha > 0) {
-          y.alpha > 1 && (y.alpha = 1), y.visible = 1, y.x = 5, y.y = canvasSize.y - 305;
+          y.alpha > 1 && (y.alpha = 1), y.visible = !0, y.x = 5, y.y = canvasSize.y - 305;
           const e = gameContainer.scale.x,
             s = gameContainer.scale.y,
             i = gameContainer.x,
             a = gameContainer.y;
           gameContainer.position.set(0, 0), C.vip && (X.tx = -2 * C.vip.x + 150, X.ty = -2 * C.vip.y + 150), gameContainer.scale.set(2, 2), t.renderer.render(gameContainer, f, void 0, X), gameContainer.scale.set(e, s), gameContainer.position.set(i, a)
-        } else y.visible = 0
+        } else y.visible = !1
       }(e, t)
   }
 
@@ -295,7 +295,7 @@ var Incremancer;
       x: size + shift,
       y: size - shift
     };
-
+    
     if (grass) {
       grass.width = gameFieldSize.x;
       grass.height = gameFieldSize.y;
@@ -303,28 +303,17 @@ var Incremancer;
     }
   }
 
-  function setSizes() {
-    const x = document.body.clientWidth;
-    const y = document.body.clientHeight;
+  function O() {
+    const e = document.body.clientWidth,
+      t = document.body.clientHeight;
     canvasSize = {
-      x: x,
-      y: y,
-      defaultScale: Math.max(x, y) / 1000
-    };
-    KeysPressed.scrollSpeed = Math.max(x, y) / 4;
+      x: e,
+      y: t,
+      defaultScale: Math.max(e, t) / 1e3
+    }, KeysPressed.scrollSpeed = Math.max(e, t) / 4
   }
-
   new Map, window.onload = function() {
-    GameModel = ne.getInstance();
-    S = new Qe;
-    M = new Oe;
-    k = new Ue;
-    Skeleton = new SkeletonManager;
-    Zombies = new ZombieManager;
-    C = new Se;
-    GameModel.loadData();
-    GameModel.onReady();
-    setSizes(),
+    GameModel = ne.getInstance(), S = new Qe, M = new Oe, k = new Ue, w = new Xe, Zombies = new Ae, C = new Se, GameModel.loadData(), GameModel.onReady(), O(),
       function() {
         PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
         const e = new PIXI.Application({
@@ -332,154 +321,140 @@ var Incremancer;
           height: canvasSize.y,
           backgroundColor: 1066256,
           resolution: GameModel.persistentData.resolution || 1,
-          antialias: 0,
+          antialias: !1,
           resizeTo: window
         });
         document.body.appendChild(e.view), PIXI.utils.isWebGLSupported() || console.error("Warning: WebGL support not detected. Game performance may be slower."),
           function(e) {
-            gameContainer = new PIXI.Container, u = new PIXI.Container, p = new PIXI.Container, g = new PIXI.Container, g.sortableChildren = 1, b = new PIXI.Container, m = new PIXI.Container, f = PIXI.RenderTexture.create({
+            gameContainer = new PIXI.Container, u = new PIXI.Container, p = new PIXI.Container, g = new PIXI.Container, g.sortableChildren = !0, b = new PIXI.Container, m = new PIXI.Container, f = PIXI.RenderTexture.create({
               width: 300,
               height: 300
-            }), y = new PIXI.Sprite(f), y.visible = 0, y.alpha = 0, m.addChild(y), gameContainer.addChild(u), gameContainer.addChild(p), gameContainer.addChild(g), gameContainer.addChild(b), e.stage.addChild(gameContainer), e.stage.addChild(m), gameContainer.interactive = 1, gameContainer.interactiveChildren = 0, gameContainer.on("pointerdown", onDragStart), gameContainer.on("pointerup", onDragEnd), gameContainer.on("pointerupoutside", onDragEnd), gameContainer.on("pointermove", onDragMove), gameContainer.on("click", onClickTap), gameContainer.on("tap", onClickTap), document.getElementsByTagName("canvas")[0].onwheel = onWheel, document.getElementsByTagName("canvas")[0].oncontextmenu = function(e) {
+            }), y = new PIXI.Sprite(f), y.visible = !1, y.alpha = 0, m.addChild(y), gameContainer.addChild(u), gameContainer.addChild(p), gameContainer.addChild(g), gameContainer.addChild(b), e.stage.addChild(gameContainer), e.stage.addChild(m), gameContainer.interactive = !0, gameContainer.interactiveChildren = !1, gameContainer.on("pointerdown", onDragStart), gameContainer.on("pointerup", onDragEnd), gameContainer.on("pointerupoutside", onDragEnd), gameContainer.on("pointermove", onDragMove), gameContainer.on("click", onClickTap), gameContainer.on("tap", onClickTap), document.getElementsByTagName("canvas")[0].onwheel = onWheel, document.getElementsByTagName("canvas")[0].oncontextmenu = function(e) {
               e.preventDefault()
             }
           }(e), e.loader.add("sprites/ground.json").add("sprites/megagraveyard.png").add("sprites/graveyard.json").add("sprites/buildings.json").add("sprites/humans.json").add("sprites/cop.json").add("sprites/dogs.json").add("sprites/army.json").add("sprites/doctor.json").add("sprites/zombie.json").add("sprites/golem.json").add("sprites/bonecollector.json").add("sprites/harpy.json").add("sprites/objects2.json").add("sprites/fenceposts.json").add("sprites/trees2.json").add("sprites/fortress.json").add("sprites/tank.json").add("sprites/skeleton.json").load((function() {
             GameModel.app = e, setGameFieldSizeForLevel(), grass = new PIXI.TilingSprite(PIXI.Texture.from("grass.png")), grass.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF, grass.width = gameFieldSize.x, grass.height = gameFieldSize.y, u.addChild(grass), GameModel.setupLevel(), setTimeout((function() {
-              centerGameContainer(1)
+              centerGameContainer(!0)
             })), e.ticker.add((t => {
               U(e.ticker.deltaMS / 1e3, e), GameModel.frameRate = e.ticker.FPS
             }))
           }))
       }(), window.self !== window.top && ("" != document.referrer && -1 == document.referrer.indexOf("kongregate.com") && -1 == document.referrer.indexOf("konggames.com") && -1 == document.referrer.indexOf("gti.nz") ? window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ" : -1 === document.referrer.indexOf("kongregate.com") && -1 === document.referrer.indexOf("konggames.com") || kongregateAPI.loadAPI((function() {
-        window.kongregate = kongregateAPI.getAPI(), GameModel.kongregate = 1, GameModel.loginInUsingPlayFab()
+        window.kongregate = kongregateAPI.getAPI(), GameModel.kongregate = !0, GameModel.loginInUsingPlayFab()
       }))), document.addEventListener("visibilitychange", (function() {
-        "hidden" == document.visibilityState ? GameModel.hidden = 1 : GameModel.hidden = 0
-      }), 0)
+        "hidden" == document.visibilityState ? GameModel.hidden = !0 : GameModel.hidden = !1
+      }), !1)
   }, window.onresize = function() {
-    setSizes()
+    O()
   };
   const KeysPressed = {
     scrollSpeed: 200,
-    w: 0,
-    a: 0,
-    s: 0,
-    d: 0,
-    shift: 0
+    w: !1,
+    a: !1,
+    s: !1,
+    d: !1,
+    shift: !1
   };
   window.onblur = function() {
-    KeysPressed.w = KeysPressed.a = KeysPressed.s = KeysPressed.d = 0, KeysPressed.shift = 0
+    KeysPressed.w = KeysPressed.a = KeysPressed.s = KeysPressed.d = !1, KeysPressed.shift = !1
   }, window.onkeydown = function(e) {
     switch (e.keyCode) {
       case 16:
       case 17:
-        KeysPressed.shift = 1;
+        KeysPressed.shift = !0;
         break;
       case 87:
       case 38:
-        KeysPressed.w = 1;
+        KeysPressed.w = !0;
         break;
       case 65:
       case 37:
-        KeysPressed.a = 1;
+        KeysPressed.a = !0;
         break;
       case 83:
       case 40:
-        KeysPressed.s = 1;
+        KeysPressed.s = !0;
         break;
       case 68:
       case 39:
-        KeysPressed.d = 1;
+        KeysPressed.d = !0;
         break;
       default:
-        return 1
+        return !0
     }
-    return 0
+    return !1
   }, window.onkeyup = function(e) {
     switch (e.keyCode) {
       case 16:
       case 17:
-        KeysPressed.shift = 0;
+        KeysPressed.shift = !1;
         break;
       case 87:
       case 38:
-        KeysPressed.w = 0;
+        KeysPressed.w = !1;
         break;
       case 65:
       case 37:
-        KeysPressed.a = 0;
+        KeysPressed.a = !1;
         break;
       case 83:
       case 40:
-        KeysPressed.s = 0;
+        KeysPressed.s = !1;
         break;
       case 68:
       case 39:
-        KeysPressed.d = 0;
+        KeysPressed.d = !1;
         break;
       default:
-        return 1
+        return !0
     }
-    return 0
+    return !1
   };
-  class Spell {
-    constructor(id, name, tooltip, itemText, cooldown, duration, energyCost, effectStart, effectEnd) {
-      this.id = id;
-      this.name = name;
-      this.tooltip = tooltip;
-      this.itemText = itemText;
-      this.cooldown = cooldown;
-      this.duration = duration;
-      this.energyCost = energyCost;
-      this.start = effectStart;
-      this.end = effectEnd;
-      this.timer = 0;
-      this.onCooldown = 0;
-      this.active = 0;
-      this.cooldownLeft = 0
+  class W {
+    constructor(e, t, s, i, a, r, n, o, h) {
+      this.id = e, this.name = t, this.tooltip = s, this.itemText = i, this.cooldown = a, this.duration = r, this.energyCost = n, this.start = o, this.end = h, this.timer = 0, this.onCooldown = !1, this.active = !1, this.cooldownLeft = 0
     }
   }
-  class SpellManager {
+  class q {
     constructor() {
-      if (this.cooldownReduction = 0, this.timeExtension = 0, this.costReduction = 0, this.skeleton = new SkeletonManager, this.zombies = new ZombieManager, this.humans = new Se, this.spellMap = new Map, this.spells = [new Spell(1, "Time Warp", "Speed up the flow of time for 30 seconds", "", 90, 30, 0, (function() {
+      if (this.cooldownReduction = 0, this.timeExtension = 0, this.costReduction = 0, this.skeleton = new Xe, this.zombies = new Ae, this.humans = new Se, this.spellMap = new Map, this.spells = [new W(1, "Time Warp", "Speed up the flow of time for 30 seconds", "", 90, 30, 0, (function() {
           ne.getInstance().gameSpeed = 2
         }), (function() {
           ne.getInstance().gameSpeed = 1
-        })), new Spell(2, "Energy Charge", "5x Energy rate for 20 seconds, cost 50 energy", "", 160, 20, 50, (function() {
+        })), new W(2, "Energy Charge", "5x Energy rate for 20 seconds, cost 50 energy", "", 160, 20, 50, (function() {
           ne.getInstance().energySpellMultiplier = 5
         }), (function() {
           ne.getInstance().energySpellMultiplier = 1
-        })), new Spell(3, "Detonate", "Turns your zombies into fast moving living bombs, cost 69 energy... nice", "", 80, 8, 69, (function() {
-          (new SpellManager).zombies.detonate = 1
+        })), new W(3, "Detonate", "Turns your zombies into fast moving living bombs, cost 69 energy... nice", "", 80, 8, 69, (function() {
+          (new q).zombies.detonate = !0
         }), (function() {
-          (new SpellManager).zombies.detonate = 0
-        })), new Spell(4, "Earth Freeze", "Freeze all humans in place preventing them from moving for 15 seconds, cost 75 energy", "", 50, 15, 75, (function() {
-          (new SpellManager).humans.frozen = 1
+          (new q).zombies.detonate = !1
+        })), new W(4, "Earth Freeze", "Freeze all humans in place preventing them from moving for 15 seconds, cost 75 energy", "", 50, 15, 75, (function() {
+          (new q).humans.frozen = !0
         }), (function() {
-          (new SpellManager).humans.frozen = 0
-        })), new Spell(5, "Gigazombies", "For 5 seconds any zombies spawned will be giants with 10x health and attack damage, cost 100 energy", "", 260, 5, 100, (function() {
-          (new SpellManager).zombies.super = 1
+          (new q).humans.frozen = !1
+        })), new W(5, "Gigazombies", "For 5 seconds any zombies spawned will be giants with 10x health and attack damage, cost 100 energy", "", 260, 5, 100, (function() {
+          (new q).zombies.super = !0
         }), (function() {
-          (new SpellManager).zombies.super = 0
-        })), new Spell(6, "Incinerate", "Burns humans near the skeleton champion", "Has a chance to cast Incinerate when attacking, burning all humans within a large radius of the Skeleton", 1, 10, 10, (function() {
-          (new SpellManager).skeleton.incinerate(), this.timer = 1
-        }), (function() {})), new Spell(7, "Pandemic", "Causes plague to spread", "Has a chance to cast Pandemic when attacking, causing infected humans to spread the plague to each other for 20 seconds", 10, 20, 10, (function() {
-          (new SpellManager).humans.pandemic = 1
+          (new q).zombies.super = !1
+        })), new W(6, "Incinerate", "Burns humans near the skeleton champion", "Has a chance to cast Incinerate when attacking, burning all humans within a large radius of the Skeleton", 1, 10, 10, (function() {
+          (new q).skeleton.incinerate(), this.timer = 1
+        }), (function() {})), new W(7, "Pandemic", "Causes plague to spread", "Has a chance to cast Pandemic when attacking, causing infected humans to spread the plague to each other for 20 seconds", 10, 20, 10, (function() {
+          (new q).humans.pandemic = !0
         }), (function() {
-          (new SpellManager).humans.pandemic = 0
-        })), new Spell(8, "Part Storm", "Doubles parts", "Has a chance to cast Part Storm when attacking, doubling the parts production of your factory machines for 15 seconds", 10, 15, 10, (function() {
-          (new PartFactory).storm = 1
+          (new q).humans.pandemic = !1
+        })), new W(8, "Part Storm", "Doubles parts", "Has a chance to cast Part Storm when attacking, doubling the parts production of your factory machines for 15 seconds", 10, 15, 10, (function() {
+          (new se).storm = !0
         }), (function() {
-          (new PartFactory).storm = 0
-        }))], SpellManager.instance) return SpellManager.instance;
-      SpellManager.instance = this, this.spells.forEach((e => this.spellMap.set(e.id, e)))
+          (new se).storm = !1
+        }))], q.instance) return q.instance;
+      q.instance = this, this.spells.forEach((e => this.spellMap.set(e.id, e)))
     }
     lockAllSpells() {
-      for (let i = 0; i < this.spells.length; i++) {
-        this.spells[i].unlocked = 0;
-      }
+      for (let e = 0; e < this.spells.length; e++) this.spells[e].unlocked = !1
     }
     unlockSpell(e) {
-      this.spellMap.get(e).unlocked = 1
+      this.spellMap.get(e).unlocked = !0
     }
     getSpell(e) {
       return this.spellMap.get(e)
@@ -489,16 +464,16 @@ var Incremancer;
     }
     castSpell(e) {
       const t = ne.getInstance();
-      e.onCooldown || e.active || !e.unlocked || e.energyCost - this.costReduction > t.energy || (t.energy -= e.energyCost - this.costReduction, e.onCooldown = 1, e.cooldownLeft = e.cooldown * this.cooldownReduction, e.active = 1, e.timer = e.duration + this.timeExtension, e.start(), t.sendMessage(e.name))
+      e.onCooldown || e.active || !e.unlocked || e.energyCost - this.costReduction > t.energy || (t.energy -= e.energyCost - this.costReduction, e.onCooldown = !0, e.cooldownLeft = e.cooldown * this.cooldownReduction, e.active = !0, e.timer = e.duration + this.timeExtension, e.start(), t.sendMessage(e.name))
     }
     castSpellNoMana(e) {
       const t = this.spellMap.get(e);
-      t && !t.active && (t.active = 1, t.timer = t.duration + this.timeExtension, t.start(), ne.getInstance().sendMessage(t.name))
+      t && !t.active && (t.active = !0, t.timer = t.duration + this.timeExtension, t.start(), ne.getInstance().sendMessage(t.name))
     }
     updateSpells(e) {
       for (let t = 0; t < this.spells.length; t++) {
         const s = this.spells[t];
-        s.onCooldown && !s.active && (s.cooldownLeft -= e, s.cooldownLeft <= 0 && (s.onCooldown = 0)), s.active && (s.timer -= e, s.timer <= 0 && (s.active = 0, s.end()))
+        s.onCooldown && !s.active && (s.cooldownLeft -= e, s.cooldownLeft <= 0 && (s.onCooldown = !1)), s.active && (s.timer -= e, s.timer <= 0 && (s.active = !1, s.end()))
       }
     }
   }
@@ -519,18 +494,18 @@ var Incremancer;
   }
   class K {
     constructor() {
-      this.burning = 0, this.infected = 0, this.dead = 0, this.golem = 0
+      this.burning = !1, this.infected = !1, this.dead = !1, this.golem = !1
     }
   }
   class Q extends PIXI.AnimatedSprite {
     constructor(e) {
-      super(e), this.xSpeed = 0, this.ySpeed = 0, this.health = 0, this.maxHealth = 0, this.zombie = 0, this.targetVector = {
+      super(e), this.xSpeed = 0, this.ySpeed = 0, this.health = 0, this.maxHealth = 0, this.zombie = !1, this.targetVector = {
         x: 0,
         y: 0
-      }, this.burnDamage = 0, this.hasIcon = 0, this.flags = new K, this.timer = new $
+      }, this.burnDamage = 0, this.hasIcon = !1, this.flags = new K, this.timer = new $
     }
     reset() {
-      this.xSpeed = 0, this.ySpeed = 0, this.alpha = 1, this.visible = 1, this.burnDamage = 0, this.currentPoi = null, this.flags.dead = 0, this.flags.burning = 0, this.flags.infected = 0
+      this.xSpeed = 0, this.ySpeed = 0, this.alpha = 1, this.visible = !0, this.burnDamage = 0, this.currentPoi = null, this.flags.dead = !1, this.flags.burning = !1, this.flags.infected = !1
     }
   }
   class J extends PIXI.Sprite {
@@ -546,12 +521,12 @@ var Incremancer;
       this.container = e, this.texture = t
     }
     discardSprite(e) {
-      e.visible = 0, this.discardedSprites.push(e)
+      e.visible = !1, this.discardedSprites.push(e)
     }
     getSprite() {
       if (this.discardedSprites.length > 0) {
         const e = this.discardedSprites.pop();
-        return e.visible = 1, e
+        return e.visible = !0, e
       }
       const e = this.create(this.texture);
       return this.container.addChild(e), this.sprites.push(e), e
@@ -562,7 +537,7 @@ var Incremancer;
       if (this.gameModel = ne.getInstance(), this.humans = new Se, this.discardedWalls = [], this.discardedContainers = [], this.discardedFloorSprites = [], this.buildings = [], this.buildingsByPopularity = [], this.buildingMap = [], this.roadSprite = null, this.roadTexture = null, this.entranceWidth = 16, this.entranceDepth = 16, this.cornerDistance = 16, this.minBuildings = 3, this.wallWidth = 4, this.graveyardCollision = null, this.graveYardLocation = {
           x: 0,
           y: 0
-        }, this.graveYardPosition = null, this.wallCollisionBuffer = 3, this.fastDistance = fastDistance, this.pathFindStepSize = 5, this.dx = 0, this.dy = 0, this.stepsToTake = 10, this.hasHit = 0, this.vector = null, this.corner = null, this.hitbuilding = 0, this.insideBuilding = 0, this.treeSprites = [], this.treeTextures = [], this.armyTextures = [], ee.instance) return ee.instance;
+        }, this.graveYardPosition = null, this.wallCollisionBuffer = 3, this.fastDistance = fastDistance, this.pathFindStepSize = 5, this.dx = 0, this.dy = 0, this.stepsToTake = 10, this.hasHit = !1, this.vector = null, this.corner = null, this.hitbuilding = !1, this.insideBuilding = !1, this.treeSprites = [], this.treeTextures = [], this.armyTextures = [], ee.instance) return ee.instance;
       ee.instance = this
     }
     getRandomBuilding() {
@@ -572,9 +547,9 @@ var Incremancer;
       return e.x > t.x + t.width + 50 || e.x + e.width + 50 < t.x || e.y > t.y + t.height + 50 || e.y + e.height + 50 < t.y || void 0
     }
     isValidPosition(e) {
-      if (!this.roomNoOverlap(e, this.graveYardPosition)) return 0;
+      if (!this.roomNoOverlap(e, this.graveYardPosition)) return !1;
       for (let t = 0; t < this.buildings.length; t++)
-        if (!this.roomNoOverlap(e, this.buildings[t])) return 0;
+        if (!this.roomNoOverlap(e, this.buildings[t])) return !1;
       return !(this.gameModel.level % 5 == 0 && !this.gameModel.isBossStage(this.gameModel.level) && e.y < this.roadSprite.y + this.roadSprite.height && e.y + e.height > this.roadSprite.y)
     }
     getWall(e) {
@@ -614,62 +589,62 @@ var Incremancer;
     }
     addBuilding(e) {
       var t, s;
-      e.container = this.getContainer(), e.container.cacheAsBitmap = 0, e.floorSprite = this.getFloorSprite(), e.floorSprite.tint = (t = 10 + Math.round(50 * Math.random()), s = 10 + Math.round(50 * Math.random()), 10 + Math.round(50 * Math.random()) | s << 8 | t << 16), e.floorSprite.alpha = .2, e.container.x = e.x, e.container.y = e.y, e.floorSprite.width = e.width, e.floorSprite.height = e.height, e.container.addChild(e.floorSprite);
+      e.container = this.getContainer(), e.container.cacheAsBitmap = !1, e.floorSprite = this.getFloorSprite(), e.floorSprite.tint = (t = 10 + Math.round(50 * Math.random()), s = 10 + Math.round(50 * Math.random()), 10 + Math.round(50 * Math.random()) | s << 8 | t << 16), e.floorSprite.alpha = .2, e.container.x = e.x, e.container.y = e.y, e.floorSprite.width = e.width, e.floorSprite.height = e.height, e.container.addChild(e.floorSprite);
       const r = [{
         x: e.x + e.width / 2,
         y: e.y,
-        north: 1,
+        north: !0,
         inside: {
           x: e.x + e.width / 2,
           y: e.y + this.entranceDepth,
-          entrance: 1
+          entrance: !0
         },
         outside: {
           x: e.x + e.width / 2,
           y: e.y - this.entranceDepth,
-          entrance: 1
+          entrance: !0
         }
       }, {
         x: e.x + e.width / 2,
         y: e.y + e.height,
-        south: 1,
+        south: !0,
         inside: {
           x: e.x + e.width / 2,
           y: e.y + e.height - this.entranceDepth,
-          entrance: 1
+          entrance: !0
         },
         outside: {
           x: e.x + e.width / 2,
           y: e.y + e.height + this.entranceDepth,
-          entrance: 1
+          entrance: !0
         }
       }, {
         x: e.x,
         y: e.y + e.height / 2,
-        west: 1,
+        west: !0,
         inside: {
           x: e.x + this.entranceDepth,
           y: e.y + e.height / 2,
-          entrance: 1
+          entrance: !0
         },
         outside: {
           x: e.x - this.entranceDepth,
           y: e.y + e.height / 2,
-          entrance: 1
+          entrance: !0
         }
       }, {
         x: e.x + e.width,
         y: e.y + e.height / 2,
-        east: 1,
+        east: !0,
         inside: {
           x: e.x + e.width - this.entranceDepth,
           y: e.y + e.height / 2,
-          entrance: 1
+          entrance: !0
         },
         outside: {
           x: e.x + e.width + this.entranceDepth,
           y: e.y + e.height / 2,
-          entrance: 1
+          entrance: !0
         }
       }];
       let n;
@@ -686,7 +661,7 @@ var Incremancer;
       const l = getRandomElementFromArray(this.buildingTextures, Math.random());
       this.makeHorizontalWall(e.walls, l, e.entrance.north, -4, -4, e.width + 8), this.makeHorizontalWall(e.walls, l, e.entrance.south, -4, e.height, e.width + 8), this.makeVerticalWall(e.walls, l, e.entrance.west, -4, -4, e.height + 8), this.makeVerticalWall(e.walls, l, e.entrance.east, e.width, -4, e.height + 8);
       for (let t = 0; t < e.walls.length; t++) e.container.addChild(e.walls[t]);
-      e.container.cacheAsBitmap = 1, u.addChild(e.container);
+      e.container.cacheAsBitmap = !0, u.addChild(e.container);
       for (let t = 0; t < e.walls.length; t++) e.walls[t].collisionX = e.x + e.walls[t].x, e.walls[t].collisionY = e.y + e.walls[t].y, e.walls[t].collisionWidth = e.walls[t].width, e.walls[t].collisionHeight = e.walls[t].height
     }
     addCorners(e) {
@@ -725,7 +700,7 @@ var Incremancer;
         this.buildingTextures = [];
         for (let e = 0; e < 2; e++) this.buildingTextures.push(PIXI.Texture.from("floor" + (e + 1) + ".png"));
         for (let e = 0; e < 2; e++) this.buildingTextures.push(PIXI.Texture.from("wall" + (e + 1) + ".png"));
-        this.roadSprite = new PIXI.TilingSprite(PIXI.Texture.from("road.png")), this.roadSprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF, this.roadSprite.width = gameFieldSize.x, this.roadSprite.tileScale.set(3, 3), this.roadSprite.height = 96, u.addChild(this.roadSprite), this.roadSprite.visible = 0, this.roadSprite.anchor.set(0, 0)
+        this.roadSprite = new PIXI.TilingSprite(PIXI.Texture.from("road.png")), this.roadSprite.texture.baseTexture.mipmap = PIXI.MIPMAP_MODES.OFF, this.roadSprite.width = gameFieldSize.x, this.roadSprite.tileScale.set(3, 3), this.roadSprite.height = 96, u.addChild(this.roadSprite), this.roadSprite.visible = !1, this.roadSprite.anchor.set(0, 0)
       }
       if (this.buildings.length > 0)
         for (let e = 0; e < this.buildings.length; e++) u.removeChild(this.buildings[e].container), this.buildings[e].walls.forEach((t => {
@@ -736,12 +711,12 @@ var Incremancer;
       let t = this.minBuildings,
         s = this.humans.getMaxHumans();
       const i = Math.max(Math.min(50, Math.round(s / 3)), 10);
-      for (this.roadSprite.visible = 0, this.gameModel.isBossStage(this.gameModel.level) ? (s = 0, t = 0) : this.gameModel.level % 5 == 0 && (this.roadSprite.visible = 1, this.roadSprite.width = gameFieldSize.x, this.roadSprite.x = 0, this.roadSprite.y = gameFieldSize.y / 2 - 48); s > 0 || t > 0;) {
+      for (this.roadSprite.visible = !1, this.gameModel.isBossStage(this.gameModel.level) ? (s = 0, t = 0) : this.gameModel.level % 5 == 0 && (this.roadSprite.visible = !0, this.roadSprite.width = gameFieldSize.x, this.roadSprite.x = 0, this.roadSprite.y = gameFieldSize.y / 2 - 48); s > 0 || t > 0;) {
         t--;
         const a = Math.round(5 + Math.random() * (i - 5)),
           r = Math.sqrt(500 * a);
         s -= a;
-        let n, o = 0,
+        let n, o = !1,
           h = 1e3;
         const l = 10;
         for (; !o && h > 0;) h--, n = this.gameModel.level % 5 == 0 ? Math.random() > .7 ? {
@@ -812,7 +787,7 @@ var Incremancer;
       return e > s.x - i && e < s.x + s.width + i && t > s.y - i && t < s.y + s.height + i
     }
     checkWall(e, t, s, i) {
-      t.y > e.collisionY && t.y < e.collisionY + e.collisionHeight && (t.x < e.collisionX - this.wallCollisionBuffer && s.x > e.collisionX - this.wallCollisionBuffer && (i.x = 1, i.validX = e.collisionX - this.wallCollisionBuffer - 1), t.x > e.collisionX + e.collisionWidth + this.wallCollisionBuffer && s.x < e.collisionX + e.collisionWidth + this.wallCollisionBuffer && (i.x = 1, i.validX = e.collisionX + e.collisionWidth + this.wallCollisionBuffer + 1)), t.x > e.collisionX && t.x < e.collisionX + e.collisionWidth && (t.y < e.collisionY - this.wallCollisionBuffer && s.y > e.collisionY - this.wallCollisionBuffer && (i.y = 1, i.validY = e.collisionY - this.wallCollisionBuffer - 1), t.y > e.collisionY + e.collisionHeight + this.wallCollisionBuffer && s.y < e.collisionY + e.collisionHeight + this.wallCollisionBuffer && (i.y = 1, i.validY = e.collisionY + e.collisionHeight + this.wallCollisionBuffer + 1))
+      t.y > e.collisionY && t.y < e.collisionY + e.collisionHeight && (t.x < e.collisionX - this.wallCollisionBuffer && s.x > e.collisionX - this.wallCollisionBuffer && (i.x = !0, i.validX = e.collisionX - this.wallCollisionBuffer - 1), t.x > e.collisionX + e.collisionWidth + this.wallCollisionBuffer && s.x < e.collisionX + e.collisionWidth + this.wallCollisionBuffer && (i.x = !0, i.validX = e.collisionX + e.collisionWidth + this.wallCollisionBuffer + 1)), t.x > e.collisionX && t.x < e.collisionX + e.collisionWidth && (t.y < e.collisionY - this.wallCollisionBuffer && s.y > e.collisionY - this.wallCollisionBuffer && (i.y = !0, i.validY = e.collisionY - this.wallCollisionBuffer - 1), t.y > e.collisionY + e.collisionHeight + this.wallCollisionBuffer && s.y < e.collisionY + e.collisionHeight + this.wallCollisionBuffer && (i.y = !0, i.validY = e.collisionY + e.collisionHeight + this.wallCollisionBuffer + 1))
     }
     checkGraveyard(e, t) {
       const s = new te;
@@ -857,14 +832,14 @@ var Incremancer;
       return this.graveyardCollision && this.checkWall(this.graveyardCollision, s, a, i), i.x && (e.x = 0), i.y && (e.y = 0), this.normalizeVector(e)
     }
     willVectorHitBuilding(e, t, s, i) {
-      if (this.dx = t.x - e.x, this.dy = t.y - e.y, this.dx < 0 && e.x < s.x - 4) return 0;
-      if (this.dx > 0 && e.x > s.x + s.width + 4) return 0;
-      if (this.dy < 0 && e.y < s.y - 4) return 0;
-      if (this.dy > 0 && e.y > s.y + s.width + 4) return 0;
-      for (this.step = this.pathStepCalc(e, t), this.stepsToTake = Math.min(i / this.pathFindStepSize - this.pathFindStepSize, 30), this.hasHit = 0, this.testPosition = {
+      if (this.dx = t.x - e.x, this.dy = t.y - e.y, this.dx < 0 && e.x < s.x - 4) return !1;
+      if (this.dx > 0 && e.x > s.x + s.width + 4) return !1;
+      if (this.dy < 0 && e.y < s.y - 4) return !1;
+      if (this.dy > 0 && e.y > s.y + s.width + 4) return !1;
+      for (this.step = this.pathStepCalc(e, t), this.stepsToTake = Math.min(i / this.pathFindStepSize - this.pathFindStepSize, 30), this.hasHit = !1, this.testPosition = {
           x: e.x,
           y: e.y
-        }; !this.hasHit && this.stepsToTake > 0;) this.stepsToTake--, this.testPosition.x += this.step.x, this.testPosition.y += this.step.y, this.isInsidePoi(this.testPosition.x, this.testPosition.y, s, 4) && (this.hasHit = 1);
+        }; !this.hasHit && this.stepsToTake > 0;) this.stepsToTake--, this.testPosition.x += this.step.x, this.testPosition.y += this.step.y, this.isInsidePoi(this.testPosition.x, this.testPosition.y, s, 4) && (this.hasHit = !0);
       return this.hasHit
     }
     findNearestCorner(e, t) {
@@ -889,7 +864,7 @@ var Incremancer;
       }, s ? (this.hitbuilding = this.willVectorHitBuilding(e, t, s, i), this.hitbuilding ? (this.corner = this.findNearestCorner(t, s.corners), this.hitbuilding = this.willVectorHitBuilding(e, this.corner, s, i), this.hitbuilding ? (this.corner = this.findNearestCorner(e, this.findAdjacentCorners(this.corner, s)), this.vector.x = this.corner.x - e.x, this.vector.y = this.corner.y - e.y, this.modifyVectorForCollision(this.vector, s, e)) : (this.vector.x = this.corner.x - e.x, this.vector.y = this.corner.y - e.y, this.modifyVectorForCollision(this.vector, s, e))) : this.modifyVectorForCollision(this.vector, s, e)) : this.normalizeVector(this.vector)
     }
     howDoIGetToMyTarget(e, t) {
-      if (this.distanceToTarget = this.fastDistance(e.x, e.y, t.x, t.y), this.closeBuilding = this.findBuilding(e), this.insideBuilding = 0, this.closeBuilding && (this.insideBuilding = this.isInsidePoi(e.x, e.y, this.closeBuilding, 0), this.insideBuilding)) return this.isInsidePoi(t.x, t.y, this.closeBuilding, 0) ? this.modifyVectorForCollision({
+      if (this.distanceToTarget = this.fastDistance(e.x, e.y, t.x, t.y), this.closeBuilding = this.findBuilding(e), this.insideBuilding = !1, this.closeBuilding && (this.insideBuilding = this.isInsidePoi(e.x, e.y, this.closeBuilding, 0), this.insideBuilding)) return this.isInsidePoi(t.x, t.y, this.closeBuilding, 0) ? this.modifyVectorForCollision({
         x: t.x - e.x,
         y: t.y - e.y
       }, this.closeBuilding, e) : this.modifyVectorForCollision({
@@ -906,14 +881,14 @@ var Incremancer;
       }, this.closeBuilding, e) : this.navigateAroundBuilding(e, t, this.closeBuilding, this.distanceToTarget)
     }
     isValidTreePosition(e) {
-      if (!this.isValidPosition(e)) return 0;
+      if (!this.isValidPosition(e)) return !1;
       for (let t = 0; t < this.treeSprites.length; t++)
-        if (this.fastDistance(e.x, e.y, this.treeSprites[t].x, this.treeSprites[t].y) < 25) return 0;
-      return 1
+        if (this.fastDistance(e.x, e.y, this.treeSprites[t].x, this.treeSprites[t].y) < 25) return !1;
+      return !0
     }
     populateTrees() {
       if (this.treeSprites.length > 0)
-        for (let e = 0; e < this.treeSprites.length; e++) this.treeSprites[e].visible = 0;
+        for (let e = 0; e < this.treeSprites.length; e++) this.treeSprites[e].visible = !1;
       if (0 == this.treeTextures.length) {
         for (let e = 0; e < 6; e++) this.treeTextures.push(PIXI.Texture.from("tree" + e + ".png"));
         this.armyTextures.push(PIXI.Texture.from("hedgehog.png")), this.armyTextures.push(PIXI.Texture.from("sandbags.png"))
@@ -922,7 +897,7 @@ var Incremancer;
       this.gameModel.isBossStage(this.gameModel.level) && (e = Math.round(1.5 * e));
       let t = 0;
       for (; e > 0;) {
-        let s, i = 0,
+        let s, i = !1,
           r = 1e3;
         const n = 8,
           o = 2;
@@ -936,7 +911,7 @@ var Incremancer;
           let e = .4 + .6 * Math.random();
           this.gameModel.constructions.graveyard && (e = Math.min((this.fastDistance(s.x, s.y, this.graveYardLocation.x, this.graveYardLocation.y) - 90) / 400, 1));
           let i, r = this.treeTextures[this.treeTextures.length - 1 - Math.round((this.treeTextures.length - 1) * e)];
-          this.gameModel.isBossStage(this.gameModel.level) && Math.random() > .7 && (r = getRandomElementFromArray(this.armyTextures, Math.random())), this.treeSprites.length > t ? (i = this.treeSprites[t], i.texture = r, i.visible = 1) : (i = new PIXI.Sprite(r), this.treeSprites.push(i), g.addChild(i)), t++, i.anchor.set(.5, 1), i.x = s.x, i.y = s.y, i.zIndex = i.y, i.scale.x = i.scale.y = 2, i.scale.x = Math.random() > .5 ? i.scale.x : -1 * i.scale.x
+          this.gameModel.isBossStage(this.gameModel.level) && Math.random() > .7 && (r = getRandomElementFromArray(this.armyTextures, Math.random())), this.treeSprites.length > t ? (i = this.treeSprites[t], i.texture = r, i.visible = !0) : (i = new PIXI.Sprite(r), this.treeSprites.push(i), g.addChild(i)), t++, i.anchor.set(.5, 1), i.x = s.x, i.y = s.y, i.zIndex = i.y, i.scale.x = i.scale.y = 2, i.scale.x = Math.random() > .5 ? i.scale.x : -1 * i.scale.x
         }
         e--
       }
@@ -944,16 +919,16 @@ var Incremancer;
   }
   class te {
     constructor() {
-      this.x = 0, this.y = 0, this.validX = 0, this.validY = 0
+      this.x = !1, this.y = !1, this.validX = 0, this.validY = 0
     }
   }
-  class PartFactory {
+  class se {
     constructor() {
-      if (this.storm = 0, this.gameModel = ne.getInstance(), this.costs = {
+      if (this.storm = !1, this.gameModel = ne.getInstance(), this.costs = {
           blood: "blood",
           parts: "parts"
-        }, this.generatorsApplied = [], this.generators = [new ie(1, "Simple Machine", this.costs.blood, 1e6, 1.08, 1, 2, "A simple device that produces 1 part every 2 seconds"), new ie(2, "Part Duplicator", this.costs.parts, 100, 1.09, 4, 3, "A more advanced device that produces 4 parts every 3 seconds"), new ie(3, "Stamp Press", this.costs.parts, 1e3, 1.1, 16, 5, "An industrial press that produces 16 parts every 5 seconds"), new ie(4, "Conveyor", this.costs.parts, 1e4, 1.11, 64, 8, "A fantastic new invention that produces 64 parts every 8 seconds"), new ie(5, "Splitter Combiner", this.costs.parts, 1e5, 1.12, 192, 10, "A wondrous machine that produces 192 parts every 10 seconds"), new ie(6, "Batch Converter", this.costs.parts, 5e5, 1.13, 512, 12, "An astounding contraption that produces 512 parts every 12 seconds")], PartFactory.instance) return PartFactory.instance;
-      PartFactory.instance = this
+        }, this.generatorsApplied = [], this.generators = [new ie(1, "Simple Machine", this.costs.blood, 1e6, 1.08, 1, 2, "A simple device that produces 1 part every 2 seconds"), new ie(2, "Part Duplicator", this.costs.parts, 100, 1.09, 4, 3, "A more advanced device that produces 4 parts every 3 seconds"), new ie(3, "Stamp Press", this.costs.parts, 1e3, 1.1, 16, 5, "An industrial press that produces 16 parts every 5 seconds"), new ie(4, "Conveyor", this.costs.parts, 1e4, 1.11, 64, 8, "A fantastic new invention that produces 64 parts every 8 seconds"), new ie(5, "Splitter Combiner", this.costs.parts, 1e5, 1.12, 192, 10, "A wondrous machine that produces 192 parts every 10 seconds"), new ie(6, "Batch Converter", this.costs.parts, 5e5, 1.13, 512, 12, "An astounding contraption that produces 512 parts every 12 seconds")], se.instance) return se.instance;
+      se.instance = this
     }
     factoryStats() {
       let e = 0,
@@ -1004,14 +979,14 @@ var Incremancer;
         case this.costs.parts:
           return this.gameModel.persistentData.parts >= this.purchasePrice(e)
       }
-      return 0
+      return !1
     }
     purchaseMaxGenerators(e) {
       const t = this.upgradeMaxAffordable(e);
-      for (let s = 0; s < t; s++) this.purchaseGenerator(e, 0);
+      for (let s = 0; s < t; s++) this.purchaseGenerator(e, !1);
       this.gameModel.saveData()
     }
-    purchaseGenerator(e, t = 1) {
+    purchaseGenerator(e, t = !0) {
       if (this.canAffordGenerator(e)) {
         switch (e.costType) {
           case this.costs.blood:
@@ -1029,8 +1004,8 @@ var Incremancer;
       }
     }
     applyGenerator(e, t) {
-      let s = 0;
-      for (let i = 0; i < this.generatorsApplied.length; i++) this.generatorsApplied[i].id == e.id && (s = 1, this.generatorsApplied[i].rank = t, this.generatorsApplied[i].total = this.generatorsApplied[i].produces * this.generatorsApplied[i].rank);
+      let s = !1;
+      for (let i = 0; i < this.generatorsApplied.length; i++) this.generatorsApplied[i].id == e.id && (s = !0, this.generatorsApplied[i].rank = t, this.generatorsApplied[i].total = this.generatorsApplied[i].produces * this.generatorsApplied[i].rank);
       s || this.generatorsApplied.push({
         id: e.id,
         produces: e.produces,
@@ -1054,7 +1029,7 @@ var Incremancer;
   }
   class ae {
     constructor() {
-      if (this.gameModel = ne.getInstance(), this.spawnedSavedCreatures = 0, this.types = {
+      if (this.gameModel = ne.getInstance(), this.spawnedSavedCreatures = !1, this.types = {
           earthGolem: 1,
           airGolem: 2,
           fireGolem: 3,
@@ -1064,7 +1039,7 @@ var Incremancer;
     }
     update(e) {
       const t = (new Ue).creatureCount;
-      for (let s = 0; s < this.creatures.length; s++) this.creatures[s].building ? (this.creatures[s].timeLeft -= e, this.creatures[s].timeLeft < 0 && (this.spawnCreature(this.creatures[s]), this.creatures[s].building = 0)) : void 0 !== t[this.creatures[s].type] && t[this.creatures[s].type] < this.creatures[s].autobuild && this.startBuilding(this.creatures[s]), this.gameModel.persistentData.creatureLevels[this.creatures[s].id] && (this.creatures[s].level = this.gameModel.persistentData.creatureLevels[this.creatures[s].id])
+      for (let s = 0; s < this.creatures.length; s++) this.creatures[s].building ? (this.creatures[s].timeLeft -= e, this.creatures[s].timeLeft < 0 && (this.spawnCreature(this.creatures[s]), this.creatures[s].building = !1)) : void 0 !== t[this.creatures[s].type] && t[this.creatures[s].type] < this.creatures[s].autobuild && this.startBuilding(this.creatures[s]), this.gameModel.persistentData.creatureLevels[this.creatures[s].id] && (this.creatures[s].level = this.gameModel.persistentData.creatureLevels[this.creatures[s].id])
     }
     refundParts(e, t) {
       this.gameModel.persistentData.parts += e.price * t
@@ -1087,7 +1062,7 @@ var Incremancer;
       return e
     }
     startBuilding(e) {
-      e.building || this.canAffordCreature(e) && (this.creaturesBuildingCount() + this.gameModel.creatureCount >= this.gameModel.creatureLimit || (e.building = 1, e.timeLeft = e.time, this.gameModel.persistentData.parts -= this.purchasePrice(e)))
+      e.building || this.canAffordCreature(e) && (this.creaturesBuildingCount() + this.gameModel.creatureCount >= this.gameModel.creatureLimit || (e.building = !0, e.timeLeft = e.time, this.gameModel.persistentData.parts -= this.purchasePrice(e)))
     }
     creatureAutoBuildNumber(e, t) {
       e.autobuild + t >= 0 && (e.autobuild += t, this.gameModel.persistentData.creatureAutobuild[e.id] = e.autobuild)
@@ -1113,7 +1088,7 @@ var Incremancer;
               s = this.creatures.filter((t => t.type == e.t))[0];
             s.level = e.l, this.spawnCreature(s)
           }
-        this.spawnedSavedCreatures = 1
+        this.spawnedSavedCreatures = !0
       }
     }
     creatureStats(e) {
@@ -1135,24 +1110,24 @@ var Incremancer;
   }
   class re {
     constructor(e, t, s, i, a, r, n, o) {
-      this.id = e, this.type = t, this.name = s, this.baseHealth = i, this.baseDamage = a, this.speed = r, this.baseCost = n, this.description = o, this.time = 3, this.building = 0, this.timeLeft = 10, this.autobuild = 0, this.level = 1
+      this.id = e, this.type = t, this.name = s, this.baseHealth = i, this.baseDamage = a, this.speed = r, this.baseCost = n, this.description = o, this.time = 3, this.building = !1, this.timeLeft = 10, this.autobuild = 0, this.level = 1
     }
   }
   class ne {
     constructor() {
-      this.storageName = "ZombieData", this.kongregate = null, this.playFabId = null, this.titleId = "772D8", this.hidden = 0, this.autoShatter = 0, this.energy = 0, this.energyMax = 10, this.energyRate = 1, this.brainsRate = 0, this.bonesRate = 0, this.endLevelBones = 0, this.energySpellMultiplier = 1, this.prestigePointsEarned = 0, this.zombieCost = 10, this.bonesPCMod = 1, this.partsPCMod = 1, this.bloodMax = 1e3, this.bloodPCMod = 1, this.bloodStorePCMod = 1, this.brainsMax = 50, this.brainsPCMod = 1, this.brainsStorePCMod = 1, this.zombieHealth = 100, this.zombieHealthPCMod = 1, this.zombieDamage = 10, this.zombieDamagePCMod = 1, this.zombieSpeed = 10, this.zombieCages = 0, this.zombiesInCages = 0, this.golemDamagePCMod = 1, this.golemHealthPCMod = 1, this.plagueDamageMod = 0, this.plagueticks = 2, this.graveyardHealthMod = 1, this.burningSpeedMod = 1, this.startingResources = 0, this.blastHealing = 0, this.plagueDmgReduction = 0, this.brainRecoverChance = 0, this.riseFromTheDeadChance = 0, this.infectedBiteChance = 0, this.infectedBlastChance = 0, this.spitDistance = 0, this.spikeDelay = 5, this.startTimer = 0, this.fenceRadius = 50, this.constructions = {}, this.construction = 0, this.boneCollectorCapacity = 10, this.frameRate = 0, this.humanCount = 50, this.zombieCount = 0, this.creatureCount = 0, this.creatureLimit = 1, this.harpySpeed = 75, this.tankBuster = 0, this.harpyBombs = 1, this.stats = null, this.runicSyphon = {
+      this.storageName = "ZombieData", this.kongregate = null, this.playFabId = null, this.titleId = "772D8", this.hidden = !1, this.autoShatter = !1, this.energy = 0, this.energyMax = 10, this.energyRate = 1, this.brainsRate = 0, this.bonesRate = 0, this.endLevelBones = 0, this.energySpellMultiplier = 1, this.prestigePointsEarned = 0, this.zombieCost = 10, this.bonesPCMod = 1, this.partsPCMod = 1, this.bloodMax = 1e3, this.bloodPCMod = 1, this.bloodStorePCMod = 1, this.brainsMax = 50, this.brainsPCMod = 1, this.brainsStorePCMod = 1, this.zombieHealth = 100, this.zombieHealthPCMod = 1, this.zombieDamage = 10, this.zombieDamagePCMod = 1, this.zombieSpeed = 10, this.zombieCages = 0, this.zombiesInCages = 0, this.golemDamagePCMod = 1, this.golemHealthPCMod = 1, this.plagueDamageMod = 0, this.plagueticks = 2, this.graveyardHealthMod = 1, this.burningSpeedMod = 1, this.startingResources = 0, this.blastHealing = 0, this.plagueDmgReduction = 0, this.brainRecoverChance = 0, this.riseFromTheDeadChance = 0, this.infectedBiteChance = 0, this.infectedBlastChance = 0, this.spitDistance = 0, this.spikeDelay = 5, this.startTimer = 0, this.fenceRadius = 50, this.constructions = {}, this.construction = 0, this.boneCollectorCapacity = 10, this.frameRate = 0, this.humanCount = 50, this.zombieCount = 0, this.creatureCount = 0, this.creatureLimit = 1, this.harpySpeed = 75, this.tankBuster = !1, this.harpyBombs = 1, this.stats = null, this.runicSyphon = {
         percentage: 0,
         blood: 0,
         bones: 0,
         brains: 0
-      }, this.gigazombies = 0, this.endLevelTimer = 3, this.endLevelDelay = 3, this.messageQueue = [], this.offlineMessage = "", this.runeEffects = {
+      }, this.gigazombies = !1, this.endLevelTimer = 3, this.endLevelDelay = 3, this.messageQueue = [], this.offlineMessage = "", this.runeEffects = {
         attackSpeed: 1,
         critChance: 0,
         critDamage: 0,
         damageReduction: 1,
         healthRegen: 0,
         damageReflection: 0
-      }, this.encodedContent = "", this.savefilename = "", this.autoUpgrades = 0, this.autoconstruction = 0, this.autoconstructionUnlocked = 0, this.levelResourcesAdded = 0, this.bulletproofChance = 0, this.gameSpeed = 1, this.level = 1, this.currentState = "startGame", this.states = {
+      }, this.encodedContent = "", this.savefilename = "", this.autoUpgrades = !1, this.autoconstruction = !1, this.autoconstructionUnlocked = !1, this.levelResourcesAdded = !1, this.bulletproofChance = 0, this.gameSpeed = 1, this.level = 1, this.currentState = "startGame", this.states = {
         playingLevel: "playingLevel",
         levelCompleted: "levelCompleted",
         startGame: "startGame",
@@ -1176,7 +1151,7 @@ var Incremancer;
       }, this.zoom = zoom, this.centerGameContainer = centerGameContainer, this.lastSave = 0, this.lastPlayFabSave = Date.now() - 15e3, this.persistentData = {
         saveCreated: Date.now(),
         dateOfSave: Date.now(),
-        autoStart: 0,
+        autoStart: !1,
         levelUnlocked: 1,
         allTimeHighestLevel: 0,
         blood: 0,
@@ -1192,8 +1167,8 @@ var Incremancer;
         graveyardZombies: 1,
         harpies: 0,
         resolution: 1,
-        zoomButtons: 0,
-        particles: 1,
+        zoomButtons: !1,
+        particles: !0,
         generators: [],
         currentConstruction: null,
         creatureLevels: [],
@@ -1201,7 +1176,7 @@ var Incremancer;
         creatureAutobuild: [],
         savedCreatures: [],
         levelsCompleted: [],
-        showfps: 0,
+        showfps: !1,
         runeshatter: 0,
         runes: {
           life: {
@@ -1217,16 +1192,16 @@ var Incremancer;
         },
         trophies: [],
         vipEscaped: [],
-        autoRelease: 0,
+        autoRelease: !1,
         skeleton: null,
         skeletonTalents: []
       }
     }
     static getInstance() {
-      return ne.instance || (ne.instance = new ne, ne.instance.particles = new Qe, ne.instance.trophies = new de, ne.instance.bones = new tt, ne.instance.creatureFactory = new ae, ne.instance.creatures = new Ue, ne.instance.boneCollectors = new Ve, ne.instance.graveyard = new Oe, ne.instance.spells = new SpellManager, ne.instance.partFactory = new PartFactory, ne.instance.skeleton = new SkeletonManager, ne.instance.upgrades = new oe, ne.instance.zombies = new ZombieManager, ne.instance.humans = new Se, ne.instance.police = new ke, ne.instance.army = new Te), ne.instance
+      return ne.instance || (ne.instance = new ne, ne.instance.particles = new Qe, ne.instance.trophies = new de, ne.instance.bones = new tt, ne.instance.creatureFactory = new ae, ne.instance.creatures = new Ue, ne.instance.boneCollectors = new Ve, ne.instance.graveyard = new Oe, ne.instance.spells = new q, ne.instance.partFactory = new se, ne.instance.skeleton = new Xe, ne.instance.upgrades = new oe, ne.instance.zombies = new Ae, ne.instance.humans = new Se, ne.instance.police = new ke, ne.instance.army = new Te), ne.instance
     }
     resetToBaseStats() {
-      this.energyRate = this.baseStats.energyRate, this.brainsRate = this.baseStats.brainsRate, this.bonesRate = this.baseStats.bonesRate, this.energyMax = this.baseStats.energyMax, this.bloodMax = this.baseStats.bloodMax, this.brainsMax = this.baseStats.brainsMax, this.zombieHealth = this.baseStats.zombieHealth, this.zombieDamage = this.baseStats.zombieDamage, this.zombieSpeed = this.baseStats.zombieSpeed, this.zombieCost = this.baseStats.zombieCost, this.zombieCages = 0, this.brainRecoverChance = 0, this.riseFromTheDeadChance = 0, this.infectedBiteChance = 0, this.infectedBlastChance = 0, this.construction = this.baseStats.construction, this.constructions = {}, this.boneCollectorCapacity = this.baseStats.boneCollectorCapacity, this.bonesPCMod = 1, this.partsPCMod = 1, this.bloodPCMod = 1, this.bloodStorePCMod = 1, this.brainsPCMod = 1, this.brainsStorePCMod = 1, this.zombieHealthPCMod = 1, this.zombieDamagePCMod = 1, this.golemHealthPCMod = 1, this.golemDamagePCMod = 1, this.plagueDamageMod = 0, this.plagueticks = 2, this.burningSpeedMod = 1, this.startingResources = 0, this.fenceRadius = 50, this.spitDistance = 0, this.spikeDelay = 5, this.blastHealing = 0, this.plagueDmgReduction = 1, this.creatureLimit = 1, this.runicSyphon.percentage = 0, this.autoconstructionUnlocked = 0, this.autoUpgrades = 0, this.graveyardHealthMod = 1, this.bulletproofChance = 0, this.gigazombies = 0, this.harpySpeed = 75, this.tankBuster = 0, this.harpyBombs = 1
+      this.energyRate = this.baseStats.energyRate, this.brainsRate = this.baseStats.brainsRate, this.bonesRate = this.baseStats.bonesRate, this.energyMax = this.baseStats.energyMax, this.bloodMax = this.baseStats.bloodMax, this.brainsMax = this.baseStats.brainsMax, this.zombieHealth = this.baseStats.zombieHealth, this.zombieDamage = this.baseStats.zombieDamage, this.zombieSpeed = this.baseStats.zombieSpeed, this.zombieCost = this.baseStats.zombieCost, this.zombieCages = 0, this.brainRecoverChance = 0, this.riseFromTheDeadChance = 0, this.infectedBiteChance = 0, this.infectedBlastChance = 0, this.construction = this.baseStats.construction, this.constructions = {}, this.boneCollectorCapacity = this.baseStats.boneCollectorCapacity, this.bonesPCMod = 1, this.partsPCMod = 1, this.bloodPCMod = 1, this.bloodStorePCMod = 1, this.brainsPCMod = 1, this.brainsStorePCMod = 1, this.zombieHealthPCMod = 1, this.zombieDamagePCMod = 1, this.golemHealthPCMod = 1, this.golemDamagePCMod = 1, this.plagueDamageMod = 0, this.plagueticks = 2, this.burningSpeedMod = 1, this.startingResources = 0, this.fenceRadius = 50, this.spitDistance = 0, this.spikeDelay = 5, this.blastHealing = 0, this.plagueDmgReduction = 1, this.creatureLimit = 1, this.runicSyphon.percentage = 0, this.autoconstructionUnlocked = !1, this.autoUpgrades = !1, this.graveyardHealthMod = 1, this.bulletproofChance = 0, this.gigazombies = !1, this.harpySpeed = 75, this.tankBuster = !1, this.harpyBombs = 1
     }
     addEnergy(e) {
       this.energy += e, this.energy > this.energyMax && (this.energy = this.energyMax)
@@ -1247,7 +1222,7 @@ var Incremancer;
       return this.energySpellMultiplier * this.energyRate - (this.persistentData.boneCollectors + this.persistentData.harpies)
     }
     update(e, t) {
-      this.spells.updateSpells(e), e *= this.gameSpeed, this.hidden && U(e, this.app), this.partFactory.update(e), this.autoRemoveCollectorsHarpies(), this.addEnergy(this.getEnergyRate() * e), this.currentState == this.states.playingLevel && (this.addBones(this.bonesRate * e), this.addBrains(this.brainsRate * e), this.upgrades.updateRunicSyphon(this.runicSyphon), this.lastSave + 3e4 < t && (this.saveData(), this.lastSave = t), this.lastPlayFabSave + 12e5 < t && this.saveToPlayFab(), this.getHumanCount() <= 0 && (this.endLevelTimer < 0 ? (this.isBossStage(this.level) && this.trophies.doesLevelHaveTrophy(this.level) && this.trophies.trophyAquired(this.level), this.prestigePointsEarned = this.prestigePointsForLevel(this.level), this.currentState = this.states.levelCompleted, this.levelResourcesAdded = 0, this.calculateEndLevelBones(), this.calculateEndLevelZombieCages(), this.persistentData.levelsCompleted.includes(this.level) || (this.addPrestigePoints(this.prestigePointsForLevel(this.level)), this.persistentData.levelsCompleted.push(this.level)), this.persistentData.levelUnlocked = this.level + 1, (!this.persistentData.allTimeHighestLevel || this.level > this.persistentData.allTimeHighestLevel) && (this.persistentData.allTimeHighestLevel = this.level, window.kongregate && window.kongregate.stats.submit("level", this.persistentData.allTimeHighestLevel)), this.startTimer = 2) : this.endLevelTimer -= e), this.upgrades.updateConstruction(e), this.upgrades.updateAutoUpgrades(), this.creatureFactory.update(e)), this.currentState == this.states.levelCompleted && (this.startTimer -= e, this.startTimer < 0 && this.persistentData.autoStart && this.nextLevel()), this.currentState == this.states.failed && (this.startTimer -= e, this.startTimer < 0 && this.persistentData.autoStart && this.startLevel(this.level - 1)), this.updateStats()
+      this.spells.updateSpells(e), e *= this.gameSpeed, this.hidden && U(e, this.app), this.partFactory.update(e), this.autoRemoveCollectorsHarpies(), this.addEnergy(this.getEnergyRate() * e), this.currentState == this.states.playingLevel && (this.addBones(this.bonesRate * e), this.addBrains(this.brainsRate * e), this.upgrades.updateRunicSyphon(this.runicSyphon), this.lastSave + 3e4 < t && (this.saveData(), this.lastSave = t), this.lastPlayFabSave + 12e5 < t && this.saveToPlayFab(), this.getHumanCount() <= 0 && (this.endLevelTimer < 0 ? (this.isBossStage(this.level) && this.trophies.doesLevelHaveTrophy(this.level) && this.trophies.trophyAquired(this.level), this.prestigePointsEarned = this.prestigePointsForLevel(this.level), this.currentState = this.states.levelCompleted, this.levelResourcesAdded = !1, this.calculateEndLevelBones(), this.calculateEndLevelZombieCages(), this.persistentData.levelsCompleted.includes(this.level) || (this.addPrestigePoints(this.prestigePointsForLevel(this.level)), this.persistentData.levelsCompleted.push(this.level)), this.persistentData.levelUnlocked = this.level + 1, (!this.persistentData.allTimeHighestLevel || this.level > this.persistentData.allTimeHighestLevel) && (this.persistentData.allTimeHighestLevel = this.level, window.kongregate && window.kongregate.stats.submit("level", this.persistentData.allTimeHighestLevel)), this.startTimer = 2) : this.endLevelTimer -= e), this.upgrades.updateConstruction(e), this.upgrades.updateAutoUpgrades(), this.creatureFactory.update(e)), this.currentState == this.states.levelCompleted && (this.startTimer -= e, this.startTimer < 0 && this.persistentData.autoStart && this.nextLevel()), this.currentState == this.states.failed && (this.startTimer -= e, this.startTimer < 0 && this.persistentData.autoStart && this.startLevel(this.level - 1)), this.updateStats()
     }
     calculateEndLevelBones() {
       this.endLevelBones = 0, this.persistentData.boneCollectors > 0 && this.bones.uncollected && (this.endLevelBones = this.bones.uncollected.map((e => e.value)).reduce(((e, t) => e + t), 0), this.addBones(this.endLevelBones))
@@ -1331,7 +1306,7 @@ var Incremancer;
       this.saveData()
     }
     addStartLevelResources() {
-      this.energy = this.energyMax, this.levelResourcesAdded || (this.persistentData.blood += 500 * this.startingResources, this.persistentData.blood > this.bloodMax && (this.persistentData.blood = this.bloodMax), this.persistentData.brains += 50 * this.startingResources, this.persistentData.brains > this.brainsMax && (this.persistentData.brains = this.brainsMax), this.persistentData.bones += 200 * this.startingResources, this.persistentData.bonesTotal += 200 * this.startingResources, this.levelResourcesAdded = 1)
+      this.energy = this.energyMax, this.levelResourcesAdded || (this.persistentData.blood += 500 * this.startingResources, this.persistentData.blood > this.bloodMax && (this.persistentData.blood = this.bloodMax), this.persistentData.brains += 50 * this.startingResources, this.persistentData.brains > this.brainsMax && (this.persistentData.brains = this.brainsMax), this.persistentData.bones += 200 * this.startingResources, this.persistentData.bonesTotal += 200 * this.startingResources, this.levelResourcesAdded = !0)
     }
     onReady() {
       this.upgrades.upgradeIdCheck()
@@ -1341,15 +1316,15 @@ var Incremancer;
     }
     prestige() {
       if (this.persistentData.prestigePointsEarned > 0) {
-        this.persistentData.levelUnlocked = 1, this.persistentData.blood = 0, this.persistentData.brains = 0, this.persistentData.bones = 0, this.persistentData.parts = 0, this.persistentData.generators = [], this.persistentData.bonesTotal = 0, this.persistentData.upgrades = this.persistentData.upgrades.filter((e => e.costType == this.upgrades.costs.prestigePoints)), this.persistentData.constructions = [], this.persistentData.boneCollectors = 0, this.persistentData.currentConstruction = 0, this.persistentData.harpies = 0, this.persistentData.graveyardZombies = 1, this.persistentData.prestigePointsToSpend += this.persistentData.prestigePointsEarned, this.persistentData.prestigePointsEarned = 0, this.persistentData.runes = null, this.persistentData.vipEscaped = [], this.persistentData.creatureLevels = [], this.persistentData.creatureAutobuild = [], this.persistentData.levelsCompleted = [], this.persistentData.runeshatter = 0, this.zombiesInCages = 0, this.autoconstruction = 0, this.levelResourcesAdded = 0, this.gigazombies = 0, this.runeEffects = {
+        this.persistentData.levelUnlocked = 1, this.persistentData.blood = 0, this.persistentData.brains = 0, this.persistentData.bones = 0, this.persistentData.parts = 0, this.persistentData.generators = [], this.persistentData.bonesTotal = 0, this.persistentData.upgrades = this.persistentData.upgrades.filter((e => e.costType == this.upgrades.costs.prestigePoints)), this.persistentData.constructions = [], this.persistentData.boneCollectors = 0, this.persistentData.currentConstruction = !1, this.persistentData.harpies = 0, this.persistentData.graveyardZombies = 1, this.persistentData.prestigePointsToSpend += this.persistentData.prestigePointsEarned, this.persistentData.prestigePointsEarned = 0, this.persistentData.runes = null, this.persistentData.vipEscaped = [], this.persistentData.creatureLevels = [], this.persistentData.creatureAutobuild = [], this.persistentData.levelsCompleted = [], this.persistentData.runeshatter = 0, this.zombiesInCages = 0, this.autoconstruction = !1, this.levelResourcesAdded = !1, this.gigazombies = !1, this.runeEffects = {
           attackSpeed: 1,
           critChance: 0,
           critDamage: 0,
           damageReduction: 1,
           healthRegen: 0,
           damageReflection: 0
-        }, this.boneCollectors.update(.1), this.partFactory.generatorsApplied = [], this.creatureFactory.updateAutoBuild(), this.creatureFactory.resetLevels(), this.level = 1, this.currentState = this.states.prestiged, this.skeleton.persistent.talentReset = 1, this.setupLevel(), this.saveData();
-        for (let e = 0; e < this.upgrades.upgrades.length; e++) this.upgrades.upgrades[e].auto = 0
+        }, this.boneCollectors.update(.1), this.partFactory.generatorsApplied = [], this.creatureFactory.updateAutoBuild(), this.creatureFactory.resetLevels(), this.level = 1, this.currentState = this.states.prestiged, this.skeleton.persistent.talentReset = !0, this.setupLevel(), this.saveData();
+        for (let e = 0; e < this.upgrades.upgrades.length; e++) this.upgrades.upgrades[e].auto = !1
       }
     }
     saveData() {
@@ -1369,7 +1344,7 @@ var Incremancer;
           xp: 0,
           items: [],
           currItemId: 0,
-          talentReset: 0
+          talentReset: !1
         }, null !== localStorage.getItem(this.skeleton.talentsStorageName) ? this.skeleton.talents = JSON.parse(localStorage.getItem(this.skeleton.talentsStorageName)) : this.skeleton.talents = [], this.updatePersistentData(), this.calcOfflineProgress())
       } catch (e) {
         console.log(e)
@@ -1384,13 +1359,13 @@ var Incremancer;
     }
     resetData() {
       try {
-        localStorage.removeItem(this.storageName), localStorage.removeItem(this.skeleton.storageName), localStorage.removeItem(this.skeleton.talentsStorageName), this.saveToPlayFab(1)
+        localStorage.removeItem(this.storageName), localStorage.removeItem(this.skeleton.storageName), localStorage.removeItem(this.skeleton.talentsStorageName), this.saveToPlayFab(!0)
       } catch (e) {
         console.log(e)
       }
     }
     updatePersistentData() {
-      this.persistentData.constructions || (this.persistentData.constructions = []), this.persistentData.generators || (this.persistentData.generators = []), this.persistentData.parts || (this.persistentData.parts = 0), this.persistentData.creatureLevels || (this.persistentData.creatureLevels = []), this.persistentData.creatureAutobuild || (this.persistentData.creatureAutobuild = []), this.persistentData.savedCreatures || (this.persistentData.savedCreatures = []), this.persistentData.levelsCompleted || (this.persistentData.levelsCompleted = []), this.persistentData.saveCreated || (this.persistentData.saveCreated = Date.now()), void 0 === this.persistentData.particles && (this.persistentData.particles = 1), this.persistentData.runeshatter || (this.persistentData.runeshatter = 0), this.creatureFactory.updateAutoBuild()
+      this.persistentData.constructions || (this.persistentData.constructions = []), this.persistentData.generators || (this.persistentData.generators = []), this.persistentData.parts || (this.persistentData.parts = 0), this.persistentData.creatureLevels || (this.persistentData.creatureLevels = []), this.persistentData.creatureAutobuild || (this.persistentData.creatureAutobuild = []), this.persistentData.savedCreatures || (this.persistentData.savedCreatures = []), this.persistentData.levelsCompleted || (this.persistentData.levelsCompleted = []), this.persistentData.saveCreated || (this.persistentData.saveCreated = Date.now()), void 0 === this.persistentData.particles && (this.persistentData.particles = !0), this.persistentData.runeshatter || (this.persistentData.runeshatter = 0), this.creatureFactory.updateAutoBuild()
     }
     sendMessage(e) {
       this.messageQueue.includes(e) || this.messageQueue.push(e)
@@ -1413,7 +1388,7 @@ var Incremancer;
           i = ne.getInstance();
         s.onload = function(e) {
           const t = JSON.parse(LZString.decompressFromEncodedURIComponent(e.target.result));
-          t.dateOfSave ? (t.skeleton && (i.skeleton.persistent = t.skeleton, delete t.skeleton), t.skeletonTalents ? (i.skeleton.talents = t.skeletonTalents, delete t.skeletonTalents) : i.skeleton.talents = [], i.persistentData = t, i.updatePersistentData(), i.saveToPlayFab(), i.level = i.persistentData.levelUnlocked, i.creatureFactory.spawnedSavedCreatures = 0, i.setupLevel()) : alert("Error loading save game")
+          t.dateOfSave ? (t.skeleton && (i.skeleton.persistent = t.skeleton, delete t.skeleton), t.skeletonTalents ? (i.skeleton.talents = t.skeletonTalents, delete t.skeletonTalents) : i.skeleton.talents = [], i.persistentData = t, i.updatePersistentData(), i.saveToPlayFab(), i.level = i.persistentData.levelUnlocked, i.creatureFactory.spawnedSavedCreatures = !1, i.setupLevel()) : alert("Error loading save game")
         }, s.readAsText(t)
       }
     }
@@ -1453,7 +1428,7 @@ var Incremancer;
             TitleId: PlayFab.settings.titleId,
             AuthTicket: window.kongregate.services.getGameAuthToken(),
             KongregateId: window.kongregate.services.getUserId(),
-            CreateAccount: 1
+            CreateAccount: !0
           },
           t = this;
         PlayFabClientSDK.LoginWithKongregate(e, (function(e) {
@@ -1465,7 +1440,7 @@ var Incremancer;
         console.error(e)
       }
     }
-    saveToPlayFab(e = 0) {
+    saveToPlayFab(e = !1) {
       if (this.lastPlayFabSave = Date.now(), this.playFabId) {
         const t = this.persistentData.trophies;
         delete this.persistentData.trophies;
@@ -1492,7 +1467,7 @@ var Incremancer;
         }
       } else e && (this.resetToBaseStats(), this.setupLevel(), window.location.reload())
     }
-    loadFromPlayFab(e = 0) {
+    loadFromPlayFab(e = !1) {
       if (this.playFabId) {
         const t = {
           TitleId: this.titleId,
@@ -1520,7 +1495,7 @@ var Incremancer;
   }
   class oe {
     constructor() {
-      if (this.gameModel = ne.getInstance(), this.spells = new SpellManager, this.skeleton = new SkeletonManager, this.partFactory = new PartFactory, this.types = {
+      if (this.gameModel = ne.getInstance(), this.spells = new q, this.skeleton = new Xe, this.partFactory = new se, this.types = {
           energyRate: "energyRate",
           energyCap: "energyCap",
           damage: "damage",
@@ -1584,7 +1559,7 @@ var Incremancer;
           cost: "blood",
           logBase: 1.1,
           adjustment: -70,
-          subtract: 0,
+          subtract: !1,
           cap: 0
         }, {
           rune: "death",
@@ -1606,7 +1581,7 @@ var Incremancer;
           cost: "blood",
           logBase: 1.5,
           adjustment: -15,
-          subtract: 1,
+          subtract: !0,
           cap: .8
         }, {
           rune: "life",
@@ -1795,7 +1770,7 @@ var Incremancer;
         case this.types.harpySpeed:
           return void(this.gameModel.harpySpeed += e.effect * t);
         case this.types.tankBuster:
-          return void(this.gameModel.tankBuster = 1);
+          return void(this.gameModel.tankBuster = !0);
         case this.types.harpyBombs:
           return void(this.gameModel.harpyBombs += e.effect * t);
         case this.types.spikeDelay:
@@ -1825,9 +1800,9 @@ var Incremancer;
         case this.types.energyCost:
           return void(this.gameModel.zombieCost -= e.effect * t);
         case this.types.autoconstruction:
-          return void(this.gameModel.autoconstructionUnlocked = 1);
+          return void(this.gameModel.autoconstructionUnlocked = !0);
         case this.types.autoshop:
-          return void(this.gameModel.autoUpgrades = 1);
+          return void(this.gameModel.autoUpgrades = !0);
         case this.types.graveyardHealth:
           return void(this.gameModel.graveyardHealthMod *= Math.pow(1 + e.effect, t));
         case this.types.talentPoint:
@@ -1872,9 +1847,9 @@ var Incremancer;
         case this.constructionTypes.zombieCage:
           return void(this.gameModel.zombieCages += e.effect * e.rank);
         case this.constructionTypes.partFactory:
-          return this.gameModel.constructions.partFactory = 1, void(this.gameModel.constructions.factory = 1);
+          return this.gameModel.constructions.partFactory = !0, void(this.gameModel.constructions.factory = !0);
         case this.constructionTypes.monsterFactory:
-          return this.gameModel.constructions.monsterFactory = 1, void(this.gameModel.constructions.factory = 1)
+          return this.gameModel.constructions.monsterFactory = !0, void(this.gameModel.constructions.factory = !0)
       }
     }
     displayStatValue(e) {
@@ -2004,7 +1979,7 @@ var Incremancer;
       return getCostForUpgrades(e.basePrice, e.multiplier, this.currentRank(e), t)
     }
     canAffordUpgrade(e) {
-      if (e.cap > 0 && this.currentRank(e) >= e.cap) return e.auto = 0, 0;
+      if (e.cap > 0 && this.currentRank(e) >= e.cap) return e.auto = !1, !1;
       switch (e.costType) {
         case this.costs.energy:
           return this.gameModel.energy >= this.upgradePrice(e);
@@ -2019,7 +1994,7 @@ var Incremancer;
         case this.costs.prestigePoints:
           return this.gameModel.persistentData.prestigePointsToSpend >= this.upgradePrice(e)
       }
-      return 0
+      return !1
     }
     constructionLeadsTo(e) {
       let t = this.constructionUpgrades.filter((t => t.requires == e.id)).map((e => e.name)).join(", ");
@@ -2027,12 +2002,12 @@ var Incremancer;
     }
     purchaseMaxUpgrades(e) {
       const t = this.upgradeMaxAffordable(e);
-      for (let s = 0; s < t; s++) this.purchaseUpgrade(e, 0);
+      for (let s = 0; s < t; s++) this.purchaseUpgrade(e, !1);
       this.gameModel.saveData()
     }
-    purchaseUpgrade(e, t = 1) {
+    purchaseUpgrade(e, t = !0) {
       if (this.canAffordUpgrade(e)) {
-        let s, i = 0;
+        let s, i = !1;
         switch (e.costType) {
           case this.costs.energy:
             this.gameModel.energy -= this.upgradePrice(e);
@@ -2047,14 +2022,14 @@ var Incremancer;
             this.gameModel.persistentData.bones -= this.upgradePrice(e);
             break;
           case this.costs.prestigePoints:
-            i = 1, this.gameModel.persistentData.prestigePointsToSpend -= this.upgradePrice(e);
+            i = !0, this.gameModel.persistentData.prestigePointsToSpend -= this.upgradePrice(e);
             break;
           case this.costs.parts:
             this.gameModel.persistentData.parts -= this.upgradePrice(e)
         }
         for (let t = 0; t < this.gameModel.persistentData.upgrades.length; t++)
           if (e.id == this.gameModel.persistentData.upgrades[t].id) {
-            s = 1, this.gameModel.persistentData.upgrades[t] = {
+            s = !0, this.gameModel.persistentData.upgrades[t] = {
               id: e.id,
               rank: this.gameModel.persistentData.upgrades[t].rank + 1
             }, i && (this.gameModel.persistentData.upgrades[t].costType = this.costs.prestigePoints);
@@ -2083,8 +2058,8 @@ var Incremancer;
       this.applyUpgrades()
     }
     consumeResources(e) {
-      let t = 1;
-      return this.gameModel.persistentData.currentConstruction.shortfall = {}, e.energy && e.energy > this.gameModel.energy && (t = 0, this.gameModel.persistentData.currentConstruction.shortfall.energy = 1), e.blood && e.blood > this.gameModel.persistentData.blood && (t = 0, this.gameModel.persistentData.currentConstruction.shortfall.blood = 1), e.brains && e.brains > this.gameModel.persistentData.brains && (t = 0, this.gameModel.persistentData.currentConstruction.shortfall.brains = 1), e.bones && e.bones > this.gameModel.persistentData.bones && (t = 0, this.gameModel.persistentData.currentConstruction.shortfall.bones = 1), e.parts && e.parts > this.gameModel.persistentData.parts && (t = 0, this.gameModel.persistentData.currentConstruction.shortfall.parts = 1), !!t && (this.gameModel.persistentData.currentConstruction.shortfall = 0, e.energy && (this.gameModel.energy -= e.energy), e.blood && (this.gameModel.persistentData.blood -= e.blood), e.brains && (this.gameModel.persistentData.brains -= e.brains), e.bones && (this.gameModel.persistentData.bones -= e.bones), e.parts && (this.gameModel.persistentData.parts -= e.parts), 1)
+      let t = !0;
+      return this.gameModel.persistentData.currentConstruction.shortfall = {}, e.energy && e.energy > this.gameModel.energy && (t = !1, this.gameModel.persistentData.currentConstruction.shortfall.energy = !0), e.blood && e.blood > this.gameModel.persistentData.blood && (t = !1, this.gameModel.persistentData.currentConstruction.shortfall.blood = !0), e.brains && e.brains > this.gameModel.persistentData.brains && (t = !1, this.gameModel.persistentData.currentConstruction.shortfall.brains = !0), e.bones && e.bones > this.gameModel.persistentData.bones && (t = !1, this.gameModel.persistentData.currentConstruction.shortfall.bones = !0), e.parts && e.parts > this.gameModel.persistentData.parts && (t = !1, this.gameModel.persistentData.currentConstruction.shortfall.parts = !0), !!t && (this.gameModel.persistentData.currentConstruction.shortfall = !1, e.energy && (this.gameModel.energy -= e.energy), e.blood && (this.gameModel.persistentData.blood -= e.blood), e.brains && (this.gameModel.persistentData.brains -= e.brains), e.bones && (this.gameModel.persistentData.bones -= e.bones), e.parts && (this.gameModel.persistentData.parts -= e.parts), !0)
     }
     completeConstruction() {
       const e = this.constructionUpgrades.filter((e => e.id == this.gameModel.persistentData.currentConstruction.id))[0];
@@ -2096,13 +2071,13 @@ var Incremancer;
         rank: 1,
         type: e.type,
         effect: e.effect
-      }), this.gameModel.persistentData.currentConstruction = 0, this.gameModel.saveData(), this.applyUpgrades(), this.angularModel.updateConstructionUpgrades(), this.gameModel.sendMessage("Construction of " + e.name + " complete!"), e.completeMessage && this.gameModel.sendMessage(e.completeMessage)
+      }), this.gameModel.persistentData.currentConstruction = !1, this.gameModel.saveData(), this.applyUpgrades(), this.angularModel.updateConstructionUpgrades(), this.gameModel.sendMessage("Construction of " + e.name + " complete!"), e.completeMessage && this.gameModel.sendMessage(e.completeMessage)
     }
     updateAutoUpgrades() {
       if (this.gameModel.autoUpgrades) {
-        for (let e = 0; e < this.upgrades.length; e++) this.upgrades[e].auto && this.purchaseUpgrade(this.upgrades[e], 0);
+        for (let e = 0; e < this.upgrades.length; e++) this.upgrades[e].auto && this.purchaseUpgrade(this.upgrades[e], !1);
         if (this.gameModel.constructions.factory)
-          for (let e = 0; e < this.partFactory.generators.length; e++) this.partFactory.generators[e].auto && this.partFactory.purchaseGenerator(this.partFactory.generators[e], 0)
+          for (let e = 0; e < this.partFactory.generators.length; e++) this.partFactory.generators[e].auto && this.partFactory.purchaseGenerator(this.partFactory.generators[e], !1)
       }
       this.gameModel.autoShatter && this.doShatter()
     }
@@ -2111,7 +2086,7 @@ var Incremancer;
         if (this.gameModel.persistentData.currentConstruction) this.constructionTickTimer -= e, this.constructionTickTimer < 0 && (this.constructionTickTimer = 1, this.consumeResources(this.gameModel.persistentData.currentConstruction.costPerTick) ? (this.gameModel.persistentData.currentConstruction.state = this.constructionStates.building, this.gameModel.persistentData.currentConstruction.timeRemaining -= 1, this.gameModel.persistentData.currentConstruction.timeRemaining <= 0 && this.completeConstruction()) : this.gameModel.persistentData.currentConstruction.state = this.constructionStates.autoPaused);
         else if (this.gameModel.autoconstruction) {
         const e = this.getAvailableConstructions();
-        if (!e || 0 == e.length) return void(this.gameModel.autoconstruction = 0);
+        if (!e || 0 == e.length) return void(this.gameModel.autoconstruction = !1);
         let t = null,
           s = 0;
         for (let i = 0; i < e.length; i++) {
@@ -2144,7 +2119,7 @@ var Incremancer;
       this.gameModel.persistentData.currentConstruction && (this.gameModel.persistentData.currentConstruction.state == this.constructionStates.paused ? this.gameModel.persistentData.currentConstruction.state = this.constructionStates.building : this.gameModel.persistentData.currentConstruction.state = this.constructionStates.paused)
     }
     cancelConstruction() {
-      this.gameModel.persistentData.currentConstruction = 0
+      this.gameModel.persistentData.currentConstruction = !1
     }
     constructionAvailable(e) {
       return !(this.gameModel.persistentData.currentConstruction && this.gameModel.persistentData.currentConstruction.id == e.id || this.currentRankConstruction(e) >= e.cap || e.requires && 0 == this.gameModel.persistentData.constructions.filter((t => t.id == e.requires)).length)
@@ -2161,11 +2136,11 @@ var Incremancer;
     upgradeIdCheck() {
       const e = [];
       this.upgrades.forEach((function(t) {
-        e[t.id] && console.error("ID " + t.id + " already used"), e[t.id] = 1
+        e[t.id] && console.error("ID " + t.id + " already used"), e[t.id] = !0
       })), this.prestigeUpgrades.forEach((function(t) {
-        e[t.id] && console.error("ID " + t.id + " already used"), e[t.id] = 1
+        e[t.id] && console.error("ID " + t.id + " already used"), e[t.id] = !0
       })), this.constructionUpgrades.forEach((function(t) {
-        e[t.id] && console.error("ID " + t.id + " already used"), e[t.id] = 1
+        e[t.id] && console.error("ID " + t.id + " already used"), e[t.id] = !0
       }))
     }
     updateRunicSyphon(e) {
@@ -2237,48 +2212,48 @@ var Incremancer;
       if (this.gameModel = ne.getInstance(), this.upgrades = new oe, this.trophyStats = [{
           type: this.upgrades.types.health,
           value: 50,
-          percentage: 0
+          percentage: !1
         }, {
           type: this.upgrades.types.damage,
           value: 7,
-          percentage: 0
+          percentage: !1
         }, {
           type: this.upgrades.types.energyCap,
           value: 10,
-          percentage: 0
+          percentage: !1
         }, {
           type: this.upgrades.types.energyRate,
           value: .5,
-          percentage: 0
+          percentage: !1
         }, {
           type: this.upgrades.types.plagueTicks,
           value: 1,
-          percentage: 0,
-          static: 1
+          percentage: !1,
+          static: !0
         }, {
           type: this.upgrades.types.plagueDamage,
           value: 50,
-          percentage: 0
+          percentage: !1
         }, {
           type: this.upgrades.types.bloodCap,
           value: 5e3,
-          percentage: 0
+          percentage: !1
         }, {
           type: this.upgrades.types.brainsRate,
           value: 2,
-          percentage: 0
+          percentage: !1
         }, {
           type: this.upgrades.types.zombieHealthPC,
           value: .02,
-          percentage: 1
+          percentage: !0
         }, {
           type: this.upgrades.types.bonesRate,
           value: 2,
-          percentage: 0
+          percentage: !1
         }, {
           type: this.upgrades.types.zombieDmgPC,
           value: .02,
-          percentage: 1
+          percentage: !0
         }], de.instance) return de.instance;
       de.instance = this
     }
@@ -2322,7 +2297,7 @@ var Incremancer;
     getAquiredTrophyList() {
       this.gameModel.persistentData.trophies || (this.gameModel.persistentData.trophies = []);
       const e = [];
-      for (let t = 0; t < this.gameModel.persistentData.trophies.length; t++) e.push(this.createTrophy(this.gameModel.persistentData.trophies[t], 1, 0));
+      for (let t = 0; t < this.gameModel.persistentData.trophies.length; t++) e.push(this.createTrophy(this.gameModel.persistentData.trophies[t], !0, !1));
       return e
     }
   }
@@ -2342,26 +2317,26 @@ var Incremancer;
   }
   class xe extends K {
     constructor() {
-      super(...arguments), this.dog = 0, this.doctor = 0, this.tank = 0, this.vip = 0, this.torchBearer = 0
+      super(...arguments), this.dog = !1, this.doctor = !1, this.tank = !1, this.vip = !1, this.torchBearer = !1
     }
   }
   class ve extends Q {
     constructor() {
-      super(...arguments), this.maxSpeed = 0, this.flags = new xe, this.target = null, this.speedMod = 0, this.human = 1, this.plagueTicks = 0, this.plagueDamage = 0, this.visionDistance = 0, this.timer = new ye
+      super(...arguments), this.maxSpeed = 0, this.flags = new xe, this.target = null, this.speedMod = 0, this.human = !0, this.plagueTicks = 0, this.plagueDamage = 0, this.visionDistance = 0, this.timer = new ye
     }
   }
   class Se {
     constructor() {
-      if (this.maxWalkSpeed = 15, this.maxRunSpeed = 35, this.minSecondsTostand = 1, this.maxSecondsToStand = 60, this.chanceToStayInCurrentBuilding = .95, this.textures = [], this.doctorTextures = [], this.humans = [], this.discardedHumans = [], this.aliveHumans = [], this.graveyardAttackers = [], this.humansPerLevel = 50, this.maxHumans = 1e3, this.scaling = 2, this.visionDistance = 60, this.vipEscaping = 0, this.fleeChancePerZombie = .1, this.fleeTime = 10, this.scanTime = 3, this.attackDistance = 20, this.moveTargetDistance = 3, this.attackSpeed = 2, this.attackDamage = 5, this.fadeSpeed = .1, this.plagueTickTimer = 5, this.healTickTimer = 5, this.burnTickTimer = 5, this.smokeTimer = .3, this.fastDistance = fastDistance, this.frozen = 0, this.pandemic = 0, this.graveYardPosition = null, this.drawTargets = 0, Se.instance) return Se.instance;
+      if (this.maxWalkSpeed = 15, this.maxRunSpeed = 35, this.minSecondsTostand = 1, this.maxSecondsToStand = 60, this.chanceToStayInCurrentBuilding = .95, this.textures = [], this.doctorTextures = [], this.humans = [], this.discardedHumans = [], this.aliveHumans = [], this.graveyardAttackers = [], this.humansPerLevel = 50, this.maxHumans = 1e3, this.scaling = 2, this.visionDistance = 60, this.vipEscaping = !1, this.fleeChancePerZombie = .1, this.fleeTime = 10, this.scanTime = 3, this.attackDistance = 20, this.moveTargetDistance = 3, this.attackSpeed = 2, this.attackDamage = 5, this.fadeSpeed = .1, this.plagueTickTimer = 5, this.healTickTimer = 5, this.burnTickTimer = 5, this.smokeTimer = .3, this.fastDistance = fastDistance, this.frozen = !1, this.pandemic = !1, this.graveYardPosition = null, this.drawTargets = !1, Se.instance) return Se.instance;
       Se.instance = this
     }
     randomSecondsToStand() {
       return this.minSecondsTostand + Math.random() * (this.maxSecondsToStand - this.minSecondsTostand)
     }
     damageHuman(e, t) {
-      this.gameModel.addBlood(Math.round(t / 3)), e.health -= t, e.timer.scan = 0, e.flags.tank ? this.fragments.newPart(e.x, e.y - 18, 8086798) : (this.blood.newSplatter(e.x, e.y), e.speedMod = Math.max(Math.min(1, e.health / e.maxHealth), .25)), e.health <= 0 && !e.flags.dead && (this.bones.newBones(e.x, e.y), e.flags.dead = 1, this.gameModel.addBrains(1), this.skeleton.addXp(this.gameModel.level), this.skeleton.testForLoot(), e.flags.tank ? (this.blasts.newDroneBlast(e.x, e.y - 5), this.fragments.newFragmentExplosion(e.x, e.y - 5, 8086798), e.visible = 0) : e.textures = e.deadTexture, e.flags.vip && (this.vipText.visible = 0, this.trophies.trophyAquired(this.gameModel.level), setTimeout((() => {
-        this.vipEscaping = 0
-      }), 2e3))), this.army.assaultStarted || Math.random() > .9 && this.gameModel.isBossStage(this.gameModel.level) && (this.army.assaultStarted = 1, this.gameModel.sendMessage("The assault has begun!"))
+      this.gameModel.addBlood(Math.round(t / 3)), e.health -= t, e.timer.scan = 0, e.flags.tank ? this.fragments.newPart(e.x, e.y - 18, 8086798) : (this.blood.newSplatter(e.x, e.y), e.speedMod = Math.max(Math.min(1, e.health / e.maxHealth), .25)), e.health <= 0 && !e.flags.dead && (this.bones.newBones(e.x, e.y), e.flags.dead = !0, this.gameModel.addBrains(1), this.skeleton.addXp(this.gameModel.level), this.skeleton.testForLoot(), e.flags.tank ? (this.blasts.newDroneBlast(e.x, e.y - 5), this.fragments.newFragmentExplosion(e.x, e.y - 5, 8086798), e.visible = !1) : e.textures = e.deadTexture, e.flags.vip && (this.vipText.visible = !1, this.trophies.trophyAquired(this.gameModel.level), setTimeout((() => {
+        this.vipEscaping = !1
+      }), 2e3))), this.army.assaultStarted || Math.random() > .9 && this.gameModel.isBossStage(this.gameModel.level) && (this.army.assaultStarted = !0, this.gameModel.sendMessage("The assault has begun!"))
     }
     updateBurns(e, t) {
       e.timer.burnTick -= t, e.timer.smoke -= t, e.timer.smoke < 0 && (this.smoke.newFireSmoke(e.x, e.y - 14), e.timer.smoke = this.smokeTimer), e.timer.burnTick < 0 && (this.damageHuman(e, e.burnDamage), e.timer.burnTick = this.burnTickTimer, this.exclamations.newFire(e))
@@ -2395,10 +2370,10 @@ var Incremancer;
         stroke: "#000",
         strokeThickness: 5,
         align: "center"
-      }), this.vipText.anchor.set(.5, 1), this.vipText.scale.x = .25, this.vipText.scale.y = .25, b.addChild(this.vipText)), this.vipText.visible = 1, this.vipText.human = e, this.vipText.yOffset = -20, this.vipText.x = e.x, this.vipText.y = e.y + this.vipText.yOffset
+      }), this.vipText.anchor.set(.5, 1), this.vipText.scale.x = .25, this.vipText.scale.y = .25, b.addChild(this.vipText)), this.vipText.visible = !0, this.vipText.human = e, this.vipText.yOffset = -20, this.vipText.x = e.x, this.vipText.y = e.y + this.vipText.yOffset
     }
     populate() {
-      if (this.map = new ee, this.zombies = new ZombieManager, this.gameModel = ne.getInstance(), this.blood = new _e, this.smoke = new ot, this.bones = new tt, this.skeleton = new SkeletonManager, this.blasts = new nt, this.fragments = new lt, this.trophies = new de, this.exclamations = new it, this.bullets = new rt, this.police = new ke, this.army = new Te, this.tanks = new De, this.map.populatePois(), 0 == this.textures.length)
+      if (this.map = new ee, this.zombies = new Ae, this.gameModel = ne.getInstance(), this.blood = new _e, this.smoke = new ot, this.bones = new tt, this.skeleton = new Xe, this.blasts = new nt, this.fragments = new lt, this.trophies = new de, this.exclamations = new it, this.bullets = new rt, this.police = new ke, this.army = new Te, this.tanks = new De, this.map.populatePois(), 0 == this.textures.length)
         for (let e = 0; e < 6; e++) {
           const t = [];
           for (let s = 0; s < 3; s++) t.push(PIXI.Texture.from("human" + (e + 1) + "_" + (s + 1) + ".png"));
@@ -2423,16 +2398,16 @@ var Incremancer;
       this.vip = void 0, i ? this.escapeTarget = {
         x: gameFieldSize.x / 2,
         y: gameFieldSize.y + 50
-      } : this.vipText && (this.vipText.visible = 0);
+      } : this.vipText && (this.vipText.visible = !1);
       for (let a = 0; a < e; a++) {
         let e;
-        if (t > 0) this.discardedHumans.length > 0 ? (e = this.discardedHumans.pop(), e.textures = this.doctorTextures) : e = new ve(this.doctorTextures), e.deadTexture = this.doctorDeadTexture, e.flags.doctor = 1, e.flags.torchBearer = 0, e.timer.healTick = Math.random() * this.healTickTimer, t--;
+        if (t > 0) this.discardedHumans.length > 0 ? (e = this.discardedHumans.pop(), e.textures = this.doctorTextures) : e = new ve(this.doctorTextures), e.deadTexture = this.doctorDeadTexture, e.flags.doctor = !0, e.flags.torchBearer = !1, e.timer.healTick = Math.random() * this.healTickTimer, t--;
         else {
           const t = Math.random() < this.getTorchChance(),
             s = Math.floor(3 * Math.random()) + (t ? 3 : 0);
-          this.discardedHumans.length > 0 ? (e = this.discardedHumans.pop(), e.textures = this.textures[s].animated) : e = new ve(this.textures[s].animated), e.flags.torchBearer = t, e.deadTexture = this.textures[s].dead, e.flags.doctor = 0
+          this.discardedHumans.length > 0 ? (e = this.discardedHumans.pop(), e.textures = this.textures[s].animated) : e = new ve(this.textures[s].animated), e.flags.torchBearer = t, e.deadTexture = this.textures[s].dead, e.flags.doctor = !1
         }
-        e.reset(), e.flags.vip = 0, e.flags.dead = 0, e.flags.burning = 0, e.flags.infected = 0, e.burnDamage = 0, e.plagueDamage = 0, e.plagueTicks = 0, e.animationSpeed = .15, e.anchor.set(35 / 80, 1), e.currentPoi = this.map.getRandomBuilding(), e.position.copyFrom(this.map.randomPositionInBuilding(e.currentPoi)), e.zIndex = e.position.y, e.xSpeed = 0, e.ySpeed = 0, e.timer.plagueTick = Math.random() * this.plagueTickTimer, e.target = 0, e.speedMod = 1, e.zombieTarget = null, e.lastKnownBuilding = null, e.visionDistance = this.visionDistance, e.visible = 1, e.alpha = 1, e.maxHealth = e.health = s, i && !e.flags.doctor && (e.flags.vip = 1, this.vip = e, i = 0, e.maxHealth = e.health = 2 * s, this.setupVipText(e)), e.timer.scan = Math.random() * this.scanTime, e.timer.flee = 0, this.changeState(e, ce.standing), e.timer.standing = Math.random() * this.randomSecondsToStand(), e.timer.attack = this.attackSpeed, e.scale.set(Math.random() > .5 ? this.scaling : -1 * this.scaling, this.scaling), this.humans.push(e), g.addChild(e)
+        e.reset(), e.flags.vip = !1, e.flags.dead = !1, e.flags.burning = !1, e.flags.infected = !1, e.burnDamage = 0, e.plagueDamage = 0, e.plagueTicks = 0, e.animationSpeed = .15, e.anchor.set(35 / 80, 1), e.currentPoi = this.map.getRandomBuilding(), e.position.copyFrom(this.map.randomPositionInBuilding(e.currentPoi)), e.zIndex = e.position.y, e.xSpeed = 0, e.ySpeed = 0, e.timer.plagueTick = Math.random() * this.plagueTickTimer, e.target = !1, e.speedMod = 1, e.zombieTarget = null, e.lastKnownBuilding = null, e.visionDistance = this.visionDistance, e.visible = !0, e.alpha = 1, e.maxHealth = e.health = s, i && !e.flags.doctor && (e.flags.vip = !0, this.vip = e, i = !1, e.maxHealth = e.health = 2 * s, this.setupVipText(e)), e.timer.scan = Math.random() * this.scanTime, e.timer.flee = 0, this.changeState(e, ce.standing), e.timer.standing = Math.random() * this.randomSecondsToStand(), e.timer.attack = this.attackSpeed, e.scale.set(Math.random() > .5 ? this.scaling : -1 * this.scaling, this.scaling), this.humans.push(e), g.addChild(e)
       }
     }
     updateHumanSpeed(e, t) {
@@ -2452,8 +2427,8 @@ var Incremancer;
     }
     updateDeadHumanFading(e, t) {
       if (e.visible) {
-        if (e.alpha > .5 && e.alpha - this.fadeSpeed * t <= .5 && !e.flags.tank && Math.random() < this.gameModel.riseFromTheDeadChance) return this.zombies.createZombie(e.x, e.y, e.flags.dog), e.visible = 0, void g.removeChild(e);
-        e.alpha -= this.fadeSpeed * t, e.alpha < 0 && (e.visible = 0, g.removeChild(e))
+        if (e.alpha > .5 && e.alpha - this.fadeSpeed * t <= .5 && !e.flags.tank && Math.random() < this.gameModel.riseFromTheDeadChance) return this.zombies.createZombie(e.x, e.y, e.flags.dog), e.visible = !1, void g.removeChild(e);
+        e.alpha -= this.fadeSpeed * t, e.alpha < 0 && (e.visible = !1, g.removeChild(e))
       }
     }
     changeState(e, t) {
@@ -2468,7 +2443,7 @@ var Incremancer;
           e.play(), e.timer.flee = this.fleeTime, e.maxSpeed = this.maxRunSpeed, this.assignRandomTarget(e), this.exclamations.newExclamation(e);
           break;
         case ce.escaping:
-          e.play(), e.maxSpeed = this.maxRunSpeed, e.target = this.escapeTarget, this.exclamations.newExclamation(e), this.gameModel.sendMessage("The VIP is escaping!"), this.vipEscaping = 1;
+          e.play(), e.maxSpeed = this.maxRunSpeed, e.target = this.escapeTarget, this.exclamations.newExclamation(e), this.gameModel.sendMessage("The VIP is escaping!"), this.vipEscaping = !0;
           break;
         case ce.attacking:
           e.play(), e.maxSpeed = this.maxRunSpeed
@@ -2476,16 +2451,16 @@ var Incremancer;
       e.state = t
     }
     inflictBurn(e, t) {
-      e.flags.torchBearer && (t.flags.burning ? t.burnDamage += this.attackDamage : (this.exclamations.newFire(t), t.burnDamage = this.attackDamage), t.flags.burning = 1)
+      e.flags.torchBearer && (t.flags.burning ? t.burnDamage += this.attackDamage : (this.exclamations.newFire(t), t.burnDamage = this.attackDamage), t.flags.burning = !0)
     }
     burnHuman(e, t) {
-      e && (e.flags.burning ? e.burnDamage += t : (e.timer.burnTick = this.burnTickTimer, e.timer.smoke = this.smokeTimer, this.exclamations.newFire(e), e.burnDamage = t), e.flags.burning = 1)
+      e && (e.flags.burning ? e.burnDamage += t : (e.timer.burnTick = this.burnTickTimer, e.timer.smoke = this.smokeTimer, this.exclamations.newFire(e), e.burnDamage = t), e.flags.burning = !0)
     }
     updatePlague(e, t) {
-      e.timer.plagueTick -= t, e.timer.plagueTick < 0 && (this.damageHuman(e, e.plagueDamage), e.timer.plagueTick = this.plagueTickTimer * (1 / this.gameModel.runeEffects.attackSpeed), this.exclamations.newPoison(e), e.plagueTicks--, this.pandemic && this.pandemicBullet(e), e.plagueTicks <= 0 && (e.flags.infected = 0, e.plagueDamage = 0))
+      e.timer.plagueTick -= t, e.timer.plagueTick < 0 && (this.damageHuman(e, e.plagueDamage), e.timer.plagueTick = this.plagueTickTimer * (1 / this.gameModel.runeEffects.attackSpeed), this.exclamations.newPoison(e), e.plagueTicks--, this.pandemic && this.pandemicBullet(e), e.plagueTicks <= 0 && (e.flags.infected = !1, e.plagueDamage = 0))
     }
     pandemicBullet(e) {
-      for (let t = 0; t < this.aliveHumans.length; t++) Math.abs(this.aliveHumans[t].x - e.x) < 30 && Math.abs(this.aliveHumans[t].y - e.y) < 30 && Math.random() < .3 && this.bullets.newBullet(e, this.aliveHumans[t], this.gameModel.zombieDamage / 2, 1)
+      for (let t = 0; t < this.aliveHumans.length; t++) Math.abs(this.aliveHumans[t].x - e.x) < 30 && Math.abs(this.aliveHumans[t].y - e.y) < 30 && Math.random() < .3 && this.bullets.newBullet(e, this.aliveHumans[t], this.gameModel.zombieDamage / 2, !0)
     }
     healHuman(e) {
       e.health < e.maxHealth && (e.flags.infected && e.plagueTicks > 0 && e.plagueTicks--, e.health += 2 * this.attackDamage, e.health > e.maxHealth && (e.health = e.maxHealth, e.speedMod = Math.max(Math.min(1, e.health / e.maxHealth), .25)), this.exclamations.newHealing(e))
@@ -2512,8 +2487,8 @@ var Incremancer;
           this.fastDistance(e.position.x, e.position.y, e.target.x, e.target.y) < this.moveTargetDistance ? (e.target = void 0, e.zombieTarget = void 0, this.changeState(e, ce.standing)) : this.updateHumanSpeed(e, t);
           break;
         case ce.escaping:
-          this.fastDistance(e.position.x, e.position.y, e.target.x, e.target.y) < this.moveTargetDistance ? (this.smoke.newDroneCloud(e.x, e.y), e.flags.dead = 1, e.zombieTarget = void 0, e.visible = 0, this.vipText.visible = 0, this.gameModel.sendMessage("The VIP has escaped!"), this.gameModel.vipEscaped(), setTimeout((() => {
-            this.vipEscaping = 0
+          this.fastDistance(e.position.x, e.position.y, e.target.x, e.target.y) < this.moveTargetDistance ? (this.smoke.newDroneCloud(e.x, e.y), e.flags.dead = !0, e.zombieTarget = void 0, e.visible = !1, this.vipText.visible = !1, this.gameModel.sendMessage("The VIP has escaped!"), this.gameModel.vipEscaped(), setTimeout((() => {
+            this.vipEscaping = !1
           }), 2e3)) : this.updateHumanSpeed(e, t);
           break;
         case ce.attacking:
@@ -2554,7 +2529,7 @@ var Incremancer;
       this.attackDamage = Math.round(this.getMaxHealth() / 10)
     }
     populate() {
-      if (this.map = new ee, this.gameModel = ne.getInstance(), this.humans = new Se, this.exclamations = new it, this.zombies = new ZombieManager, this.bullets = new rt, 0 == this.walkTexture.length) {
+      if (this.map = new ee, this.gameModel = ne.getInstance(), this.humans = new Se, this.exclamations = new it, this.zombies = new Ae, this.bullets = new rt, 0 == this.walkTexture.length) {
         for (let e = 0; e < 3; e++) this.walkTexture.push(PIXI.Texture.from("cop" + (e + 1) + ".png"));
         this.deadTexture = [PIXI.Texture.from("cop4.png")];
         for (let e = 0; e < 2; e++) this.dogTexture.push(PIXI.Texture.from("dog" + (e + 1) + ".png"));
@@ -2570,13 +2545,13 @@ var Incremancer;
       this.getAttackDamage();
       for (let i = 0; i < e; i++) {
         let e;
-        this.discardedPolice.length > 0 ? (e = this.discardedPolice.pop(), e.alpha = 1, e.textures = this.walkTexture) : e = new Me(this.walkTexture), e.reset(), e.flags.dog = 0, e.flags.dead = 0, e.flags.infected = 0, e.flags.burning = 0, e.burnDamage = 0, e.plagueDamage = 0, e.plagueTicks = 0, e.deadTexture = this.deadTexture, e.animationSpeed = .2, e.anchor.set(35 / 80, 1), e.currentPoi = this.map.getRandomBuilding(), e.position.copyFrom(this.map.randomPositionInBuilding(e.currentPoi)), e.zIndex = e.position.y, e.xSpeed = 0, e.ySpeed = 0, e.radioTime = 5, e.speedMod = 1, e.lastKnownBuilding = void 0, e.timer.plagueTick = Math.random() * this.humans.plagueTickTimer, e.maxSpeed = this.maxWalkSpeed, e.visionDistance = this.visionDistance, e.visible = 1, e.maxHealth = e.health = t, e.timer.scan = Math.random() * this.humans.scanTime, e.timer.standing = Math.random() * this.humans.randomSecondsToStand(), e.target = 0, e.zombieTarget = void 0, e.policeState = ue.standing, e.timer.attack = this.attackSpeed, e.scale.set(Math.random() > .5 ? this.scaling : -1 * this.scaling, this.scaling), this.police.push(e), g.addChild(e), this.gameModel.level >= this.policeDogLevel && Math.random() > .5 && this.createPoliceDog(e, s)
+        this.discardedPolice.length > 0 ? (e = this.discardedPolice.pop(), e.alpha = 1, e.textures = this.walkTexture) : e = new Me(this.walkTexture), e.reset(), e.flags.dog = !1, e.flags.dead = !1, e.flags.infected = !1, e.flags.burning = !1, e.burnDamage = 0, e.plagueDamage = 0, e.plagueTicks = 0, e.deadTexture = this.deadTexture, e.animationSpeed = .2, e.anchor.set(35 / 80, 1), e.currentPoi = this.map.getRandomBuilding(), e.position.copyFrom(this.map.randomPositionInBuilding(e.currentPoi)), e.zIndex = e.position.y, e.xSpeed = 0, e.ySpeed = 0, e.radioTime = 5, e.speedMod = 1, e.lastKnownBuilding = void 0, e.timer.plagueTick = Math.random() * this.humans.plagueTickTimer, e.maxSpeed = this.maxWalkSpeed, e.visionDistance = this.visionDistance, e.visible = !0, e.maxHealth = e.health = t, e.timer.scan = Math.random() * this.humans.scanTime, e.timer.standing = Math.random() * this.humans.randomSecondsToStand(), e.target = !1, e.zombieTarget = void 0, e.policeState = ue.standing, e.timer.attack = this.attackSpeed, e.scale.set(Math.random() > .5 ? this.scaling : -1 * this.scaling, this.scaling), this.police.push(e), g.addChild(e), this.gameModel.level >= this.policeDogLevel && Math.random() > .5 && this.createPoliceDog(e, s)
       }
       this.isExtraPolice() && this.gameModel.sendMessage("Warning: High Police Activity!")
     }
     createPoliceDog(e, t) {
       let s;
-      this.discardedPolice.length > 0 ? (s = this.discardedPolice.pop(), s.alpha = 1, s.textures = this.dogTexture) : s = new Me(this.dogTexture), s.reset(), s.owner = e, s.flags.dog = 1, s.flags.dead = 0, s.flags.infected = 0, s.flags.burning = 0, s.burnDamage = 0, s.plagueDamage = 0, s.plagueTicks = 0, s.deadTexture = this.deadDogTexture, s.animationSpeed = .15, s.anchor.set(.5, 1), s.position.set(e.position.x + 3, e.position.y), s.zIndex = s.position.y, s.xSpeed = 0, s.ySpeed = 0, s.speedMod = 1, s.lastKnownBuilding = null, s.timer.plagueTick = Math.random() * this.humans.plagueTickTimer, s.maxSpeed = this.maxRunSpeed, s.visionDistance = this.visionDistance, s.visible = 1, s.maxHealth = s.health = t, s.timer.scan = Math.random() * this.humans.scanTime, s.target = e, s.zombieTarget = null, s.policeState = ue.following, s.followTimer = 0, s.timer.attack = this.attackSpeed, s.scale.set(Math.random() > .5 ? this.dogScaling : -1 * this.dogScaling, this.dogScaling), this.police.push(s), g.addChild(s)
+      this.discardedPolice.length > 0 ? (s = this.discardedPolice.pop(), s.alpha = 1, s.textures = this.dogTexture) : s = new Me(this.dogTexture), s.reset(), s.owner = e, s.flags.dog = !0, s.flags.dead = !1, s.flags.infected = !1, s.flags.burning = !1, s.burnDamage = 0, s.plagueDamage = 0, s.plagueTicks = 0, s.deadTexture = this.deadDogTexture, s.animationSpeed = .15, s.anchor.set(.5, 1), s.position.set(e.position.x + 3, e.position.y), s.zIndex = s.position.y, s.xSpeed = 0, s.ySpeed = 0, s.speedMod = 1, s.lastKnownBuilding = null, s.timer.plagueTick = Math.random() * this.humans.plagueTickTimer, s.maxSpeed = this.maxRunSpeed, s.visionDistance = this.visionDistance, s.visible = !0, s.maxHealth = s.health = t, s.timer.scan = Math.random() * this.humans.scanTime, s.target = e, s.zombieTarget = null, s.policeState = ue.following, s.followTimer = 0, s.timer.attack = this.attackSpeed, s.scale.set(Math.random() > .5 ? this.dogScaling : -1 * this.dogScaling, this.dogScaling), this.police.push(s), g.addChild(s)
     }
     update(e, t) {
       let s = 0;
@@ -2628,7 +2603,7 @@ var Incremancer;
           e.timer.standing -= t, e.timer.standing < 0 && (this.humans.assignRandomTarget(e), this.changeState(e, ue.walking));
           break;
         case ue.walking:
-          fastDistance(e.position.x, e.position.y, e.target.x, e.target.y) < this.moveTargetDistance ? (e.target = 0, e.zombieTarget = null, e.timer.standing = this.humans.randomSecondsToStand(), this.changeState(e, ue.standing)) : this.humans.updateHumanSpeed(e, t);
+          fastDistance(e.position.x, e.position.y, e.target.x, e.target.y) < this.moveTargetDistance ? (e.target = !1, e.zombieTarget = null, e.timer.standing = this.humans.randomSecondsToStand(), this.changeState(e, ue.standing)) : this.humans.updateHumanSpeed(e, t);
           break;
         case ue.running:
           e.zombieTarget && !e.zombieTarget.flags.dead ? e.target && this.humans.updateHumanSpeed(e, t) : this.changeState(e, ue.standing);
@@ -2670,14 +2645,14 @@ var Incremancer;
   }
   class we extends ve {
     constructor() {
-      super(...arguments), this.minigun = 0, this.rocketlauncher = 0, this.attackingGraveyard = 0, this.shotsLeft = 0, this.shotTimer = 0
+      super(...arguments), this.minigun = !1, this.rocketlauncher = !1, this.attackingGraveyard = !1, this.shotsLeft = 0, this.shotTimer = 0
     }
   }! function(e) {
     e[e.shooting = 0] = "shooting", e[e.attacking = 1] = "attacking", e[e.walking = 2] = "walking", e[e.running = 3] = "running", e[e.standing = 4] = "standing"
   }(pe || (pe = {}));
   class Te {
     constructor() {
-      if (this.maxWalkSpeed = 20, this.maxRunSpeed = 50, this.armymen = [], this.discardedArmymen = [], this.textures = [], this.aliveZombies = [], this.armyPerLevel = .9, this.attackSpeed = 2, this.attackDamage = 20, this.attackDistance = 25, this.moveTargetDistance = 5, this.shootDistance = 130, this.visionDistance = 200, this.scaling = 2, this.shotsPerBurst = 3, this.droneStrikeTimer = 0, this.droneStrikeTime = 35, this.assaultStarted = 0, this.droneStrike = null, this.droneActive = 0, this.droneBlastRadius = 35, Te.instance) return Te.instance;
+      if (this.maxWalkSpeed = 20, this.maxRunSpeed = 50, this.armymen = [], this.discardedArmymen = [], this.textures = [], this.aliveZombies = [], this.armyPerLevel = .9, this.attackSpeed = 2, this.attackDamage = 20, this.attackDistance = 25, this.moveTargetDistance = 5, this.shootDistance = 130, this.visionDistance = 200, this.scaling = 2, this.shotsPerBurst = 3, this.droneStrikeTimer = 0, this.droneStrikeTime = 35, this.assaultStarted = !1, this.droneStrike = null, this.droneActive = !1, this.droneBlastRadius = 35, Te.instance) return Te.instance;
       Te.instance = this
     }
     isExtraArmy() {
@@ -2694,7 +2669,7 @@ var Incremancer;
       this.attackDamage = Math.round(this.getMaxHealth() / 10)
     }
     populate() {
-      if (this.map = new ee, this.zombies = new ZombieManager, this.humans = new Se, this.gameModel = ne.getInstance(), this.graveyard = new Oe, this.bullets = new rt, this.assaultStarted = 0, this.blasts = new nt, this.exclamations = new it, 0 == this.textures.length)
+      if (this.map = new ee, this.zombies = new Ae, this.humans = new Se, this.gameModel = ne.getInstance(), this.graveyard = new Oe, this.bullets = new rt, this.assaultStarted = !1, this.blasts = new nt, this.exclamations = new it, 0 == this.textures.length)
         for (let e = 0; e < 3; e++) {
           const t = [];
           for (let s = 0; s < 3; s++) t.push(PIXI.Texture.from("army" + (e + 1) + "_" + (s + 1) + ".png"));
@@ -2709,10 +2684,10 @@ var Incremancer;
       }
       const e = this.getMaxArmy(),
         t = this.getMaxHealth();
-      this.getAttackDamage(), this.droneStrike = 0, this.droneStrikeTimer = Math.random() * this.droneStrikeTime, this.droneActive = this.gameModel.level >= 25;
+      this.getAttackDamage(), this.droneStrike = !1, this.droneStrikeTimer = Math.random() * this.droneStrikeTime, this.droneActive = this.gameModel.level >= 25;
       for (let s = 0; s < e; s++) {
         let e, s = 0;
-        this.gameModel.level > 35 && Math.random() < .3 && (s = 1), (this.gameModel.level > 45 && Math.random() < .3 || this.gameModel.isBossStage(this.gameModel.level) && Math.random() < .5) && (s = 2), this.discardedArmymen.length > 0 ? (e = this.discardedArmymen.pop(), e.alpha = 1, e.textures = this.textures[s].animated) : e = new we(this.textures[s].animated), e.reset(), e.flags.dead = 0, e.flags.infected = 0, e.flags.burning = 0, e.burnDamage = 0, e.plagueDamage = 0, e.minigun = 1 == s, e.rocketlauncher = 2 == s, e.deadTexture = this.textures[s].dead, e.animationSpeed = .2, e.anchor.set(35 / 80, 1), e.currentPoi = this.map.getRandomBuilding(), e.position.copyFrom(this.map.randomPositionInBuilding(e.currentPoi)), e.zIndex = e.position.y, e.xSpeed = 0, e.ySpeed = 0, e.speedMod = 1, e.lastKnownBuilding = null, e.maxSpeed = this.maxWalkSpeed, e.visionDistance = this.visionDistance, e.visible = 1, e.maxHealth = e.health = t, e.timer.attack = this.attackSpeed, e.timer.plagueTick = Math.random() * this.humans.plagueTickTimer, e.timer.scan = Math.random() * this.humans.scanTime, e.timer.standing = Math.random() * this.humans.randomSecondsToStand(), e.target = 0, e.zombieTarget = null, e.graveYardTarget = null, e.armyState = pe.standing, e.attackingGraveyard = 0, e.scale.set(Math.random() > .5 ? this.scaling : -1 * this.scaling, this.scaling), this.armymen.push(e), g.addChild(e)
+        this.gameModel.level > 35 && Math.random() < .3 && (s = 1), (this.gameModel.level > 45 && Math.random() < .3 || this.gameModel.isBossStage(this.gameModel.level) && Math.random() < .5) && (s = 2), this.discardedArmymen.length > 0 ? (e = this.discardedArmymen.pop(), e.alpha = 1, e.textures = this.textures[s].animated) : e = new we(this.textures[s].animated), e.reset(), e.flags.dead = !1, e.flags.infected = !1, e.flags.burning = !1, e.burnDamage = 0, e.plagueDamage = 0, e.minigun = 1 == s, e.rocketlauncher = 2 == s, e.deadTexture = this.textures[s].dead, e.animationSpeed = .2, e.anchor.set(35 / 80, 1), e.currentPoi = this.map.getRandomBuilding(), e.position.copyFrom(this.map.randomPositionInBuilding(e.currentPoi)), e.zIndex = e.position.y, e.xSpeed = 0, e.ySpeed = 0, e.speedMod = 1, e.lastKnownBuilding = null, e.maxSpeed = this.maxWalkSpeed, e.visionDistance = this.visionDistance, e.visible = !0, e.maxHealth = e.health = t, e.timer.attack = this.attackSpeed, e.timer.plagueTick = Math.random() * this.humans.plagueTickTimer, e.timer.scan = Math.random() * this.humans.scanTime, e.timer.standing = Math.random() * this.humans.randomSecondsToStand(), e.target = !1, e.zombieTarget = null, e.graveYardTarget = null, e.armyState = pe.standing, e.attackingGraveyard = !1, e.scale.set(Math.random() > .5 ? this.scaling : -1 * this.scaling, this.scaling), this.armymen.push(e), g.addChild(e)
       }
       this.isExtraArmy() && this.gameModel.sendMessage("Warning: High Military Activity!")
     }
@@ -2755,7 +2730,7 @@ var Incremancer;
     updateArmy(e, t, s) {
       var a, r;
       if (e.flags.dead) return this.humans.updateDeadHumanFading(e, t);
-      switch (e.timer.attack -= t, e.timer.scan -= t, e.flags.infected && this.humans.updatePlague(e, t), e.flags.burning && this.humans.updateBurns(e, t), !e.graveYardTarget && (!e.zombieTarget || e.zombieTarget.flags.dead) && e.timer.scan < 0 && (this.humans.scanForZombies(e, s) > 3 && this.droneActive && this.droneStrikeTimer < 0 && this.callDroneStrike(e, s), this.assaultStarted && e.rocketlauncher && Math.random() > .98 && (e.graveYardTarget = this.graveyard.target, e.attackingGraveyard = 1)), this.decideStateOnZombieDistance(e), e.armyState) {
+      switch (e.timer.attack -= t, e.timer.scan -= t, e.flags.infected && this.humans.updatePlague(e, t), e.flags.burning && this.humans.updateBurns(e, t), !e.graveYardTarget && (!e.zombieTarget || e.zombieTarget.flags.dead) && e.timer.scan < 0 && (this.humans.scanForZombies(e, s) > 3 && this.droneActive && this.droneStrikeTimer < 0 && this.callDroneStrike(e, s), this.assaultStarted && e.rocketlauncher && Math.random() > .98 && (e.graveYardTarget = this.graveyard.target, e.attackingGraveyard = !0)), this.decideStateOnZombieDistance(e), e.armyState) {
         case pe.standing:
           e.timer.standing -= t, e.timer.standing < 0 && (this.humans.assignRandomTarget(e), this.changeState(e, pe.walking));
           break;
@@ -2769,7 +2744,7 @@ var Incremancer;
           e.zombieTarget && !e.zombieTarget.flags.dead ? (e.scale.x = e.zombieTarget.x > e.x ? this.scaling : -this.scaling, e.timer.attack < 0 && (this.zombies.damageZombie(e.zombieTarget, this.attackDamage, e), e.timer.attack = this.attackSpeed)) : this.changeState(e, pe.standing);
           break;
         case pe.shooting:
-          e.graveYardTarget || e.zombieTarget && !e.zombieTarget.flags.dead ? (e.target = null !== (r = e.graveYardTarget) && void 0 !== r ? r : e.zombieTarget, e.scale.x = e.target.x > e.x ? this.scaling : -this.scaling, e.timer.attack < 0 && (e.shotsLeft = this.shotsPerBurst, e.minigun && (e.shotsLeft = 3 * this.shotsPerBurst), e.rocketlauncher && (e.shotsLeft = 1), e.timer.attack = e.rocketlauncher ? 1.5 * this.attackSpeed : this.attackSpeed, e.shotTimer = 0), e.shotsLeft > 0 && (e.shotTimer -= t, e.shotTimer < 0 && (e.shotTimer = .15, e.minigun && (e.shotTimer = .08), this.bullets.newBullet(e, e.target, e.rocketlauncher ? 1.2 * this.attackDamage : e.minigun ? this.attackDamage / 2 : this.attackDamage, 0, e.rocketlauncher), e.shotsLeft--))) : this.changeState(e, pe.standing)
+          e.graveYardTarget || e.zombieTarget && !e.zombieTarget.flags.dead ? (e.target = null !== (r = e.graveYardTarget) && void 0 !== r ? r : e.zombieTarget, e.scale.x = e.target.x > e.x ? this.scaling : -this.scaling, e.timer.attack < 0 && (e.shotsLeft = this.shotsPerBurst, e.minigun && (e.shotsLeft = 3 * this.shotsPerBurst), e.rocketlauncher && (e.shotsLeft = 1), e.timer.attack = e.rocketlauncher ? 1.5 * this.attackSpeed : this.attackSpeed, e.shotTimer = 0), e.shotsLeft > 0 && (e.shotTimer -= t, e.shotTimer < 0 && (e.shotTimer = .15, e.minigun && (e.shotTimer = .08), this.bullets.newBullet(e, e.target, e.rocketlauncher ? 1.2 * this.attackDamage : e.minigun ? this.attackDamage / 2 : this.attackDamage, !1, e.rocketlauncher), e.shotsLeft--))) : this.changeState(e, pe.standing)
       }
     }
     callDroneStrike(e, t) {
@@ -2804,14 +2779,14 @@ var Incremancer;
           }), this.droneStrike.text.anchor = {
             x: .5,
             y: 1
-          }, this.droneStrike.text.scale.x = .5, this.droneStrike.text.scale.y = .5, b.addChild(this.droneStrike.text), this.droneStrike.laser = new PIXI.Graphics, b.addChild(this.droneStrike.laser)), this.droneStrike.text.text = Math.ceil(this.droneStrike.timer), this.droneStrike.text.x = this.droneStrike.target.x, this.droneStrike.text.y = this.droneStrike.target.y - 30, this.droneStrike.laser.clear(), this.droneStrike.laser.lineStyle(1, 16711680), this.droneStrike.laser.moveTo(this.droneStrike.caller.x, this.droneStrike.caller.y - 10), this.droneStrike.laser.lineTo(this.droneStrike.target.x, this.droneStrike.target.y - 10)), (this.droneStrike.caller.dead || this.droneStrike.target.dead) && !this.droneStrike.startedBombing) return b.removeChild(this.droneStrike.text), b.removeChild(this.droneStrike.laser), this.droneStrike = 0, void(this.droneStrikeTimer = 0);
-        this.droneStrike.timer < 0 && (this.droneStrike.startedBombing || (b.removeChild(this.droneStrike.text), b.removeChild(this.droneStrike.laser), this.droneStrike.startedBombing = 1), this.droneBomb(t), this.droneStrike.bombsLeft <= 0 && (this.droneStrike = 0))
+          }, this.droneStrike.text.scale.x = .5, this.droneStrike.text.scale.y = .5, b.addChild(this.droneStrike.text), this.droneStrike.laser = new PIXI.Graphics, b.addChild(this.droneStrike.laser)), this.droneStrike.text.text = Math.ceil(this.droneStrike.timer), this.droneStrike.text.x = this.droneStrike.target.x, this.droneStrike.text.y = this.droneStrike.target.y - 30, this.droneStrike.laser.clear(), this.droneStrike.laser.lineStyle(1, 16711680), this.droneStrike.laser.moveTo(this.droneStrike.caller.x, this.droneStrike.caller.y - 10), this.droneStrike.laser.lineTo(this.droneStrike.target.x, this.droneStrike.target.y - 10)), (this.droneStrike.caller.dead || this.droneStrike.target.dead) && !this.droneStrike.startedBombing) return b.removeChild(this.droneStrike.text), b.removeChild(this.droneStrike.laser), this.droneStrike = !1, void(this.droneStrikeTimer = 0);
+        this.droneStrike.timer < 0 && (this.droneStrike.startedBombing || (b.removeChild(this.droneStrike.text), b.removeChild(this.droneStrike.laser), this.droneStrike.startedBombing = !0), this.droneBomb(t), this.droneStrike.bombsLeft <= 0 && (this.droneStrike = !1))
       }
     }
   }
   class Ce extends ve {
     constructor() {
-      super(...arguments), this.attackingGraveyard = 0
+      super(...arguments), this.attackingGraveyard = !1
     }
   }! function(e) {
     e[e.shooting = 0] = "shooting", e[e.attacking = 1] = "attacking", e[e.patrolling = 2] = "patrolling"
@@ -2834,7 +2809,7 @@ var Incremancer;
       this.attackDamage = Math.round(this.getMaxHealth() / 10)
     }
     populate() {
-      if (this.map = new ee, this.gameModel = ne.getInstance(), this.zombies = new ZombieManager, this.humans = new Se, this.army = new Te, this.graveyard = new Oe, this.bullets = new rt, !this.textures) {
+      if (this.map = new ee, this.gameModel = ne.getInstance(), this.zombies = new Ae, this.humans = new Se, this.army = new Te, this.graveyard = new Oe, this.bullets = new rt, !this.textures) {
         this.textures = {
           vertical: [],
           horizontal: [],
@@ -2853,7 +2828,7 @@ var Incremancer;
       this.getAttackDamage();
       for (let s = 0; s < e; s++) {
         const e = new Ce(this.textures.horizontal);
-        e.flags.tank = 1, e.turretSprite = new PIXI.Sprite(this.textures.turret), e.addChild(e.turretSprite), e.animationSpeed = .2, e.anchor.set(.5, 1), e.turretSprite.anchor.set(7.5 / 16, 7.5 / 16), e.x = 0, e.y = 0, e.play(), e.turretSprite.x = 0, e.turretSprite.y = -7, e.currentDirection = me.horizontal, e.currentPoi = this.map.getRandomBuilding(), e.position.copyFrom(this.map.randomPositionInBuilding(e.currentPoi)), e.zIndex = e.position.y, e.xSpeed = 0, e.ySpeed = 0, e.speedMod = 1, e.flags.dead = 0, e.flags.infected = 0, e.flags.burning = 0, e.burnDamage = 0, e.lastKnownBuilding = null, e.plagueDamage = 0, e.timer.plagueTick = Math.random() * this.humans.plagueTickTimer, e.maxSpeed = this.speed, e.visionDistance = 250, e.visible = 1, e.maxHealth = e.health = t, e.timer.scan = Math.random() * this.humans.scanTime, e.target = 0, e.zombieTarget = null, e.graveYardTarget = null, e.attackingGraveyard = 0, e.tankState = ge.patrolling, e.timer.attack = this.attackSpeed, e.scale.set(this.scaling, this.scaling), this.tanks.push(e), g.addChild(e)
+        e.flags.tank = !0, e.turretSprite = new PIXI.Sprite(this.textures.turret), e.addChild(e.turretSprite), e.animationSpeed = .2, e.anchor.set(.5, 1), e.turretSprite.anchor.set(7.5 / 16, 7.5 / 16), e.x = 0, e.y = 0, e.play(), e.turretSprite.x = 0, e.turretSprite.y = -7, e.currentDirection = me.horizontal, e.currentPoi = this.map.getRandomBuilding(), e.position.copyFrom(this.map.randomPositionInBuilding(e.currentPoi)), e.zIndex = e.position.y, e.xSpeed = 0, e.ySpeed = 0, e.speedMod = 1, e.flags.dead = !1, e.flags.infected = !1, e.flags.burning = !1, e.burnDamage = 0, e.lastKnownBuilding = null, e.plagueDamage = 0, e.timer.plagueTick = Math.random() * this.humans.plagueTickTimer, e.maxSpeed = this.speed, e.visionDistance = 250, e.visible = !0, e.maxHealth = e.health = t, e.timer.scan = Math.random() * this.humans.scanTime, e.target = !1, e.zombieTarget = null, e.graveYardTarget = null, e.attackingGraveyard = !1, e.tankState = ge.patrolling, e.timer.attack = this.attackSpeed, e.scale.set(this.scaling, this.scaling), this.tanks.push(e), g.addChild(e)
       }
     }
     update(e, t) {
@@ -2862,15 +2837,15 @@ var Incremancer;
     }
     updateTank(e, t, s) {
       if (e.flags.dead) return this.humans.updateDeadHumanFading(e, t);
-      switch (e.timer.attack -= t, e.timer.scan -= t, e.flags.burning && this.humans.updateBurns(e, t), !e.attackingGraveyard && (!e.zombieTarget || e.zombieTarget.flags.dead) && e.timer.scan < 0 && (this.humans.scanForZombies(e, s), this.army.assaultStarted && Math.random() > .9 && (e.graveYardTarget = this.graveyard.target, e.attackingGraveyard = 1)), this.decideStateOnZombieDistance(e), e.tankState) {
+      switch (e.timer.attack -= t, e.timer.scan -= t, e.flags.burning && this.humans.updateBurns(e, t), !e.attackingGraveyard && (!e.zombieTarget || e.zombieTarget.flags.dead) && e.timer.scan < 0 && (this.humans.scanForZombies(e, s), this.army.assaultStarted && Math.random() > .9 && (e.graveYardTarget = this.graveyard.target, e.attackingGraveyard = !0)), this.decideStateOnZombieDistance(e), e.tankState) {
         case ge.patrolling:
-          e.target || (e.target = this.map.randomPositionInBuilding(null)), fastDistance(e.position.x, e.position.y, e.target.x, e.target.y) < this.moveTargetDistance ? (e.target = 0, e.zombieTarget = null) : this.humans.updateHumanSpeed(e, t);
+          e.target || (e.target = this.map.randomPositionInBuilding(null)), fastDistance(e.position.x, e.position.y, e.target.x, e.target.y) < this.moveTargetDistance ? (e.target = !1, e.zombieTarget = null) : this.humans.updateHumanSpeed(e, t);
           break;
         case ge.attacking:
           e.attackingGraveyard ? (e.target = e.graveYardTarget, this.humans.updateHumanSpeed(e, t)) : e.zombieTarget && !e.zombieTarget.flags.dead ? this.humans.updateHumanSpeed(e, t) : this.changeState(e, ge.patrolling);
           break;
         case ge.shooting:
-          e.graveYardTarget || e.zombieTarget && !e.zombieTarget.flags.dead ? e.timer.attack < 0 && (e.timer.attack = this.attackSpeed, this.bullets.newBullet(e, e.graveYardTarget || e.zombieTarget, this.attackDamage, 0, 1)) : this.changeState(e, ge.patrolling)
+          e.graveYardTarget || e.zombieTarget && !e.zombieTarget.flags.dead ? e.timer.attack < 0 && (e.timer.attack = this.attackSpeed, this.bullets.newBullet(e, e.graveYardTarget || e.zombieTarget, this.attackDamage, !1, !0)) : this.changeState(e, ge.patrolling)
       }
       this.updateTankSprites(e, t)
     }
@@ -2903,8 +2878,8 @@ var Incremancer;
   }
   class Pe extends Q {
     constructor() {
-      super(...arguments), this.currentDirection = 0, this.bulletReflect = 0, this.zombieId = 0, this.lastKnownBuilding = null, this.maxSpeed = 0, this.graveyard = 0, this.regenTimer = 0, this.bloodbornTimer = 0, this.level = 0, this.creatureType = 0, this.scaling = 0, this.attackDamage = 0, this.speedMultiplier = 1, this.price = 0, this.immuneToBurns = 0, this.zombie = 1, this.textureSet = {
-        set: 0,
+      super(...arguments), this.currentDirection = 0, this.bulletReflect = 0, this.zombieId = 0, this.lastKnownBuilding = null, this.maxSpeed = 0, this.graveyard = !1, this.regenTimer = 0, this.bloodbornTimer = 0, this.level = 0, this.creatureType = 0, this.scaling = 0, this.attackDamage = 0, this.speedMultiplier = 1, this.price = 0, this.immuneToBurns = !1, this.zombie = !0, this.textureSet = {
+        set: !1,
         down: [],
         up: [],
         left: [],
@@ -2920,10 +2895,10 @@ var Incremancer;
       super(...arguments), this.speed = 30, this.fadeTime = .5
     }
     updateCritText(e) {
-      this.visible && (this.y -= this.speed * e, this.fadeTime -= e, this.fadeTime < 0 && (this.alpha -= 2 * e, this.alpha < 0 && (this.visible = 0, Re.push(this))))
+      this.visible && (this.y -= this.speed * e, this.fadeTime -= e, this.fadeTime < 0 && (this.alpha -= 2 * e, this.alpha < 0 && (this.visible = !1, Re.push(this))))
     }
     reset() {
-      this.fadeTime = .5, this.alpha = 1, this.visible = 1
+      this.fadeTime = .5, this.alpha = 1, this.visible = !0
     }
   }
   const Ie = new PIXI.TextStyle({
@@ -2945,7 +2920,7 @@ var Incremancer;
   }
   class Fe extends K {
     constructor() {
-      super(...arguments), this.dog = 0, this.super = 0
+      super(...arguments), this.dog = !1, this.super = !1
     }
   }
   class Ee extends Pe {
@@ -2953,10 +2928,10 @@ var Incremancer;
       super(...arguments), this.flags = new Fe, this.mod = 1, this.scaleMod = 1, this.textureId = 0, this.turnTimer = 0
     }
   }
-  class ZombieManager {
+  class Ae {
     constructor() {
-      if (this.zombies = [], this.discardedZombies = [], this.aliveZombies = [], this.aliveHumans = [], this.zombiePartition = [], this.scaling = 2, this.moveTargetDistance = 15, this.attackDistance = 15, this.attackSpeed = 3, this.targetDistance = 100, this.fadeSpeed = .1, this.refundChance = 0, this.currId = 1, this.scanTime = 3, this.textures = [], this.dogTexture = [], this.deadDogTexture = [], this.maxSpeed = 10, this.zombieCursor = null, this.zombieCursorText = null, this.zombieCursorScale = 3, this.mouseOutOfBounds = 0, this.burnTickTimer = 5, this.bloodpact = 1, this.bloodborn = 0, this.gigamutagen = 0, this.gigamutationTimer = 10, this.smokeTimer = .3, this.fastDistance = fastDistance, this.magnitude = magnitude, this.detonate = 0, this.super = 0, this.reactionTime = 0, this.graveyardAttackers = [], this.spaceNeeded = 3, ZombieManager.instance) return ZombieManager.instance;
-      ZombieManager.instance = this
+      if (this.zombies = [], this.discardedZombies = [], this.aliveZombies = [], this.aliveHumans = [], this.zombiePartition = [], this.scaling = 2, this.moveTargetDistance = 15, this.attackDistance = 15, this.attackSpeed = 3, this.targetDistance = 100, this.fadeSpeed = .1, this.refundChance = 0, this.currId = 1, this.scanTime = 3, this.textures = [], this.dogTexture = [], this.deadDogTexture = [], this.maxSpeed = 10, this.zombieCursor = null, this.zombieCursorText = null, this.zombieCursorScale = 3, this.mouseOutOfBounds = !1, this.burnTickTimer = 5, this.bloodpact = 1, this.bloodborn = 0, this.gigamutagen = 0, this.gigamutationTimer = 10, this.smokeTimer = .3, this.fastDistance = fastDistance, this.magnitude = magnitude, this.detonate = !1, this.super = !1, this.reactionTime = 0, this.graveyardAttackers = [], this.spaceNeeded = 3, Ae.instance) return Ae.instance;
+      Ae.instance = this
     }
     populate() {
       if (this.map = new ee, this.model = ne.getInstance(), this.humans = new Se, this.graveyard = new Oe, this.creatureFactory = new ae, this.smoke = new ot, this.blood = new _e, this.bones = new tt, this.exclamations = new it, this.blasts = new nt, this.bullets = new rt, this.model.zombieCount = 0, 0 == this.textures.length) {
@@ -2988,18 +2963,18 @@ var Incremancer;
         }), this.zombieCursorText.anchor = {
           x: .5,
           y: 1
-        }, this.zombieCursorText.scale.x = this.zombieCursorText.scale.y = .1, this.zombieCursorText.y = -9, this.zombieCursorText.visible = 0, this.zombieCursorText.alpha = .7, this.zombieCursor.addChild(e), this.zombieCursor.addChild(this.zombieCursorText), m.addChild(this.zombieCursor)
+        }, this.zombieCursorText.scale.x = this.zombieCursorText.scale.y = .1, this.zombieCursorText.y = -9, this.zombieCursorText.visible = !1, this.zombieCursorText.alpha = .7, this.zombieCursor.addChild(e), this.zombieCursor.addChild(this.zombieCursorText), m.addChild(this.zombieCursor)
       }
     }
-    createZombie(e, t, s = 0) {
+    createZombie(e, t, s = !1) {
       const i = Math.floor(Math.random() * this.textures.length);
       let a;
-      this.discardedZombies.length > 0 ? (a = this.discardedZombies.pop(), a.textures = s ? this.dogTexture : this.textures[i].animated) : a = new Ee(s ? this.dogTexture : this.textures[i].animated), a.zombie = 1, a.mod = 1, a.scaleMod = 1, this.super && (a.mod = 10, a.scaleMod = 1.5), a.flags = new Fe, a.flags.dog = s, a.flags.super = this.super, a.deadTexture = a.flags.dog ? this.deadDogTexture : this.textures[i].dead, a.textureId = i, a.burnDamage = 0, a.lastKnownBuilding = 0, a.alpha = 1, a.animationSpeed = .15, a.anchor.set(35 / 80, 1), a.bloodbornTimer = this.bloodborn, a.position.set(e, t), a.target = null, a.zIndex = a.position.y, a.visible = 1, a.maxHealth = a.health = this.model.zombieHealth * a.mod, a.regenTimer = 5, a.state = be.lookingForTarget;
+      this.discardedZombies.length > 0 ? (a = this.discardedZombies.pop(), a.textures = s ? this.dogTexture : this.textures[i].animated) : a = new Ee(s ? this.dogTexture : this.textures[i].animated), a.zombie = !0, a.mod = 1, a.scaleMod = 1, this.super && (a.mod = 10, a.scaleMod = 1.5), a.flags = new Fe, a.flags.dog = s, a.flags.super = this.super, a.deadTexture = a.flags.dog ? this.deadDogTexture : this.textures[i].dead, a.textureId = i, a.burnDamage = 0, a.lastKnownBuilding = !1, a.alpha = 1, a.animationSpeed = .15, a.anchor.set(35 / 80, 1), a.bloodbornTimer = this.bloodborn, a.position.set(e, t), a.target = null, a.zIndex = a.position.y, a.visible = !0, a.maxHealth = a.health = this.model.zombieHealth * a.mod, a.regenTimer = 5, a.state = be.lookingForTarget;
       const r = s ? .7 : 1;
       a.scaling = a.scaleMod * this.scaling * r, a.scale.set(Math.random() > .5 ? a.scaling : -1 * a.scaling, a.scaling), a.timer.attack = 0, a.xSpeed = 0, a.ySpeed = 0, a.speedMultiplier = 1, a.timer.scan = 0, a.timer.burnTick = this.burnTickTimer, a.timer.smoke = this.smokeTimer, a.play(), a.zombieId = this.currId++, this.zombies.push(a), g.addChild(a), this.smoke.newZombieSpawnCloud(e, t - 2)
     }
     spawnZombie(e, t) {
-      this.model.energy < this.model.zombieCost || (this.model.energy -= this.model.zombieCost, this.createZombie(e, t, 0))
+      this.model.energy < this.model.zombieCost || (this.model.energy -= this.model.zombieCost, this.createZombie(e, t, !1))
     }
     spawnAllZombies(e, t) {
       const s = Math.min(Math.floor(this.model.energy / this.model.zombieCost), 100);
@@ -3009,12 +2984,12 @@ var Incremancer;
       if (e.graveyard) this.graveyard.damageGraveyard(t);
       else {
         if (e.boneshield) return e.boneshield--, void this.bones.newPart(e.x, e.y, 1);
-        this.graveyard.isWithinFence(e) && (t *= .5, this.exclamations.newShield(e)), e.bloodbornTimer > 0 && (t *= .5, this.exclamations.newShield(e)), s && s.flags.infected && (t *= this.model.plagueDmgReduction), e.health -= t * this.model.runeEffects.damageReduction, this.setSpeedMultiplier(e), this.blood.newSplatter(e.x, e.y), e.health <= 0 && !e.flags.dead && (this.bones.newBones(e.x, e.y), e.flags.dead = 1, e.flags.golem && this.refundChance > 0 && (this.model.sendMessage("Golem Refunded!"), this.creatureFactory.refundParts(e, this.refundChance)), Math.random() < this.model.infectedBlastChance && this.causePlagueExplosion(e, .2 * e.maxHealth, 1, 0), e.textures = e.deadTexture, e.gotoAndStop(0), Math.random() < this.model.brainRecoverChance && this.model.addBrains(1)), s && this.model.runeEffects.damageReflection > 0 && this.humans.damageHuman(s, t * this.model.runeEffects.damageReflection)
+        this.graveyard.isWithinFence(e) && (t *= .5, this.exclamations.newShield(e)), e.bloodbornTimer > 0 && (t *= .5, this.exclamations.newShield(e)), s && s.flags.infected && (t *= this.model.plagueDmgReduction), e.health -= t * this.model.runeEffects.damageReduction, this.setSpeedMultiplier(e), this.blood.newSplatter(e.x, e.y), e.health <= 0 && !e.flags.dead && (this.bones.newBones(e.x, e.y), e.flags.dead = !0, e.flags.golem && this.refundChance > 0 && (this.model.sendMessage("Golem Refunded!"), this.creatureFactory.refundParts(e, this.refundChance)), Math.random() < this.model.infectedBlastChance && this.causePlagueExplosion(e, .2 * e.maxHealth, !0, !1), e.textures = e.deadTexture, e.gotoAndStop(0), Math.random() < this.model.brainRecoverChance && this.model.addBrains(1)), s && this.model.runeEffects.damageReflection > 0 && this.humans.damageHuman(s, t * this.model.runeEffects.damageReflection)
       }
     }
-    causePlagueExplosion(e, t, s = 1, i = 0) {
+    causePlagueExplosion(e, t, s = !0, i = !1) {
       const a = i ? 75 : 50;
-      this.blood.newPlagueSplatter(e.x, e.y), i ? this.blasts.newDetonateBlast(e.x, e.y - 4) : this.blasts.newZombieBlast(e.x, e.y - 4), s && (e.visible = 0, g.removeChild(e));
+      this.blood.newPlagueSplatter(e.x, e.y), i ? this.blasts.newDetonateBlast(e.x, e.y - 4) : this.blasts.newZombieBlast(e.x, e.y - 4), s && (e.visible = !1, g.removeChild(e));
       for (let s = 0; s < this.aliveHumans.length; s++) Math.abs(this.aliveHumans[s].x - e.x) < a && Math.abs(this.aliveHumans[s].y - e.y) < a && this.fastDistance(e.x, e.y, this.aliveHumans[s].x, this.aliveHumans[s].y) < a && (this.inflictPlague(this.aliveHumans[s]), this.humans.damageHuman(this.aliveHumans[s], t));
       if (this.model.blastHealing > 0) {
         const s = t * this.model.blastHealing;
@@ -3043,20 +3018,20 @@ var Incremancer;
       for (let i = 0; i < this.zombies.length; i++) this.zombies[i].visible && (this.updateZombie(this.zombies[i], e), this.zombies[i].flags.dead || (t.push(this.zombies[i]), this.partitionInsert(s, this.zombies[i])));
       if (this.model.zombieCount = t.length, this.aliveZombies = t, this.zombiePartition = s, this.model.energy >= this.model.zombieCost && this.model.currentState == this.model.states.playingLevel)
         if (this.zombieCursor.visible = !this.mouseOutOfBounds, KeysPressed.shift && !this.mouseOutOfBounds) {
-          this.zombieCursorText.visible = 1;
+          this.zombieCursorText.visible = !0;
           const e = Math.min(Math.floor(this.model.energy / this.model.zombieCost), 100);
           this.zombieCursorText.text != e && (this.zombieCursorText.text = e)
-        } else this.zombieCursorText.visible = 0;
-      else this.zombieCursor.visible = 0
+        } else this.zombieCursorText.visible = !1;
+      else this.zombieCursor.visible = !1
     }
     detonateZombie(e) {
-      (e.state == be.attackingTarget || 0 == this.aliveHumans.length && Math.random() < .05) && (this.bones.newBones(e.x, e.y), e.flags.dead = 1, this.causePlagueExplosion(e, e.maxHealth, 1, 1), Math.random() < this.model.brainRecoverChance && this.model.addBrains(1))
+      (e.state == be.attackingTarget || 0 == this.aliveHumans.length && Math.random() < .05) && (this.bones.newBones(e.x, e.y), e.flags.dead = !0, this.causePlagueExplosion(e, e.maxHealth, !0, !0), Math.random() < this.model.brainRecoverChance && this.model.addBrains(1))
     }
     updateZombie(e, t) {
       var s;
       if (e.flags.dead) {
         if (!e.visible) return;
-        return e.alpha -= this.fadeSpeed * t, void(e.alpha < 0 && (e.visible = 0, g.removeChild(e)))
+        return e.alpha -= this.fadeSpeed * t, void(e.alpha < 0 && (e.visible = !1, g.removeChild(e)))
       }
       switch (1 == e.mod && this.gigamutationTimer < 0 && (e.mod = 10, e.scaling *= 1.5, e.scale.set(e.scaling, e.scaling), e.maxHealth *= 10, e.health *= 10, this.gigamutationTimer = this.gigamutagen, this.smoke.newZombieSpawnCloud(e.x, e.y - 2)), e.bloodbornTimer -= t, e.timer.attack -= t, e.timer.scan -= t, this.model.runeEffects.healthRegen > 0 && this.updateZombieRegen(e, t), this.detonate && this.detonateZombie(e), e.flags.burning && this.updateBurns(e, t), (!e.target || e.target.flags.dead) && e.timer.scan < 0 && (e.state = be.lookingForTarget), e.state) {
         case be.lookingForTarget:
@@ -3069,7 +3044,7 @@ var Incremancer;
               e.state = be.attackingTarget;
               break
             }
-            e.timer.attack < 0 && s < this.model.spitDistance && (this.bullets.newBullet(e, e.target, this.model.zombieDamage / 2, 1), e.timer.attack = this.attackSpeed * (1 / this.model.runeEffects.attackSpeed)),
+            e.timer.attack < 0 && s < this.model.spitDistance && (this.bullets.newBullet(e, e.target, this.model.zombieDamage / 2, !0), e.timer.attack = this.attackSpeed * (1 / this.model.runeEffects.attackSpeed)),
             s > 3 * this.attackDistance && e.timer.scan < 0 && this.searchClosestTarget(e),
             this.updateZombieSpeed(e, t);
             break
@@ -3095,7 +3070,7 @@ var Incremancer;
       return this.model.runeEffects.critChance > 0 && Math.random() < this.model.runeEffects.critChance && (t *= this.model.runeEffects.critDamage, He(e.x, e.y - 20, t)), this.bloodpact > 0 && this.model.addBlood(t * this.bloodpact), t
     }
     inflictPlague(e) {
-      e.flags.infected ? (e.plagueDamage += this.model.zombieDamage / 2 + this.model.plagueDamageMod, e.plagueTicks = this.model.plagueticks) : (this.exclamations.newPoison(e), e.plagueDamage = this.model.zombieDamage / 2 + this.model.plagueDamageMod, e.plagueTicks = this.model.plagueticks), e.flags.infected = 1
+      e.flags.infected ? (e.plagueDamage += this.model.zombieDamage / 2 + this.model.plagueDamageMod, e.plagueTicks = this.model.plagueticks) : (this.exclamations.newPoison(e), e.plagueDamage = this.model.zombieDamage / 2 + this.model.plagueDamageMod, e.plagueTicks = this.model.plagueticks), e.flags.infected = !0
     }
     updateBurns(e, t) {
       e.timer.burnTick -= t, e.timer.smoke -= t, e.timer.smoke < 0 && (this.smoke.newFireSmoke(e.x, e.y - 14), e.timer.smoke = this.smokeTimer), e.timer.burnTick < 0 && (this.damageZombie(e, e.burnDamage, null), e.timer.burnTick = this.burnTickTimer, this.exclamations.newFire(e))
@@ -3176,7 +3151,7 @@ var Incremancer;
       const i = this.partitionGetNeighbours(e);
       for (let a = 0; a < i.length; a++)
         if (i[a].health >= e.health && i[a].zombieId != e.zombieId && Math.abs(i[a].x - t) < this.spaceNeeded && Math.abs(i[a].y - s) < this.spaceNeeded && Math.abs(i[a].x - t) < this.spaceNeeded) return this.fastDistance(t, s, i[a].x, i[a].y) > this.fastDistance(e.x, e.y, i[a].x, i[a].y);
-      return 1
+      return !0
     }
   }
   class Le extends Pe {
@@ -3189,7 +3164,7 @@ var Incremancer;
       super(...arguments), this.speed = {
         x: 0,
         y: 0
-      }, this.flying = 0
+      }, this.flying = !1
     }
   }
   class Ge extends PIXI.Container {
@@ -3212,10 +3187,10 @@ var Incremancer;
       for (let t = 0; t < this.bones.length; t++) this.bones[t].visible = t < e
     }
   }
-  class SkeletonManager {
+  class Xe {
     constructor() {
       if (this.skeletons = [], this.aliveSkeletons = [], this.discardedSprites = [], this.aliveHumans = [], this.scaling = 1, this.moveTargetDistance = 15, this.attackDistance = 25, this.attackSpeed = 3, this.targetDistance = 100, this.fadeSpeed = .1, this.currId = 1, this.scanTime = 3, this.spawnTimer = 0, this.respawnTime = 10, this.moveSpeed = 40, this.lastKillingBlow = 0, this.randomSpells = [], this.lootChance = .001, this.spellTimer = 3, this.textures = {
-          set: 0,
+          set: !1,
           up: [],
           down: [],
           left: [],
@@ -3234,7 +3209,7 @@ var Incremancer;
           xp: 0,
           items: [],
           currItemId: 0,
-          talentReset: 0
+          talentReset: !1
         }, this.talents = [], this.talentPoints = 0, this.killingBlowParts = 0, this.lootChanceMod = 1, this.darkorb = 0, this.darkorbTimer = 0, this.boneshield = 0, this.aliveZombies = [], this.graveyardAttackers = [], this.lootPositions = {
           helmet: {
             id: 1,
@@ -3295,8 +3270,8 @@ var Incremancer;
             id: 5,
             scaling: 1
           }
-        }, SkeletonManager.instance) return SkeletonManager.instance;
-      SkeletonManager.instance = this
+        }, Xe.instance) return Xe.instance;
+      Xe.instance = this
     }
     getUsedPoints() {
       return this.talents.reduce(((e, t) => e + t), 0)
@@ -3318,8 +3293,8 @@ var Incremancer;
     }
     isAlive() {
       for (let e = 0; e < this.skeletons.length; e++)
-        if (!this.skeletons[e].flags.dead) return 1;
-      return 0
+        if (!this.skeletons[e].flags.dead) return !0;
+      return !1
     }
     applyUpgrades() {
       if (this.persistent.skeletons > 0) {
@@ -3332,12 +3307,12 @@ var Incremancer;
       this.model.persistentData.trophies = [], this.persistent.skeletons < 1 ? (this.persistent.skeletons = 1, this.persistent.xpRate = 1, this.model.sendMessage("Skeleton Champion joins the fight!")) : this.persistent.xpRate *= 2, this.upgrades.applyUpgrades(), this.model.saveData()
     }
     populate() {
-      if (this.model = ne.getInstance(), this.map = new ee, this.graveyard = new Oe, this.exclamations = new it, this.bullets = new rt, this.spells = new SpellManager, this.smoke = new ot, this.upgrades = new oe, this.humans = new Se, this.zombies = new ZombieManager, this.prestigePoints = new Je, this.partFactory = new PartFactory, this.bones = new tt, this.blasts = new nt, this.blood = new _e, this.damageZombie = this.zombies.damageZombie, this.searchClosestTarget = this.zombies.searchClosestTarget, this.updateBurns = this.zombies.updateBurns, this.updateZombieRegen = this.zombies.updateZombieRegen, this.causePlagueExplosion = this.zombies.causePlagueExplosion, this.inflictPlague = this.zombies.inflictPlague, this.healZombie = this.zombies.healZombie, this.setSpeedMultiplier = this.zombies.setSpeedMultiplier, !this.textures.set) {
+      if (this.model = ne.getInstance(), this.map = new ee, this.graveyard = new Oe, this.exclamations = new it, this.bullets = new rt, this.spells = new q, this.smoke = new ot, this.upgrades = new oe, this.humans = new Se, this.zombies = new Ae, this.prestigePoints = new Je, this.partFactory = new se, this.bones = new tt, this.blasts = new nt, this.blood = new _e, this.damageZombie = this.zombies.damageZombie, this.searchClosestTarget = this.zombies.searchClosestTarget, this.updateBurns = this.zombies.updateBurns, this.updateZombieRegen = this.zombies.updateZombieRegen, this.causePlagueExplosion = this.zombies.causePlagueExplosion, this.inflictPlague = this.zombies.inflictPlague, this.healZombie = this.zombies.healZombie, this.setSpeedMultiplier = this.zombies.setSpeedMultiplier, !this.textures.set) {
         this.textures.down = [], this.textures.up = [], this.textures.right = [], this.textures.dead = [];
         for (let e = 0; e < 3; e++) this.textures.down.push(PIXI.Texture.from("skeleton" + e + ".png"));
         for (let e = 3; e < 6; e++) this.textures.up.push(PIXI.Texture.from("skeleton" + e + ".png"));
         for (let e = 6; e < 9; e++) this.textures.right.push(PIXI.Texture.from("skeleton" + e + ".png"));
-        this.textures.dead.push(PIXI.Texture.from("skeleton9.png")), this.textures.set = 1
+        this.textures.dead.push(PIXI.Texture.from("skeleton9.png")), this.textures.set = !0
       }
       const e = [];
       for (let t = 0; t < this.skeletons.length; t++) this.skeletons[t].flags.dead ? (this.discardedSprites.push(this.skeletons[t]), g.removeChild(this.skeletons[t])) : (e.push(this.skeletons[t]), this.skeletons[t].x = this.graveyard.sprite.x, this.skeletons[t].zIndex = this.skeletons[t].y = this.graveyard.sprite.y + (this.graveyard.level > 2 ? 8 : 0), this.skeletons[t].target = null, this.skeletons[t].state = be.lookingForTarget, this.skeletons[t].timer.scan = 0);
@@ -3345,7 +3320,7 @@ var Incremancer;
     }
     spawnCreature() {
       let e;
-      this.discardedSprites.length > 0 ? (e = this.discardedSprites.pop(), e.textures = this.textures.down) : (e = new Le(this.textures.down), e.addChild(e.boneshieldContainer), e.boneshieldContainer.position.set(0, -16)), e.tint = 15658734, e.immuneToBurns = 0, e.bulletReflect = 0, e.zombie = 1, e.textureSet = this.textures, e.deadTexture = this.textures.dead, e.currentDirection = this.directions.down, e.flags = new K, e.burnDamage = 0, e.lastKnownBuilding = 0, e.alpha = 1, e.animationSpeed = .15, e.anchor.set(8.5 / 16, 1), e.position.set(this.graveyard.sprite.x, this.graveyard.sprite.y + (this.graveyard.level > 2 ? 8 : 0)), e.target = null, e.zIndex = e.position.y, e.visible = 1, e.maxHealth = e.health = 10 * this.model.zombieHealth, e.attackDamage = 10 * this.model.zombieDamage, e.regenTimer = 5, e.state = be.lookingForTarget, e.scaling = this.scaling, e.scale.set(e.scaling, e.scaling), e.timer.ability = 4 * Math.random(), e.timer.attack = 0, e.timer.scan = 0, e.timer.burnTick = this.burnTickTimer, e.timer.smoke = this.smokeTimer, e.xSpeed = 0, e.ySpeed = 0, e.speedMultiplier = 1, e.maxSpeed = this.moveSpeed, e.play(), e.zombieId = this.currId++, this.skeletons.push(e), g.addChild(e), this.smoke.newZombieSpawnCloud(e.x, e.y - 2)
+      this.discardedSprites.length > 0 ? (e = this.discardedSprites.pop(), e.textures = this.textures.down) : (e = new Le(this.textures.down), e.addChild(e.boneshieldContainer), e.boneshieldContainer.position.set(0, -16)), e.tint = 15658734, e.immuneToBurns = !1, e.bulletReflect = 0, e.zombie = !0, e.textureSet = this.textures, e.deadTexture = this.textures.dead, e.currentDirection = this.directions.down, e.flags = new K, e.burnDamage = 0, e.lastKnownBuilding = !1, e.alpha = 1, e.animationSpeed = .15, e.anchor.set(8.5 / 16, 1), e.position.set(this.graveyard.sprite.x, this.graveyard.sprite.y + (this.graveyard.level > 2 ? 8 : 0)), e.target = null, e.zIndex = e.position.y, e.visible = !0, e.maxHealth = e.health = 10 * this.model.zombieHealth, e.attackDamage = 10 * this.model.zombieDamage, e.regenTimer = 5, e.state = be.lookingForTarget, e.scaling = this.scaling, e.scale.set(e.scaling, e.scaling), e.timer.ability = 4 * Math.random(), e.timer.attack = 0, e.timer.scan = 0, e.timer.burnTick = this.burnTickTimer, e.timer.smoke = this.smokeTimer, e.xSpeed = 0, e.ySpeed = 0, e.speedMultiplier = 1, e.maxSpeed = this.moveSpeed, e.play(), e.zombieId = this.currId++, this.skeletons.push(e), g.addChild(e), this.smoke.newZombieSpawnCloud(e.x, e.y - 2)
     }
     skeletonTimer() {
       return this.aliveSkeletons.length < this.persistent.skeletons ? this.spawnTimer : 0
@@ -3358,9 +3333,9 @@ var Incremancer;
     updateCreature(e, t) {
       if (e.flags.dead) {
         if (!e.visible) return;
-        return e.alpha -= this.fadeSpeed * t, void(e.alpha < 0 && (e.visible = 0, g.removeChild(e)))
+        return e.alpha -= this.fadeSpeed * t, void(e.alpha < 0 && (e.visible = !1, g.removeChild(e)))
       }
-      switch (this.boneshield > 0 && e.boneshield < this.boneshield && (e.boneshieldTimer -= t, e.boneshieldTimer < 0 && (e.boneshieldTimer = 10 / this.boneshield, e.boneshield++)), this.boneshield ? (e.boneshieldContainer.visible = 1, e.boneshieldContainer.update(e.boneshield), e.boneshieldContainer.rotation += t) : e.boneshieldContainer.visible = 0, this.darkorb > 0 && (this.darkorbTimer -= t, this.darkorbTimer < 0 && e.target && !e.target.flags.dead && (this.darkorbTimer = this.darkorb, this.bullets.newBullet(e, e.target, this.calculateDamage(e), 0, 0, 0, 1))), e.timer.attack -= t, e.timer.scan -= t, e.timer.ability -= t, this.model.runeEffects.healthRegen > 0 && this.updateZombieRegen(e, t), e.flags.burning && !e.immuneToBurns && this.updateBurns(e, t), e.timer.ability < 0 && (e.timer.ability = 4), e.target && !e.target.flags.dead || (e.state = be.lookingForTarget, e.timer.target = 0, e.timer.scan = 0), e.state) {
+      switch (this.boneshield > 0 && e.boneshield < this.boneshield && (e.boneshieldTimer -= t, e.boneshieldTimer < 0 && (e.boneshieldTimer = 10 / this.boneshield, e.boneshield++)), this.boneshield ? (e.boneshieldContainer.visible = !0, e.boneshieldContainer.update(e.boneshield), e.boneshieldContainer.rotation += t) : e.boneshieldContainer.visible = !1, this.darkorb > 0 && (this.darkorbTimer -= t, this.darkorbTimer < 0 && e.target && !e.target.flags.dead && (this.darkorbTimer = this.darkorb, this.bullets.newBullet(e, e.target, this.calculateDamage(e), !1, !1, !1, !0))), e.timer.attack -= t, e.timer.scan -= t, e.timer.ability -= t, this.model.runeEffects.healthRegen > 0 && this.updateZombieRegen(e, t), e.flags.burning && !e.immuneToBurns && this.updateBurns(e, t), e.timer.ability < 0 && (e.timer.ability = 4), e.target && !e.target.flags.dead || (e.state = be.lookingForTarget, e.timer.target = 0, e.timer.scan = 0), e.state) {
         case be.lookingForTarget:
           this.searchClosestTarget(e), e.target && (e.state = be.movingToTarget);
           break;
@@ -3380,7 +3355,7 @@ var Incremancer;
             const s = this.fastDistance(e.position.x, e.position.y, e.target.x, e.target.y);
             if (s < this.attackDistance) {
               if (e.timer.attack < 0 && !e.target.flags.dead && (this.humans.damageHuman(e.target, this.calculateDamage(e)), e.target.flags.dead && this.killingBlow(e.target), e.timer.attack = this.attackSpeed * (1 / this.model.runeEffects.attackSpeed), e.flags.burning && (e.timer.attack *= 1 / this.model.burningSpeedMod), this.randomSpells.length > 0))
-                for (let e = 0; e < this.randomSpells.length; e++) this.spellTimer < 0 && Math.random() < 0.07 && (this.spells.castSpellNoMana(this.randomSpells[e]), this.spellTimer = 3);
+                for (let e = 0; e < this.randomSpells.length; e++) this.spellTimer < 0 && Math.random() < .07 && (this.spells.castSpellNoMana(this.randomSpells[e]), this.spellTimer = 3);
               s > this.attackDistance / 2 && this.updateCreatureSpeed(e, t)
             } else e.state = be.movingToTarget;
             break
@@ -3506,7 +3481,7 @@ var Incremancer;
         case this.rarity.epic:
           return "epic";
         case this.rarity.legendary:
-          return "legendary";
+          return "legendary"
       }
     }
     getLootStats(e) {
@@ -3582,7 +3557,7 @@ var Incremancer;
         p: r,
         e: n,
         se: i,
-        q: 0
+        q: !1
       }
     }
     destroyItem(e) {
@@ -3601,8 +3576,8 @@ var Incremancer;
   }
   class Ue {
     constructor() {
-      if (this.creatureFactory = new ae, this.zombies = new ZombieManager, this.creatures = [], this.creatureCount = [], this.aliveCreatures = [], this.aliveZombies = [], this.graveyardAttackers = [], this.discardedSprites = [], this.aliveHumans = [], this.scaling = 1.6, this.moveTargetDistance = 15, this.attackDistance = 20, this.attackSpeed = 3, this.targetDistance = 100, this.fadeSpeed = .1, this.currId = 1, this.scanTime = 3, this.refundChance = 0, this.creatureTypes = this.creatureFactory.types, this.golemTextures = {
-          set: 0,
+      if (this.creatureFactory = new ae, this.zombies = new Ae, this.creatures = [], this.creatureCount = [], this.aliveCreatures = [], this.aliveZombies = [], this.graveyardAttackers = [], this.discardedSprites = [], this.aliveHumans = [], this.scaling = 1.6, this.moveTargetDistance = 15, this.attackDistance = 20, this.attackSpeed = 3, this.targetDistance = 100, this.fadeSpeed = .1, this.currId = 1, this.scanTime = 3, this.refundChance = 0, this.creatureTypes = this.creatureFactory.types, this.golemTextures = {
+          set: !1,
           down: [],
           up: [],
           left: [],
@@ -3623,7 +3598,7 @@ var Incremancer;
         for (let e = 0; e < 3; e++) this.golemTextures.down.push(PIXI.Texture.from("golem" + e + ".png"));
         for (let e = 3; e < 6; e++) this.golemTextures.up.push(PIXI.Texture.from("golem" + e + ".png"));
         for (let e = 6; e < 9; e++) this.golemTextures.right.push(PIXI.Texture.from("golem" + e + ".png"));
-        this.golemTextures.dead.push(PIXI.Texture.from("golem9.png")), this.golemTextures.set = 1
+        this.golemTextures.dead.push(PIXI.Texture.from("golem9.png")), this.golemTextures.set = !0
       }
       const e = [];
       for (let t = 0; t < this.creatures.length; t++) this.model.constructions.monsterFactory ? this.creatures[t].flags.dead ? (this.discardedSprites.push(this.creatures[t]), g.removeChild(this.creatures[t])) : (e.push(this.creatures[t]), this.creatures[t].x = this.graveyard.sprite.x, this.creatures[t].zIndex = this.creatures[t].y = this.graveyard.sprite.y + (this.graveyard.level > 2 ? 8 : 0), this.creatures[t].target = null, this.creatures[t].state = be.lookingForTarget) : (this.discardedSprites.push(this.creatures[t]), g.removeChild(this.creatures[t]));
@@ -3640,12 +3615,12 @@ var Incremancer;
           n.tint = 10266040;
           break;
         case this.creatureTypes.fireGolem:
-          n.tint = 14370586, n.immuneToBurns = 1;
+          n.tint = 14370586, n.immuneToBurns = !0;
           break;
         case this.creatureTypes.waterGolem:
-          n.tint = 5080808, n.immuneToBurns = 1
+          n.tint = 5080808, n.immuneToBurns = !0
       }
-      n.flags = new K, n.flags.golem = 1, n.burnDamage = 0, n.level = a, n.textureSet = this.golemTextures, n.deadTexture = this.golemTextures.dead, n.currentDirection = this.directions.down, n.creatureType = i, n.price = r, n.lastKnownBuilding = 0, n.alpha = 1, n.animationSpeed = .15, n.anchor.set(8.5 / 16, 1), n.position.set(this.graveyard.sprite.x, this.graveyard.sprite.y + (this.graveyard.level > 2 ? 8 : 0)), n.target = null, n.zIndex = n.position.y, n.visible = 1, n.maxHealth = n.health = e, n.attackDamage = t, n.regenTimer = 5, n.state = be.lookingForTarget, n.scaling = this.scaling, n.scale.set(n.scaling, n.scaling), n.xSpeed = 0, n.ySpeed = 0, n.speedMultiplier = 1, n.maxSpeed = s, n.timer.ability = 4 * Math.random(), n.timer.attack = 0, n.timer.scan = 0, n.timer.burnTick = this.burnTickTimer, n.timer.smoke = this.smokeTimer, n.play(), n.zombieId = this.currId++, this.creatures.push(n), g.addChild(n), this.smoke.newZombieSpawnCloud(n.x, n.y - 2), this.model.creatureCount++
+      n.flags = new K, n.flags.golem = !0, n.burnDamage = 0, n.level = a, n.textureSet = this.golemTextures, n.deadTexture = this.golemTextures.dead, n.currentDirection = this.directions.down, n.creatureType = i, n.price = r, n.lastKnownBuilding = !1, n.alpha = 1, n.animationSpeed = .15, n.anchor.set(8.5 / 16, 1), n.position.set(this.graveyard.sprite.x, this.graveyard.sprite.y + (this.graveyard.level > 2 ? 8 : 0)), n.target = null, n.zIndex = n.position.y, n.visible = !0, n.maxHealth = n.health = e, n.attackDamage = t, n.regenTimer = 5, n.state = be.lookingForTarget, n.scaling = this.scaling, n.scale.set(n.scaling, n.scaling), n.xSpeed = 0, n.ySpeed = 0, n.speedMultiplier = 1, n.maxSpeed = s, n.timer.ability = 4 * Math.random(), n.timer.attack = 0, n.timer.scan = 0, n.timer.burnTick = this.burnTickTimer, n.timer.smoke = this.smokeTimer, n.play(), n.zombieId = this.currId++, this.creatures.push(n), g.addChild(n), this.smoke.newZombieSpawnCloud(n.x, n.y - 2), this.model.creatureCount++
     }
     update(e) {
       let t = 0;
@@ -3662,7 +3637,7 @@ var Incremancer;
     updateCreature(e, t) {
       if (e.flags.dead) {
         if (!e.visible) return;
-        return e.alpha -= this.fadeSpeed * t, void(e.alpha < 0 && (e.visible = 0, g.removeChild(e)))
+        return e.alpha -= this.fadeSpeed * t, void(e.alpha < 0 && (e.visible = !1, g.removeChild(e)))
       }
       if (e.timer.attack -= t, e.timer.scan -= t, e.timer.ability -= t, this.model.runeEffects.healthRegen > 0 && this.updateZombieRegen(e, t), e.flags.burning && !e.immuneToBurns && this.updateBurns(e, t), e.timer.ability < 0) switch (e.timer.ability = 4, e.creatureType) {
         case this.creatureTypes.earthGolem:
@@ -3738,25 +3713,25 @@ var Incremancer;
     }
     golemFireball(e) {
       let t = 5;
-      for (let s = 0; s < this.aliveHumans.length; s++) t > 0 && Math.abs(this.aliveHumans[s].x - e.x) < this.targetDistance && Math.abs(this.aliveHumans[s].y - e.y) < this.targetDistance && (t--, this.bullets.newBullet(e, this.aliveHumans[s], e.attackDamage / 2, 0, 0, 1))
+      for (let s = 0; s < this.aliveHumans.length; s++) t > 0 && Math.abs(this.aliveHumans[s].x - e.x) < this.targetDistance && Math.abs(this.aliveHumans[s].y - e.y) < this.targetDistance && (t--, this.bullets.newBullet(e, this.aliveHumans[s], e.attackDamage / 2, !1, !1, !0))
     }
   }
   class Ne extends PIXI.Sprite {
     constructor() {
-      super(...arguments), this.graveyard = 1
+      super(...arguments), this.graveyard = !0
     }
   }
   class Oe {
     constructor() {
       if (this.spikeSprites = [], this.level = 1, this.spikeTimer = 5, this.fenceRadius = 50, this.fastDistance = fastDistance, this.graveyardHealth = 0, this.graveyardMaxHealth = 0, this.target = {
-          graveyard: 1,
+          graveyard: !0,
           x: 0,
           y: 0
         }, this.healthBar = null, this.fence = null, this.fencePosts = [], Oe.instance) return Oe.instance;
       Oe.instance = this
     }
     initialize() {
-      this.boneCollectors = new Ve, this.zmMap = new ee, this.zombies = new ZombieManager, this.bones = new tt, this.gameModel = ne.getInstance(), this.smoke = new ot, this.harpies = new Ke, this.blood = new _e, this.humans = new Se, void 0 === this.gameModel.persistentData.graveyardZombies && (this.gameModel.persistentData.graveyardZombies = 1), this.drawGraveyard(), this.drawFence(), this.drawHealthBar(), this.bones.initialize(), this.boneCollectors.populate(), this.harpies.populate()
+      this.boneCollectors = new Ve, this.zmMap = new ee, this.zombies = new Ae, this.bones = new tt, this.gameModel = ne.getInstance(), this.smoke = new ot, this.harpies = new Ke, this.blood = new _e, this.humans = new Se, void 0 === this.gameModel.persistentData.graveyardZombies && (this.gameModel.persistentData.graveyardZombies = 1), this.drawGraveyard(), this.drawFence(), this.drawHealthBar(), this.bones.initialize(), this.boneCollectors.populate(), this.harpies.populate()
     }
     damageGraveyard(e) {
       this.gameModel.isBossStage(this.gameModel.level) && (this.graveyardHealth -= e, this.graveyardHealth < 0 && (this.gameModel.currentState = this.gameModel.states.failed, this.gameModel.startTimer = 3))
@@ -3767,7 +3742,7 @@ var Incremancer;
         background: new PIXI.Graphics,
         foreground: new PIXI.Graphics,
         percentage: 100
-      }, this.healthBar.container.addChild(this.healthBar.background), this.healthBar.container.addChild(this.healthBar.foreground), b.addChild(this.healthBar.container)), this.target.x = gameFieldSize.x / 2, this.target.y = gameFieldSize.y / 2, this.healthBar.container.visible = 1, this.healthBar.container.x = this.target.x - 50, this.healthBar.container.y = this.target.y - 100, this.healthBar.background.clear(), this.healthBar.background.lineStyle(12, 3355443), this.healthBar.background.moveTo(-2, 0), this.healthBar.background.lineTo(102, 0), this.healthBar.foreground.clear(), this.healthBar.foreground.lineStyle(8, 16601682), this.healthBar.foreground.moveTo(0, 0), this.healthBar.foreground.lineTo(100, 0)) : this.healthBar && (this.healthBar.background.clear(), this.healthBar.foreground.clear(), this.healthBar.container.visible = 0)
+      }, this.healthBar.container.addChild(this.healthBar.background), this.healthBar.container.addChild(this.healthBar.foreground), b.addChild(this.healthBar.container)), this.target.x = gameFieldSize.x / 2, this.target.y = gameFieldSize.y / 2, this.healthBar.container.visible = !0, this.healthBar.container.x = this.target.x - 50, this.healthBar.container.y = this.target.y - 100, this.healthBar.background.clear(), this.healthBar.background.lineStyle(12, 3355443), this.healthBar.background.moveTo(-2, 0), this.healthBar.background.lineTo(102, 0), this.healthBar.foreground.clear(), this.healthBar.foreground.lineStyle(8, 16601682), this.healthBar.foreground.moveTo(0, 0), this.healthBar.foreground.lineTo(100, 0)) : this.healthBar && (this.healthBar.background.clear(), this.healthBar.foreground.clear(), this.healthBar.container.visible = !1)
     }
     updateHealthBar() {
       const e = Math.max(Math.round(this.graveyardHealth / this.graveyardMaxHealth * 100), 0);
@@ -3779,19 +3754,19 @@ var Incremancer;
         t = "";
       this.gameModel.constructions.crypt && (this.level = 2, e = "graveyard2.png"), this.gameModel.constructions.fort && (this.level = 3, e = "sprites/megagraveyard.png", t = "fort1.png"), this.gameModel.constructions.fortress && (this.level = 4, e = "sprites/megagraveyard.png", t = "fort2.png"), this.gameModel.constructions.citadel && (this.level = 5, e = "sprites/megagraveyard.png", t = "fort3.png"), this.sprite ? this.sprite.texture = PIXI.Texture.from(e) : this.sprite = new Ne(PIXI.Texture.from(e));
       const s = this.zmMap.graveYardLocation;
-      this.sprite.width = 32, this.sprite.height = 32, this.sprite.anchor.set(.5, .5), this.sprite.scale.set(2, 2), this.sprite.visible = 0, u.addChild(this.sprite), this.sprite.x = s.x, this.sprite.y = s.y, this.zmMap.graveyardCollision = 0, t && (this.fortSprite ? this.fortSprite.texture = PIXI.Texture.from(t) : this.fortSprite = new PIXI.Sprite(PIXI.Texture.from(t)), this.fortSprite.anchor.set(.5, 1), this.fortSprite.scale.set(2, 2), this.fortSprite.x = s.x, this.fortSprite.zIndex = this.fortSprite.y = s.y + 2, this.fortSprite.visible = 0, g.addChild(this.fortSprite))
+      this.sprite.width = 32, this.sprite.height = 32, this.sprite.anchor.set(.5, .5), this.sprite.scale.set(2, 2), this.sprite.visible = !1, u.addChild(this.sprite), this.sprite.x = s.x, this.sprite.y = s.y, this.zmMap.graveyardCollision = !1, t && (this.fortSprite ? this.fortSprite.texture = PIXI.Texture.from(t) : this.fortSprite = new PIXI.Sprite(PIXI.Texture.from(t)), this.fortSprite.anchor.set(.5, 1), this.fortSprite.scale.set(2, 2), this.fortSprite.x = s.x, this.fortSprite.zIndex = this.fortSprite.y = s.y + 2, this.fortSprite.visible = !1, g.addChild(this.fortSprite))
     }
     drawFence() {
       if (this.fence || (this.fence = new PIXI.Container, u.addChild(this.fence)), this.fenceRadius = this.gameModel.fenceRadius, !this.fenceTextures) {
         this.fenceTextures = [];
         for (let e = 0; e < 4; e++) this.fenceTextures.push(PIXI.Texture.from("fencepost" + (e + 1) + ".png"))
       }
-      this.fencePosts.forEach((e => e.visible = 0)), this.fence.cacheAsBitmap = 0;
+      this.fencePosts.forEach((e => e.visible = !1)), this.fence.cacheAsBitmap = !1;
       const e = Math.round(.4 * this.fenceRadius),
         t = 2 * Math.PI / e;
       for (let r = 0; r < e; r++) {
         let e;
-        this.fencePosts[r] ? (e = this.fencePosts[r], e.visible = 1) : (e = new PIXI.Sprite(getRandomElementFromArray(this.fenceTextures, Math.random())), this.fencePosts.push(e), this.fence.addChild(e)), e.anchor.set(.5, 1), e.scale.x = Math.random() > .5 ? 1 : -1;
+        this.fencePosts[r] ? (e = this.fencePosts[r], e.visible = !0) : (e = new PIXI.Sprite(getRandomElementFromArray(this.fenceTextures, Math.random())), this.fencePosts.push(e), this.fence.addChild(e)), e.anchor.set(.5, 1), e.scale.x = Math.random() > .5 ? 1 : -1;
         const n = 10 * Math.random() - 5,
           o = (0, s = this.fenceRadius + n, i = t * r, {
             x: 0 * Math.cos(i) - s * Math.sin(i),
@@ -3800,15 +3775,15 @@ var Incremancer;
         e.position.set(o.x, o.y)
       }
       var s, i;
-      this.fence.cacheAsBitmap = 1;
+      this.fence.cacheAsBitmap = !0;
       const r = this.zmMap.graveYardLocation;
       this.fence.x = r.x, this.fence.y = r.y
     }
     update(e) {
-      if (this.boneCollectors.addAndRemoveBoneCollectors(), this.harpies.addAndRemoveHarpies(), this.gameModel.isBossStage(this.gameModel.level) && this.updateHealthBar(), !this.gameModel.constructions.graveyard || this.gameModel.currentState != this.gameModel.states.playingLevel) return this.sprite.visible = 0, void(this.fence.visible = 0);
-      if ((this.level < 2 && this.gameModel.constructions.crypt || this.level < 3 && this.gameModel.constructions.fort || this.level < 4 && this.gameModel.constructions.fortress || this.level < 5 && this.gameModel.constructions.citadel) && this.drawGraveyard(), this.sprite.visible = 1, this.fortSprite && (this.fortSprite.visible = 1), 5 == this.level && Math.random() > .9 && (Math.random() > .5 ? this.smoke.newFireSmoke(this.sprite.x - 20, this.sprite.y - 113) : this.smoke.newFireSmoke(this.sprite.x + 20, this.sprite.y - 113)), this.gameModel.energy >= this.gameModel.energyMax && !this.gameModel.hidden)
+      if (this.boneCollectors.addAndRemoveBoneCollectors(), this.harpies.addAndRemoveHarpies(), this.gameModel.isBossStage(this.gameModel.level) && this.updateHealthBar(), !this.gameModel.constructions.graveyard || this.gameModel.currentState != this.gameModel.states.playingLevel) return this.sprite.visible = !1, void(this.fence.visible = !1);
+      if ((this.level < 2 && this.gameModel.constructions.crypt || this.level < 3 && this.gameModel.constructions.fort || this.level < 4 && this.gameModel.constructions.fortress || this.level < 5 && this.gameModel.constructions.citadel) && this.drawGraveyard(), this.sprite.visible = !0, this.fortSprite && (this.fortSprite.visible = !0), 5 == this.level && Math.random() > .9 && (Math.random() > .5 ? this.smoke.newFireSmoke(this.sprite.x - 20, this.sprite.y - 113) : this.smoke.newFireSmoke(this.sprite.x + 20, this.sprite.y - 113)), this.gameModel.energy >= this.gameModel.energyMax && !this.gameModel.hidden)
         for (let e = 0; e < this.gameModel.persistentData.graveyardZombies; e++) this.zombies.spawnZombie(this.sprite.x, this.sprite.y + (this.level > 2 ? 8 : 0));
-      this.bones.update(e), this.boneCollectors.update(e), this.harpies.update(e), this.gameModel.constructions.fence && this.gameModel.currentState == this.gameModel.states.playingLevel ? (this.fenceRadius !== this.gameModel.fenceRadius && this.drawFence(), this.fence.visible = 1) : this.fence.visible = 0, this.updatePlagueSpikes(e), this.updateSpikeSprites(e)
+      this.bones.update(e), this.boneCollectors.update(e), this.harpies.update(e), this.gameModel.constructions.fence && this.gameModel.currentState == this.gameModel.states.playingLevel ? (this.fenceRadius !== this.gameModel.fenceRadius && this.drawFence(), this.fence.visible = !0) : this.fence.visible = !1, this.updatePlagueSpikes(e), this.updateSpikeSprites(e)
     }
     updatePlagueSpikes(e) {
       if (this.gameModel.constructions.plagueSpikes && (this.spikeTimer -= e, this.spikeTimer < 0)) {
@@ -3824,10 +3799,10 @@ var Incremancer;
           t = this.spikeSprites[e];
           break
         }
-      t || (t = new PIXI.Sprite(this.spikeTexture), this.spikeSprites.push(t), g.addChild(t), t.anchor.set(.5, 1)), t.visible = 1, t.alpha = 1, t.x = e.x, t.y = e.y + 2, t.zIndex = t.y, t.scale.y = 2, t.scale.x = Math.random() > .5 ? 1.5 : -1.5
+      t || (t = new PIXI.Sprite(this.spikeTexture), this.spikeSprites.push(t), g.addChild(t), t.anchor.set(.5, 1)), t.visible = !0, t.alpha = 1, t.x = e.x, t.y = e.y + 2, t.zIndex = t.y, t.scale.y = 2, t.scale.x = Math.random() > .5 ? 1.5 : -1.5
     }
     updateSpikeSprites(e) {
-      for (let t = 0; t < this.spikeSprites.length; t++) this.spikeSprites[t].visible && (this.spikeSprites[t].alpha -= .4 * e, this.spikeSprites[t].alpha <= 0 && (this.spikeSprites[t].visible = 0))
+      for (let t = 0; t < this.spikeSprites.length; t++) this.spikeSprites[t].visible && (this.spikeSprites[t].alpha -= .4 * e, this.spikeSprites[t].alpha <= 0 && (this.spikeSprites[t].visible = !1))
     }
     isWithinFence(e) {
       return !(!this.gameModel.constructions.fence || this.gameModel.currentState != this.gameModel.states.playingLevel) && e.x > this.fence.x - this.fenceRadius && e.x < this.fence.x + this.fenceRadius && e.y > this.fence.y - this.fenceRadius && e.y < this.fence.y + this.fenceRadius && this.fastDistance(e.x, e.y, this.fence.x, this.fence.y) <= this.fenceRadius
@@ -3852,18 +3827,18 @@ var Incremancer;
         this.texture = [];
         for (let e = 0; e < 2; e++) this.texture.push(PIXI.Texture.from("bonecollector" + (e + 1) + ".png"))
       }
-      for (let e = 0; e < this.sprites.length; e++) this.sprites[e].boneList = [], this.sprites[e].target = 0, this.sprites[e].position.set(this.graveyard.sprite.x, this.graveyard.sprite.y), this.sprites[e].state = We.collecting
+      for (let e = 0; e < this.sprites.length; e++) this.sprites[e].boneList = [], this.sprites[e].target = !1, this.sprites[e].position.set(this.graveyard.sprite.x, this.graveyard.sprite.y), this.sprites[e].state = We.collecting
     }
     addAndRemoveBoneCollectors() {
       if (this.sprites.length > this.gameModel.persistentData.boneCollectors) {
         const e = this.sprites.pop();
         if (e.boneList)
-          for (let t = 0; t < e.boneList.length; t++) e.boneList[t].collector = 0, e.target && e.target.collector && (e.target.collector = 0);
+          for (let t = 0; t < e.boneList.length; t++) e.boneList[t].collector = !1, e.target && e.target.collector && (e.target.collector = !1);
         this.gameModel.addBones(e.bones), g.removeChild(e)
       }
       if (this.sprites.length < this.gameModel.persistentData.boneCollectors) {
         const e = new Ye(this.texture);
-        e.animationSpeed = .2, e.anchor.set(.5, 1), e.position.set(this.graveyard.sprite.x, this.graveyard.sprite.y), e.zIndex = e.position.y, e.visible = 1, e.scale.set(Math.random() > .5 ? this.scaling : -1 * this.scaling, this.scaling), e.xSpeed = 0, e.ySpeed = 0, e.bones = 0, e.speedFactor = 0, e.state = We.collecting, e.play(), e.boneList = [], this.sprites.push(e), g.addChild(e)
+        e.animationSpeed = .2, e.anchor.set(.5, 1), e.position.set(this.graveyard.sprite.x, this.graveyard.sprite.y), e.zIndex = e.position.y, e.visible = !0, e.scale.set(Math.random() > .5 ? this.scaling : -1 * this.scaling, this.scaling), e.xSpeed = 0, e.ySpeed = 0, e.bones = 0, e.speedFactor = 0, e.state = We.collecting, e.play(), e.boneList = [], this.sprites.push(e), g.addChild(e)
       }
     }
     update(e) {
@@ -3882,10 +3857,10 @@ var Incremancer;
               r < a && (a = r, i = this.bones.uncollected[e])
             }
           if (!i) break;
-          e.boneList.push(i), i.collector = 1, t = i.x, s = i.y
+          e.boneList.push(i), i.collector = !0, t = i.x, s = i.y
         }
       }
-      e.boneList.length > 0 ? e.target = e.boneList.shift() : e.target = 0
+      e.boneList.length > 0 ? e.target = e.boneList.shift() : e.target = !1
     }
     updateBoneCollector(e, t) {
       switch (!e.target || e.target.graveyard && e.state == We.collecting || this.updateSpeed(e, t), e.state) {
@@ -3893,7 +3868,7 @@ var Incremancer;
           if (e.target && e.target.value && e.target.visible || this.findNearestBone(e), e.target && e.target.value > 0 && this.fastDistance(e.position.x, e.position.y, e.target.x, e.target.y) < this.collectDistance && (e.bones += e.target.value, e.target.value = 0, e.speedFactor = 0), e.bones >= this.gameModel.boneCollectorCapacity || !e.target) return e.state = We.returning, void(e.target = this.graveyard.sprite);
           break;
         case We.returning:
-          e.target || (e.target = this.graveyard.sprite), this.fastDistance(e.position.x, e.position.y, e.target.x, e.target.y) < this.collectDistance && (e.target = 0, this.gameModel.addBones(e.bones), e.bones = 0, e.state = We.collecting, e.speedFactor = 0)
+          e.target || (e.target = this.graveyard.sprite), this.fastDistance(e.position.x, e.position.y, e.target.x, e.target.y) < this.collectDistance && (e.target = !1, this.gameModel.addBones(e.bones), e.bones = 0, e.state = We.collecting, e.speedFactor = 0)
       }
     }
     updateSpeed(e, t) {
@@ -3911,12 +3886,12 @@ var Incremancer;
   }(qe || (qe = {}));
   class je extends PIXI.AnimatedSprite {
     constructor(e) {
-      super(e), this.target = null, this.xSpeed = 0, this.ySpeed = 0, this.bombs = 0, this.speedFactor = 0, this.animationSpeed = .2, this.anchor.set(.5, 1), this.visible = 1
+      super(e), this.target = null, this.xSpeed = 0, this.ySpeed = 0, this.bombs = 0, this.speedFactor = 0, this.animationSpeed = .2, this.anchor.set(.5, 1), this.visible = !0
     }
   }
   class $e extends PIXI.Sprite {
     constructor(e) {
-      super(e), this.dropped = 0, this.floor = 0, this.rotSpeed = 0, this.xSpeed = 0, this.ySpeed = 0, this.fire = 0, this.anchor.set(.5, .5)
+      super(e), this.dropped = !1, this.floor = 0, this.rotSpeed = 0, this.xSpeed = 0, this.ySpeed = 0, this.fire = !1, this.anchor.set(.5, .5)
     }
   }
   class Ke {
@@ -3925,19 +3900,19 @@ var Incremancer;
       Ke.instance = this
     }
     populate() {
-      if (this.model = ne.getInstance(), this.graveyard = new Oe, this.zombies = new ZombieManager, this.humans = new Se, this.tanks = new De, !this.textures) {
+      if (this.model = ne.getInstance(), this.graveyard = new Oe, this.zombies = new Ae, this.humans = new Se, this.tanks = new De, !this.textures) {
         this.textures = [];
         for (let e = 0; e < 2; e++) this.textures.push(PIXI.Texture.from("harpy" + (e + 1) + ".png"));
         this.bombTexture = PIXI.Texture.from("harpybomb.png")
       }
       void 0 === this.model.persistentData.harpies && (this.model.persistentData.harpies = 0);
-      for (let e = 0; e < this.bombSprites.length; e++) this.bombSprites[e].visible && (this.bombSprites[e].visible = 0, this.discardedBombSprites.push(this.bombSprites[e]));
-      for (let e = 0; e < this.sprites.length; e++) this.sprites[e].bomb = null, this.sprites[e].target = 0, this.sprites[e].position.set(this.graveyard.sprite.x, this.graveyard.sprite.y - this.bombHeight), this.sprites[e].state = qe.returning
+      for (let e = 0; e < this.bombSprites.length; e++) this.bombSprites[e].visible && (this.bombSprites[e].visible = !1, this.discardedBombSprites.push(this.bombSprites[e]));
+      for (let e = 0; e < this.sprites.length; e++) this.sprites[e].bomb = null, this.sprites[e].target = !1, this.sprites[e].position.set(this.graveyard.sprite.x, this.graveyard.sprite.y - this.bombHeight), this.sprites[e].state = qe.returning
     }
     addAndRemoveHarpies() {
       if (this.sprites.length > this.model.persistentData.harpies) {
         const e = this.sprites.pop();
-        e.target = 0, e.bomb && (e.bomb.dropped = 1, e.bomb.floor = e.bomb.y + this.bombHeight), b.removeChild(e), this.discardedSprites.push(e)
+        e.target = !1, e.bomb && (e.bomb.dropped = !0, e.bomb.floor = e.bomb.y + this.bombHeight), b.removeChild(e), this.discardedSprites.push(e)
       }
       if (this.sprites.length < this.model.persistentData.harpies) {
         const e = this.discardedSprites.length > 0 ? this.discardedSprites.pop() : new je(this.textures);
@@ -3949,19 +3924,19 @@ var Incremancer;
       for (let t = 0; t < this.bombSprites.length; t++) this.bombSprites[t].visible && this.updateBomb(this.bombSprites[t], e)
     }
     updateBomb(e, t) {
-      e.dropped ? (e.rotation += t * e.rotSpeed, e.ySpeed += 50 * t, e.scale.x = e.scale.y -= .2 * t, e.y += e.ySpeed * t, e.y >= e.floor - 2 && (e.visible = 0, this.discardedBombSprites.push(e), e.fire && this.humans.burnHuman(e.target, .1 * this.model.zombieHealth), this.zombies.causePlagueExplosion(e, .2 * this.model.zombieHealth, 0, 0))) : (e.x = e.harpy.x, e.y = e.harpy.y)
+      e.dropped ? (e.rotation += t * e.rotSpeed, e.ySpeed += 50 * t, e.scale.x = e.scale.y -= .2 * t, e.y += e.ySpeed * t, e.y >= e.floor - 2 && (e.visible = !1, this.discardedBombSprites.push(e), e.fire && this.humans.burnHuman(e.target, .1 * this.model.zombieHealth), this.zombies.causePlagueExplosion(e, .2 * this.model.zombieHealth, !1, !1))) : (e.x = e.harpy.x, e.y = e.harpy.y)
     }
     updateHarpy(e, t) {
       switch (e.state) {
         case qe.bombing:
           if (!e.target || e.target.graveyard || e.target.dead)
-            if (this.model.tankBuster && this.model.isBossStage(this.model.level) && this.tanks.aliveTanks.length > 0) e.target = getRandomElementFromArray(this.tanks.aliveTanks, Math.random()), e.bomb.fire = 1;
+            if (this.model.tankBuster && this.model.isBossStage(this.model.level) && this.tanks.aliveTanks.length > 0) e.target = getRandomElementFromArray(this.tanks.aliveTanks, Math.random()), e.bomb.fire = !0;
             else {
               for (let t = 0; t < 8 && (e.target = getRandomElementFromArray(this.humans.aliveHumans, Math.random()), e.target && !(this.fastDistance(e.x, e.y, e.target.x, e.target.y - this.bombHeight) < 500)); t++);
-              e.bomb.fire = 0
+              e.bomb.fire = !1
             }
           if (!e.target) return void(e.state = qe.returning);
-          this.fastDistance(e.x, e.y, e.target.x, e.target.y - this.bombHeight) < 10 ? (e.bombs--, e.bomb.dropped = 1, e.bomb.floor = e.target.y, e.bomb.target = e.target, e.bomb = null, e.speedFactor = 0, e.target = 0, e.bombs <= 0 ? e.state = qe.returning : this.getBomb(e)) : this.updateHarpySpeed(e, t);
+          this.fastDistance(e.x, e.y, e.target.x, e.target.y - this.bombHeight) < 10 ? (e.bombs--, e.bomb.dropped = !0, e.bomb.floor = e.target.y, e.bomb.target = e.target, e.bomb = null, e.speedFactor = 0, e.target = !1, e.bombs <= 0 ? e.state = qe.returning : this.getBomb(e)) : this.updateHarpySpeed(e, t);
           break;
         case qe.returning:
           e.target || (e.target = this.graveyard.sprite), this.fastDistance(e.x, e.y, e.target.x, e.target.y - this.bombHeight) < 10 ? (e.bombs = this.model.harpyBombs, e.bomb || this.getBomb(e), e.state = qe.bombing, e.speedFactor = 0) : this.updateHarpySpeed(e, t)
@@ -3969,7 +3944,7 @@ var Incremancer;
     }
     getBomb(e) {
       let t;
-      this.discardedBombSprites.length > 0 ? t = this.discardedBombSprites.pop() : (t = new $e(this.bombTexture), this.bombSprites.push(t), b.addChild(t)), t.scale.x = t.scale.y = 2, t.rotation = 0, t.rotSpeed = Math.random() > .5 ? 4 : -4, t.ySpeed = 0, t.visible = 1, t.dropped = 0, t.harpy = e, e.bomb = t
+      this.discardedBombSprites.length > 0 ? t = this.discardedBombSprites.pop() : (t = new $e(this.bombTexture), this.bombSprites.push(t), b.addChild(t)), t.scale.x = t.scale.y = 2, t.rotation = 0, t.rotSpeed = Math.random() > .5 ? 4 : -4, t.ySpeed = 0, t.visible = !0, t.dropped = !1, t.harpy = e, e.bomb = t
     }
     updateHarpySpeed(e, t) {
       e.speedFactor = Math.min(1, e.speedFactor += 2 * t);
@@ -4006,8 +3981,8 @@ var Incremancer;
       this.gameModel = ne.getInstance(), this.container || (this.setup(new PIXI.Container, PIXI.Texture.from("pp.png")), b.addChild(this.container)), this.targetElement = document.getElementById("prestige-button"), this.animElement = document.getElementById("prestige-bg")
     }
     update(e) {
-      if (!this.gameModel.persistentData.particles) return void(this.container.visible = 0);
-      this.container.visible = 1;
+      if (!this.gameModel.persistentData.particles) return void(this.container.visible = !1);
+      this.container.visible = !0;
       let t = {
         x: 0,
         y: 0
@@ -4028,7 +4003,7 @@ var Incremancer;
         }),
         r = 300 * a.x - e.xSpeed,
         n = 300 * a.y - e.ySpeed;
-      if (e.xSpeed += r * t, e.ySpeed += n * t, e.x += e.xSpeed * t, e.y += e.ySpeed * t, fastDistance(e.x, e.y, s.x, s.y) < 30 && (e.visible = 0, e.x = 100, e.y = 100, this.animElement)) {
+      if (e.xSpeed += r * t, e.ySpeed += n * t, e.x += e.xSpeed * t, e.y += e.ySpeed * t, fastDistance(e.x, e.y, s.x, s.y) < 30 && (e.visible = !1, e.x = 100, e.y = 100, this.animElement)) {
         const e = this.animElement;
         e.classList.toggle("levelup"), setTimeout((function() {
           e.classList.toggle("levelup")
@@ -4038,7 +4013,7 @@ var Incremancer;
     newPart(e, t) {
       if (!this.container.visible) return;
       const s = this.getSprite();
-      s.x = e, s.y = t - 10, s.visible = 1, s.scale.set(2, 2), s.xSpeed = 0, s.ySpeed = -100
+      s.x = e, s.y = t - 10, s.visible = !0, s.scale.set(2, 2), s.xSpeed = 0, s.ySpeed = -100
     }
   }
   class _e {
@@ -4056,45 +4031,45 @@ var Incremancer;
       if (this.gameModel = ne.getInstance(), this.viewableArea = viewableArea, this.container || (this.container = new PIXI.Container, p.addChild(this.container), this.texture = this.getTexture("#ff0000"), this.plagueTexture = this.getTexture("#00ff00")), this.sprites.length < this.maxParts)
         for (let e = 0; e < this.maxParts; e++) {
           const e = new ht(this.texture);
-          this.sprites.push(e), e.visible = 0, Math.random() > .5 && e.scale.set(2, 2), this.container.addChild(e)
+          this.sprites.push(e), e.visible = !1, Math.random() > .5 && e.scale.set(2, 2), this.container.addChild(e)
         }
     }
     update(e) {
       if (this.gameModel.persistentData.particles) {
-        this.container.visible = 1, this.visibleParts = 0;
+        this.container.visible = !0, this.visibleParts = 0;
         for (let t = 0; t < this.sprites.length; t++) this.sprites[t].visible && (this.updatePart(this.sprites[t], e), this.visibleParts++)
-      } else this.container.visible = 0
+      } else this.container.visible = !1
     }
     updatePart(e, t) {
-      e.hitFloor ? (e.alpha -= this.fadeSpeed * t, e.alpha <= 0 && (e.visible = 0)) : (e.ySpeed += this.gravity * t, e.x += e.xSpeed * t, e.y += e.ySpeed * t, e.y >= e.floor && (e.hitFloor = 1))
+      e.hitFloor ? (e.alpha -= this.fadeSpeed * t, e.alpha <= 0 && (e.visible = !1)) : (e.ySpeed += this.gravity * t, e.x += e.xSpeed * t, e.y += e.ySpeed * t, e.y >= e.floor && (e.hitFloor = !0))
     }
     newPart(e, t, s) {
       if (this.viewableArea.hideParticle(e, t)) return;
       const i = this.sprites[this.partCounter++];
-      this.partCounter >= this.maxParts && (this.partCounter = 0), i.texture = s ? this.plagueTexture : this.texture, i.x = e, i.y = t - (8 + 10 * Math.random()), i.floor = t, i.hitFloor = 0, i.visible = 1, i.alpha = 1, i.scale.set(1, 1), Math.random() > .5 && i.scale.set(2, 2);
+      this.partCounter >= this.maxParts && (this.partCounter = 0), i.texture = s ? this.plagueTexture : this.texture, i.x = e, i.y = t - (8 + 10 * Math.random()), i.floor = t, i.hitFloor = !1, i.visible = !0, i.alpha = 1, i.scale.set(1, 1), Math.random() > .5 && i.scale.set(2, 2);
       const a = Math.random() * (s ? 1.5 * this.spraySpeed : this.spraySpeed);
       i.xSpeed = Math.random() > .5 ? -1 * a : a, i.ySpeed = -1 * (s ? 1.5 * this.spraySpeed : this.spraySpeed)
     }
     newSplatter(e, t) {
       if (this.container.visible)
         if (this.visibleParts < .9 * this.maxParts)
-          for (let s = 0; s < this.partsPerSplatter; s++) this.newPart(e, t, 0);
+          for (let s = 0; s < this.partsPerSplatter; s++) this.newPart(e, t, !1);
         else
-          for (let s = 0; s < this.ecoPartsPerSplatter; s++) this.newPart(e, t, 0)
+          for (let s = 0; s < this.ecoPartsPerSplatter; s++) this.newPart(e, t, !1)
     }
     newPlagueSplatter(e, t) {
       if (this.container.visible)
-        for (let s = 0; s < this.partsPerSplatter; s++) this.newPart(e, t, 1)
+        for (let s = 0; s < this.partsPerSplatter; s++) this.newPart(e, t, !0)
     }
   }
   class et extends J {
     constructor() {
-      super(...arguments), this.fadeTime = 0, this.floor = 0, this.rotSpeed = 0, this.value = 1, this.collector = null, this.hitFloor = 0
+      super(...arguments), this.fadeTime = 0, this.floor = 0, this.rotSpeed = 0, this.value = 1, this.collector = null, this.hitFloor = !1
     }
   }
   class tt {
     constructor() {
-      if (this.partsLimit = 100, this.partsPerSplatter = 3, this.container = null, this.sprites = [], this.discardedSprites = [], this.uncollected = [], this.gravity = 100, this.spraySpeed = 20, this.fadeTime = 40, this.fadeSpeed = .2, this.fadeBones = 0, this.texture = null, this.gameModel = null, tt.instance) return tt.instance;
+      if (this.partsLimit = 100, this.partsPerSplatter = 3, this.container = null, this.sprites = [], this.discardedSprites = [], this.uncollected = [], this.gravity = 100, this.spraySpeed = 20, this.fadeTime = 40, this.fadeSpeed = .2, this.fadeBones = !1, this.texture = null, this.gameModel = null, tt.instance) return tt.instance;
       tt.instance = this
     }
     getTexture() {
@@ -4105,7 +4080,7 @@ var Incremancer;
     }
     initialize() {
       this.gameModel = ne.getInstance(), this.container || (this.container = new PIXI.Container, p.addChild(this.container), this.texture = this.getTexture());
-      for (let e = 0; e < this.sprites.length; e++) this.sprites[e].value = 0, this.sprites[e].visible = 0, this.container.removeChild(this.sprites[e]);
+      for (let e = 0; e < this.sprites.length; e++) this.sprites[e].value = 0, this.sprites[e].visible = !1, this.container.removeChild(this.sprites[e]);
       this.discardedSprites = this.sprites.slice()
     }
     update(e) {
@@ -4114,12 +4089,12 @@ var Incremancer;
       this.uncollected = t, this.fadeBones = t.length > 200
     }
     updatePart(e, t) {
-      if (e.value <= 0) return e.visible = 0, this.discardedSprites.push(e), void this.container.removeChild(e);
-      e.hitFloor ? (this.fadeBones && (e.fadeTime -= t), e.fadeTime < 0 && !e.collector && (e.alpha -= this.fadeSpeed * t, e.alpha <= 0 && (e.visible = 0, this.discardedSprites.push(e), this.container.removeChild(e)))) : (e.ySpeed += this.gravity * t, e.rotation += e.rotSpeed * t, e.x += e.xSpeed * t, e.y += e.ySpeed * t, e.y >= e.floor && (e.hitFloor = 1))
+      if (e.value <= 0) return e.visible = !1, this.discardedSprites.push(e), void this.container.removeChild(e);
+      e.hitFloor ? (this.fadeBones && (e.fadeTime -= t), e.fadeTime < 0 && !e.collector && (e.alpha -= this.fadeSpeed * t, e.alpha <= 0 && (e.visible = !1, this.discardedSprites.push(e), this.container.removeChild(e)))) : (e.ySpeed += this.gravity * t, e.rotation += e.rotSpeed * t, e.x += e.xSpeed * t, e.y += e.ySpeed * t, e.y >= e.floor && (e.hitFloor = !0))
     }
     newPart(e, t, s) {
       let i = null;
-      this.discardedSprites.length > 0 ? i = this.discardedSprites.pop() : (i = new et(this.texture), this.sprites.push(i)), this.container.addChild(i), i.x = e, i.y = t - (8 + 10 * Math.random()), i.fadeTime = Math.random() * this.fadeTime, i.rotation = 5 * Math.random(), i.rotSpeed = 4 * Math.random() - 2, i.floor = t, i.hitFloor = 0, i.collector = 0, i.visible = 1, i.value = s, i.alpha = 1, i.scale.set(1, 1), Math.random() > .5 && i.scale.set(1.5, 1.5);
+      this.discardedSprites.length > 0 ? i = this.discardedSprites.pop() : (i = new et(this.texture), this.sprites.push(i)), this.container.addChild(i), i.x = e, i.y = t - (8 + 10 * Math.random()), i.fadeTime = Math.random() * this.fadeTime, i.rotation = 5 * Math.random(), i.rotSpeed = 4 * Math.random() - 2, i.floor = t, i.hitFloor = !1, i.collector = !1, i.visible = !0, i.value = s, i.alpha = 1, i.scale.set(1, 1), Math.random() > .5 && i.scale.set(1.5, 1.5);
       const a = Math.random() * this.spraySpeed;
       i.xSpeed = Math.random() > .5 ? -1 * a : a, i.ySpeed = -1 * this.spraySpeed
     }
@@ -4146,14 +4121,14 @@ var Incremancer;
       if (this.sprites.length < this.maxSprites)
         for (let e = 0; e < this.maxSprites; e++) {
           const e = new st(this.exclamationTexture);
-          e.anchor.set(.5, 1), this.sprites.push(e), e.visible = 0
+          e.anchor.set(.5, 1), this.sprites.push(e), e.visible = !1
         }
       this.discardedSprites = this.sprites.slice()
     }
     newIcon(e, t, s) {
       if (e.hasIcon) return;
       let i;
-      this.discardedSprites.length > 0 ? i = this.discardedSprites.pop() : (i = new st(this.exclamationTexture), i.anchor.set(.5, 1), this.sprites.push(i)), this.container.addChild(i), i.texture = t, i.target = e, i.target.hasIcon = 1, i.x = e.x, i.y = e.y - this.height, i.visible = 1, i.time = s, i.alpha = 1, i.scale.set(1.5, 1.5)
+      this.discardedSprites.length > 0 ? i = this.discardedSprites.pop() : (i = new st(this.exclamationTexture), i.anchor.set(.5, 1), this.sprites.push(i)), this.container.addChild(i), i.texture = t, i.target = e, i.target.hasIcon = !0, i.x = e.x, i.y = e.y - this.height, i.visible = !0, i.time = s, i.alpha = 1, i.scale.set(1.5, 1.5)
     }
     newHealing(e) {
       this.newIcon(e, this.healTexture, 1)
@@ -4177,17 +4152,17 @@ var Incremancer;
       for (let t = 0; t < this.sprites.length; t++) this.sprites[t].visible && this.updateSprite(this.sprites[t], e)
     }
     updateSprite(e, t) {
-      e.x = e.target.x, e.y = e.target.y - this.height, e.time -= t, e.time < 0 && (e.alpha -= t * this.fadeSpeed, e.alpha < 0 && (e.visible = 0, e.target.hasIcon = 0, this.discardedSprites.push(e)))
+      e.x = e.target.x, e.y = e.target.y - this.height, e.time -= t, e.time < 0 && (e.alpha -= t * this.fadeSpeed, e.alpha < 0 && (e.visible = !1, e.target.hasIcon = !1, this.discardedSprites.push(e)))
     }
   }
   class at extends J {
     constructor() {
-      super(...arguments), this.plague = 0, this.rocket = 0, this.fireball = 0, this.darkorb = 0, this.target = null, this.source = null, this.hitbox = 0, this.damage = 0
+      super(...arguments), this.plague = !1, this.rocket = !1, this.fireball = !1, this.darkorb = !1, this.target = null, this.source = null, this.hitbox = 0, this.damage = 0
     }
   }
   class rt {
     constructor() {
-      if (this.zombies = new ZombieManager, this.humans = new Se, this.graveyard = new Oe, this.army = new Te, this.maxParts = 20, this.speed = 150, this.hitbox = 12, this.sprites = [], this.discardedSprites = [], this.fadeSpeed = .2, rt.instance) return rt.instance;
+      if (this.zombies = new Ae, this.humans = new Se, this.graveyard = new Oe, this.army = new Te, this.maxParts = 20, this.speed = 150, this.hitbox = 12, this.sprites = [], this.discardedSprites = [], this.fadeSpeed = .2, rt.instance) return rt.instance;
       rt.instance = this
     }
     getTexture() {
@@ -4216,7 +4191,7 @@ var Incremancer;
       if (this.sprites.length < this.maxParts)
         for (let e = 0; e < this.maxParts; e++) {
           const e = new at(this.texture);
-          e.scale.x = e.scale.y = 2, e.visible = 0, this.sprites.push(e)
+          e.scale.x = e.scale.y = 2, e.visible = !1, this.sprites.push(e)
         }
       this.discardedSprites = this.sprites.slice()
     }
@@ -4224,11 +4199,11 @@ var Incremancer;
       for (let t = 0; t < this.sprites.length; t++) this.sprites[t].visible && this.updatePart(this.sprites[t], e)
     }
     updatePart(e, t) {
-      fastDistance(e.x, e.y + 8, e.target.x, e.target.y) < e.hitbox ? (e.plague ? (this.zombies.inflictPlague(e.target), this.humans.damageHuman(e.target, e.damage)) : e.fireball ? (this.humans.burnHuman(e.target, e.damage), this.humans.damageHuman(e.target, e.damage)) : e.darkorb ? e.target.flags.dead || (this.humans.damageHuman(e.target, e.damage), e.target.timer.dogStun = 5, (new SkeletonManager).orbHit(e.target)) : !e.rocket && e.target.bulletReflect && Math.random() < e.target.bulletReflect ? this.newBullet(e.target, e.source, e.damage, 0, 0, 0) : e.rocket ? (e.target.graveyard && this.graveyard.damageGraveyard(e.damage), this.army.droneExplosion(e.target.x, e.target.y, null, e.damage)) : (e.target.zombie && this.zombies.damageZombie(e.target, e.damage, e.source), e.target.human && this.humans.damageHuman(e.target, e.damage)), e.visible = 0, this.discardedSprites.push(e), g.removeChild(e)) : (e.x += e.xSpeed * t, e.y += e.ySpeed * t, e.zIndex = e.y), e.darkorb ? e.alpha -= this.fadeSpeed * t * .4 : e.alpha -= this.fadeSpeed * t, e.alpha < 0 && (e.visible = 0, this.discardedSprites.push(e), g.removeChild(e))
+      fastDistance(e.x, e.y + 8, e.target.x, e.target.y) < e.hitbox ? (e.plague ? (this.zombies.inflictPlague(e.target), this.humans.damageHuman(e.target, e.damage)) : e.fireball ? (this.humans.burnHuman(e.target, e.damage), this.humans.damageHuman(e.target, e.damage)) : e.darkorb ? e.target.flags.dead || (this.humans.damageHuman(e.target, e.damage), e.target.timer.dogStun = 5, (new Xe).orbHit(e.target)) : !e.rocket && e.target.bulletReflect && Math.random() < e.target.bulletReflect ? this.newBullet(e.target, e.source, e.damage, !1, !1, !1) : e.rocket ? (e.target.graveyard && this.graveyard.damageGraveyard(e.damage), this.army.droneExplosion(e.target.x, e.target.y, null, e.damage)) : (e.target.zombie && this.zombies.damageZombie(e.target, e.damage, e.source), e.target.human && this.humans.damageHuman(e.target, e.damage)), e.visible = !1, this.discardedSprites.push(e), g.removeChild(e)) : (e.x += e.xSpeed * t, e.y += e.ySpeed * t, e.zIndex = e.y), e.darkorb ? e.alpha -= this.fadeSpeed * t * .4 : e.alpha -= this.fadeSpeed * t, e.alpha < 0 && (e.visible = !1, this.discardedSprites.push(e), g.removeChild(e))
     }
-    newBullet(e, t, s, i = 0, a = 0, r = 0, n = 0) {
+    newBullet(e, t, s, i = !1, a = !1, r = !1, n = !1) {
       let o;
-      this.discardedSprites.length > 0 ? o = this.discardedSprites.pop() : (o = new at(this.texture), o.scale.x = o.scale.y = 2, this.sprites.push(o)), g.addChild(o), o.texture = n ? this.darkOrbTexture : r ? this.fireballTexture : this.texture, o.source = e, o.x = e.x, o.y = e.y - 8, i && (o.y = e.y - 12), o.target = t, o.damage = s, o.visible = 1, o.alpha = 1, o.hitbox = a ? 1.5 * this.hitbox : this.hitbox, o.plague = i, o.rocket = a, o.fireball = r, o.darkorb = n, o.tint = i ? 65280 : a ? 16772096 : 16777215, o.scale.x = o.scale.y = a ? 2.5 : 2, r && (o.scale.x = o.scale.y = 1.5);
+      this.discardedSprites.length > 0 ? o = this.discardedSprites.pop() : (o = new at(this.texture), o.scale.x = o.scale.y = 2, this.sprites.push(o)), g.addChild(o), o.texture = n ? this.darkOrbTexture : r ? this.fireballTexture : this.texture, o.source = e, o.x = e.x, o.y = e.y - 8, i && (o.y = e.y - 12), o.target = t, o.damage = s, o.visible = !0, o.alpha = 1, o.hitbox = a ? 1.5 * this.hitbox : this.hitbox, o.plague = i, o.rocket = a, o.fireball = r, o.darkorb = n, o.tint = i ? 65280 : a ? 16772096 : 16777215, o.scale.x = o.scale.y = a ? 2.5 : 2, r && (o.scale.x = o.scale.y = 1.5);
       const h = t.x - o.x,
         l = t.y - 8 - o.y,
         d = Math.abs(h),
@@ -4280,7 +4255,7 @@ var Incremancer;
   }
   class ot extends _ {
     constructor() {
-      if (super(), this.tint = 16777215, this.viewableArea = null, this.allowTint = 0, this.gameModel = null, this.sizeVariance = .2, ot.instance) return ot.instance;
+      if (super(), this.tint = 16777215, this.viewableArea = null, this.allowTint = !1, this.gameModel = null, this.sizeVariance = .2, ot.instance) return ot.instance;
       ot.instance = this, this.create = e => new J(e)
     }
     getTexture() {
@@ -4296,9 +4271,9 @@ var Incremancer;
     }
     update(e) {
       if (this.gameModel.persistentData.particles) {
-        this.container.visible = 1;
+        this.container.visible = !0;
         for (let t = 0; t < this.sprites.length; t++) this.sprites[t].visible && this.updatePart(this.sprites[t], e)
-      } else this.container.visible = 0
+      } else this.container.visible = !1
     }
     updatePart(e, t) {
       e.scale.y -= 1.5 * t, e.scale.x = e.scale.y, e.y += e.ySpeed * t, e.scale.x <= 0 && this.discardSprite(e)
@@ -4306,7 +4281,7 @@ var Incremancer;
     newSmoke(e, t, s = 0) {
       if (this.viewableArea.hideParticle(e, t)) return;
       const i = this.getSprite();
-      this.allowTint && (i.tint = this.tint), i.ySpeed = -30, i.anchor.set(.5, .5), i.scale.x = i.scale.y = 1.6 - this.sizeVariance + Math.random() * this.sizeVariance * 2, i.visible = 1, i.x = e - s + Math.random() * s * 2, i.y = t - s + Math.random() * s * 2
+      this.allowTint && (i.tint = this.tint), i.ySpeed = -30, i.anchor.set(.5, .5), i.scale.x = i.scale.y = 1.6 - this.sizeVariance + Math.random() * this.sizeVariance * 2, i.visible = !0, i.x = e - s + Math.random() * s * 2, i.y = t - s + Math.random() * s * 2
     }
     newFireSmoke(e, t) {
       this.container.visible && (this.tint = 16777215, this.newSmoke(e, t, 3))
@@ -4332,7 +4307,7 @@ var Incremancer;
   }
   class ht extends J {
     constructor() {
-      super(...arguments), this.hitFloor = 0
+      super(...arguments), this.hitFloor = !1
     }
   }
   class lt extends _ {
@@ -4351,18 +4326,18 @@ var Incremancer;
     }
     update(e) {
       if (this.gameModel.persistentData.particles) {
-        this.container.visible = 1;
+        this.container.visible = !0;
         for (let t = 0; t < this.sprites.length; t++) this.sprites[t].visible && this.updatePart(this.sprites[t], e)
-      } else this.container.visible = 0
+      } else this.container.visible = !1
     }
     updatePart(e, t) {
-      e.hitFloor ? (e.alpha -= this.fadeSpeed * t, e.alpha <= 0 && this.discardSprite(e)) : (e.ySpeed += this.gravity * t, e.x += e.xSpeed * t, e.y += e.ySpeed * t, e.y >= e.floor && (e.hitFloor = 1), e.rotation += e.rotSpeed * t)
+      e.hitFloor ? (e.alpha -= this.fadeSpeed * t, e.alpha <= 0 && this.discardSprite(e)) : (e.ySpeed += this.gravity * t, e.x += e.xSpeed * t, e.y += e.ySpeed * t, e.y >= e.floor && (e.hitFloor = !0), e.rotation += e.rotSpeed * t)
     }
     newPart(e, t, s) {
       if (!this.container.visible) return;
       if (this.viewableArea.hideParticle(e, t)) return;
       const i = this.getSprite();
-      i.tint = s, i.x = e, i.y = t - (8 + 10 * Math.random()), i.floor = t, i.hitFloor = 0, i.rotation = 5 * Math.random(), i.rotSpeed = 4 * Math.random() - 2, i.alpha = 1, i.scale.set(2, 2);
+      i.tint = s, i.x = e, i.y = t - (8 + 10 * Math.random()), i.floor = t, i.hitFloor = !1, i.rotation = 5 * Math.random(), i.rotSpeed = 4 * Math.random() - 2, i.alpha = 1, i.scale.set(2, 2);
       const a = Math.random() * this.spraySpeed;
       i.xSpeed = Math.random() > .5 ? -1 * a : a, i.ySpeed = -1 * (10 + Math.random() * this.spraySpeed)
     }
@@ -4371,11 +4346,11 @@ var Incremancer;
         for (let i = 0; i < this.partsPerSplatter; i++) this.newPart(e, t, s)
     }
   }
-  const dt = new SkeletonManager,
-    ct = new ZombieManager,
+  const dt = new Xe,
+    ct = new Ae,
     ut = new Ue,
     pt = new ae,
-    gt = new SpellManager,
+    gt = new q,
     mt = "Golem Mastery",
     bt = "Zombie Mastery",
     ft = "Skeleton Mastery",
@@ -4495,7 +4470,7 @@ var Incremancer;
   }
 
   function wt() {
-    dt.persistent.talentReset && (St.forEach((e => e.reset())), dt.persistent.talentReset = 0)
+    dt.persistent.talentReset && (St.forEach((e => e.reset())), dt.persistent.talentReset = !1)
   }
   St.forEach((e => {
     if (0 == Mt.filter((t => t.name == e.group)).length) {
@@ -4508,11 +4483,11 @@ var Incremancer;
   })).filter("whole", (function() {
     return formatWhole
   })).config(["$compileProvider", function(e) {
-    e.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|javascript|data|blob):/), e.debugInfoEnabled(0)
+    e.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|javascript|data|blob):/), e.debugInfoEnabled(!1)
   }]).controller("ZombieController", ["$scope", "$interval", "$document", function(e, t, s) {
-    const i = new SkeletonManager,
-      a = new SpellManager,
-      r = new PartFactory,
+    const i = new Xe,
+      a = new q,
+      r = new se,
       o = new ae,
       h = new oe,
       l = new de,
@@ -4526,34 +4501,34 @@ var Incremancer;
     }
     c.model = ne.getInstance(), c.skeleton = function() {
       return i.persistent
-    }, c.spells = a, c.keysPressed = KeysPressed, c.files = [], c.messageTimer = 4, c.message = 0, c.lastUpdate = 0, c.sidePanels = {}, c.upgrades = [], c.currentShopFilter = "blood", c.currentConstructionFilter = "available", c.graveyardTab = "minions", c.trophyTab = "all", c.factoryTab = "parts", c.factoryStats = {}, c.moveTooltip = moveToolTip, c.confirmMessage = "", c.confirmCancel = function() {
-      c.confirmCallback = 0
+    }, c.spells = a, c.keysPressed = KeysPressed, c.files = [], c.messageTimer = 4, c.message = !1, c.lastUpdate = 0, c.sidePanels = {}, c.upgrades = [], c.currentShopFilter = "blood", c.currentConstructionFilter = "available", c.graveyardTab = "minions", c.trophyTab = "all", c.factoryTab = "parts", c.factoryStats = {}, c.moveTooltip = moveToolTip, c.confirmMessage = "", c.confirmCancel = function() {
+      c.confirmCallback = !1
     }, c.closeSidePanels = function() {
-      c.currentShopFilter = "blood", c.currentConstructionFilter = "available", c.graveyardTab = "minions", c.factoryTab = "parts", c.sidePanels.options = 0, c.sidePanels.graveyard = 0, c.sidePanels.runesmith = 0, c.sidePanels.prestige = 0, c.sidePanels.construction = 0, c.sidePanels.shop = 0, c.sidePanels.open = 0, c.sidePanels.factory = 0, c.levelSelect.shown = 0
+      c.currentShopFilter = "blood", c.currentConstructionFilter = "available", c.graveyardTab = "minions", c.factoryTab = "parts", c.sidePanels.options = !1, c.sidePanels.graveyard = !1, c.sidePanels.runesmith = !1, c.sidePanels.prestige = !1, c.sidePanels.construction = !1, c.sidePanels.shop = !1, c.sidePanels.open = !1, c.sidePanels.factory = !1, c.levelSelect.shown = !1
     }, c.openSidePanel = function(e) {
       switch (c.closeSidePanels(), e) {
         case "shop":
-          c.filterShop(c.currentShopFilter), c.sidePanels.shop = 1;
+          c.filterShop(c.currentShopFilter), c.sidePanels.shop = !0;
           break;
         case "construction":
-          c.filterConstruction(c.currentConstructionFilter), c.sidePanels.construction = 1;
+          c.filterConstruction(c.currentConstructionFilter), c.sidePanels.construction = !0;
           break;
         case "graveyard":
-          c.sidePanels.graveyard = 1, c.graveyardTab = "minions", c.trophyTab = "all";
+          c.sidePanels.graveyard = !0, c.graveyardTab = "minions", c.trophyTab = "all";
           break;
         case "runesmith":
-          c.sidePanels.runesmith = 1;
+          c.sidePanels.runesmith = !0;
           break;
         case "factory":
-          c.sidePanels.factory = 1, c.upgrades = r.generators, c.factoryStats = r.factoryStats(), c.factory.updateDelays();
+          c.sidePanels.factory = !0, c.upgrades = r.generators, c.factoryStats = r.factoryStats(), c.factory.updateDelays();
           break;
         case "prestige":
-          c.upgrades = h.prestigeUpgrades.filter((e => 0 == e.cap || c.currentRank(e) < e.cap)), c.upgrades.push(...h.prestigeUpgrades.filter((e => 0 !== e.cap && c.currentRank(e) >= e.cap))), c.upgrades = c.upgrades.filter((e => 115 !== e.id)), c.sidePanels.prestige = 1;
+          c.upgrades = h.prestigeUpgrades.filter((e => 0 == e.cap || c.currentRank(e) < e.cap)), c.upgrades.push(...h.prestigeUpgrades.filter((e => 0 !== e.cap && c.currentRank(e) >= e.cap))), c.upgrades = c.upgrades.filter((e => 115 !== e.id)), c.sidePanels.prestige = !0;
           break;
         case "options":
-          c.sidePanels.options = 1, c.model.downloadSaveGame()
+          c.sidePanels.options = !0, c.model.downloadSaveGame()
       }
-      c.sidePanels.open = 1
+      c.sidePanels.open = !0
     }, c.graveyardTabSelect = function(e) {
       c.graveyardTab = e, "trophies" == e && (c.trophies = l.getTrophyList(), c.trophyTab = "all")
     }, c.trophyTabSelect = function(e) {
@@ -4582,7 +4557,7 @@ var Incremancer;
       }
     }, c.resetGame = function() {
       c.confirmMessage = "Are you sure you want to reset everything? If you have a cloud save it will also be deleted. Make sure you export your save game first.", c.confirmCallback = function() {
-        c.model.resetData(), c.confirmCallback = 0
+        c.model.resetData(), c.confirmCallback = !1
       }
     }, c.addBoneCollector = function() {
       c.model.getEnergyRate() >= 1 && c.model.persistentData.boneCollectors++
@@ -4645,14 +4620,14 @@ var Incremancer;
         for (let e = 0; e < r.generatorsApplied.length; e++) this.delays[r.generatorsApplied[e].id] = (-1 * (r.generatorsApplied[e].time - r.generatorsApplied[e].timeLeft)).toFixed(2)
       }
     }, c.levelSelect = {
-      shown: 0,
+      shown: !1,
       levelsPerPage: 50,
       levels: [],
       levelRanges: [],
       start: 1,
       showButton: () => c.model.persistentData.allTimeHighestLevel > 1,
       show() {
-        this.shown ? this.shown = 0 : (c.closeSidePanels(), this.shown = 1, this.level = c.model.levelInfo(c.model.level), this.start = Math.floor((this.level.level - 1) / this.levelsPerPage) * this.levelsPerPage + 1, this.populate())
+        this.shown ? this.shown = !1 : (c.closeSidePanels(), this.shown = !0, this.level = c.model.levelInfo(c.model.level), this.start = Math.floor((this.level.level - 1) / this.levelsPerPage) * this.levelsPerPage + 1, this.populate())
       },
       populate() {
         this.levels = [], this.levelRanges = [], this.start > this.levelsPerPage && this.levelRanges.push(this.start - this.levelsPerPage), this.levelRanges.push(this.start), this.start + this.levelsPerPage <= c.model.persistentData.allTimeHighestLevel + 1 && this.levelRanges.push(this.start + this.levelsPerPage);
@@ -4665,7 +4640,7 @@ var Incremancer;
         this.level = e
       },
       startLevel() {
-        c.model.startLevel(this.level.level), this.shown = 0
+        c.model.startLevel(this.level.level), this.shown = !1
       }
     }, c.addToHomeScreen = function() {
       c.model.deferredPrompt
@@ -4683,7 +4658,7 @@ var Incremancer;
       h.playPauseConstruction()
     }, c.cancelConstruction = function() {
       c.confirmMessage = "Are you sure you want to cancel construction? Used materials will not be refunded", c.confirmCallback = function() {
-        h.cancelConstruction(), c.upgrades = h.getAvailableConstructions(), c.confirmCallback = 0
+        h.cancelConstruction(), c.upgrades = h.getAvailableConstructions(), c.confirmCallback = !1
       }
     }, c.upgradeSubtitle = function(e) {
       switch (e.type) {
@@ -4808,7 +4783,7 @@ var Incremancer;
     }, c.nextLevel = function() {
       c.model.nextLevel()
     }, c.toggleAutoStart = function() {
-      c.model.persistentData.autoStart ? c.model.persistentData.autoStart = 0 : c.model.persistentData.autoStart = 1
+      c.model.persistentData.autoStart ? c.model.persistentData.autoStart = !1 : c.model.persistentData.autoStart = !0
     }, c.toggleResolution = function(e) {
       c.model.persistentData.resolution = e, c.model.setResolution(c.model.persistentData.resolution)
     }, c.getResolution = function() {
@@ -4818,7 +4793,7 @@ var Incremancer;
     }, c.zoom = function(e) {
       c.model.zoom(e)
     }, c.resetZoom = function() {
-      c.model.centerGameContainer(1)
+      c.model.centerGameContainer(!0)
     }, c.toggleShowFps = function() {
       c.model.persistentData.showfps = !c.model.persistentData.showfps
     }, c.toggleParticles = function() {
@@ -4827,13 +4802,13 @@ var Incremancer;
       return void 0 !== c.model.persistentData.prestigePointsEarned && c.model.persistentData.allTimeHighestLevel > 5
     }, c.doPrestige = function() {
       c.confirmMessage = "Are you sure you want to prestige now?", c.confirmCallback = function() {
-        c.model.prestige(), c.confirmCallback = 0
+        c.model.prestige(), c.confirmCallback = !1
       }
     }, c.constructionLeadsTo = function(e) {
       return h.constructionLeadsTo(e)
     }, c.howToPlay = ["Energy refills over time. You need 10 energy to spawn a zombie by clicking on the ground.", "Hold shift or control to spawn multiple zombies with a single click.", "Whenever one of your zombies attacks a human you will collect some blood.", "Killing a human or turning them into a zombie will earn you 1 brain.", "You can spend these currencies in the shop to purchase upgrades for your zombie horde.", "Hold shift to buy the maximum affordable number of upgrades.", "The world can be dragged with the mouse to explore it. Or by using the WASD or arrow keys.", "You can zoom in and out using your mouse wheel. Pinch to zoom on mobile."], c.updateMessages = function(e) {
-      c.message ? (c.messageTimer -= e, c.model.messageQueue.length > 0 && (c.messageTimer -= e), c.messageTimer < 0 && (c.message = 0, c.messageTimer = 4)) : c.model.messageQueue.length > 0 && (c.message = c.model.messageQueue.shift(), c.messageTimer = 4)
-    }, c.infusionAmount = 1e3, c.infusionMax = 0, c.infuseRune = function(e, t) {
+      c.message ? (c.messageTimer -= e, c.model.messageQueue.length > 0 && (c.messageTimer -= e), c.messageTimer < 0 && (c.message = !1, c.messageTimer = 4)) : c.model.messageQueue.length > 0 && (c.message = c.model.messageQueue.shift(), c.messageTimer = 4)
+    }, c.infusionAmount = 1e3, c.infusionMax = !1, c.infuseRune = function(e, t) {
       if (c.infusionMax) switch (t) {
         case "blood":
           h.infuseRune(e, t, c.model.persistentData.blood);
@@ -4872,7 +4847,7 @@ var Incremancer;
         case "brains":
           if (t > c.model.brainsMax) return "Brains capacity too low"
       }
-      return 0
+      return !1
     }, c.upgradeButtonText = function(e) {
       if (0 != e.cap && c.currentRank(e) >= e.cap) return "Sold Out";
       const t = c.upgradePrice(e);
@@ -4896,7 +4871,7 @@ var Incremancer;
     }, c.skeletonTimer = function() {
       return i.skeletonTimer()
     }, c.skeletonMenu = {
-      isShown: 0,
+      isShown: !1,
       tab: "inventory",
       changeTab(e) {
         this.tab = e
@@ -4906,7 +4881,7 @@ var Incremancer;
         this.tab = "inventory", this.upgrade = h.prestigeUpgrades.filter((e => 115 == e.id))[0], this.upgrades = Mt, this.isShown = !this.isShown, this.isShown && this.updateEquippedItems()
       },
       acceptOffer() {
-        i.acceptOffer(), this.isShown = 0
+        i.acceptOffer(), this.isShown = !1
       },
       anotherOffer: () => i.persistent.skeletons > 0 && c.model.persistentData.trophies.length >= 20 * i.persistent.xpRate,
       trophies: () => i.persistent.skeletons > 0 ? ` - ${c.model.persistentData.trophies.length} / ${20*i.persistent.xpRate} Trophies` : "",
@@ -5031,17 +5006,17 @@ var Incremancer;
         i.persistent.items.forEach((function(t) {
           t.id == e && (s = t)
         })), -1 == t ? i.destroyItem(s) : (s.s == t && (i.persistent.items.forEach((function(e) {
-          e.s == t && (e.q = 0)
-        })), s.q = 1, h.applyUpgrades()), this.updateEquippedItems())
+          e.s == t && (e.q = !1)
+        })), s.q = !0, h.applyUpgrades()), this.updateEquippedItems())
       },
       equipItem(e) {
         i.persistent.items.forEach((function(t) {
-          t.s == e.s && (t.q = 0)
-        })), e.q = 1, h.applyUpgrades(), this.updateEquippedItems()
+          t.s == e.s && (t.q = !1)
+        })), e.q = !0, h.applyUpgrades(), this.updateEquippedItems()
       },
       trashAll() {
         c.confirmMessage = "Are you sure you want to destroy all non-equipped items? You will earn " + formatWhole(i.xpForItems()) + " xp", c.confirmCallback = function() {
-          c.confirmCallback = 0, i.destroyAllItems()
+          c.confirmCallback = !1, i.destroyAllItems()
         }
       }
     }, s.ready((function() {
@@ -5119,7 +5094,7 @@ var Incremancer;
       link: function(t, s, i, a) {
         const r = t.item.s;
         s.bind("dragover", (function(e) {
-          return e.preventDefault && e.preventDefault(), e.dataTransfer.dropEffect = "move", 0
+          return e.preventDefault && e.preventDefault(), e.dataTransfer.dropEffect = "move", !1
         })), s.bind("dragenter", (function(e) {
           e.target && e.target.classList && e.target.classList.contains("icon") && angular.element(e.target.parentElement).addClass("over")
         })), s.bind("dragleave", (function(e) {
